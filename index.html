@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="ja" class="nojs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>大分 トレカ抽選マップ｜大分県内＋通販（2026-11-27）</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+:root{
+  --bg:#f6f7f9; --card:#fff; --line:#e6e9ee; --line2:#eef1f5;
+  --ink:#151a21; --ink2:#3d4653; --dim:#727d8c; --dim2:#98a2b0;
+  --teal:#0f7b6c; --tealbg:#e8f4f1;
+  --red:#d92d20; --amber:#b54708; --blue:#1d4ed8; --violet:#6941c6; --gray:#98a2b0; --green:#067647;
+}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;
+  font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased;
+  padding-bottom:calc(20px + env(safe-area-inset-bottom));
+  overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,p{margin:0}
+/* タップ遅延ゼロ：操作要素すべてに適用 */
+a,button,label,input,select,textarea,summary,[role="button"]{touch-action:manipulation}
+html.nojs .only-js{display:none!important}
+html.js .only-nojs{display:none!important}
+
+/* ---------- ヘッダー ---------- */
+.hd{background:#fff;border-bottom:1px solid var(--line);padding:12px 14px 0;position:relative}
+.hd h1{font-size:16.5px;font-weight:800;letter-spacing:-.01em;line-height:1.3;padding-right:44px}
+.hd .sub{font-size:11px;color:var(--dim);margin-top:3px;line-height:1.45;padding-right:44px}
+.hd .key{position:absolute;right:12px;top:11px;width:34px;height:34px;border-radius:10px;
+  border:1px solid var(--line);background:#fff;color:var(--ink2);font-size:15px;line-height:1;
+  display:flex;align-items:center;justify-content:center;cursor:pointer}
+.hd .key:active{background:#f3f5f8}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);margin:10px -14px 0;border-top:1px solid var(--line2)}
+.kpi{padding:7px 3px 9px;text-align:center;border-left:1px solid var(--line2)}
+.kpi:first-child{border-left:0}
+.kpi b{display:block;font-size:16px;font-weight:800;line-height:1.15;font-variant-numeric:tabular-nums}
+.kpi span{font-size:9.5px;color:var(--dim);letter-spacing:.02em}
+.kpi.red b{color:var(--red)}
+.kpi.green b{color:var(--green)}
+
+/* ---------- タブ＋絞り込み（まとめて上部固定） ---------- */
+.sticky{position:sticky;top:0;z-index:850;background:#fff;border-bottom:1px solid var(--line)}
+.tabbar{display:flex;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tabbar::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:0;background:none;padding:10px 11px 8px;font:inherit;font-size:12px;
+  font-weight:600;color:var(--dim);border-bottom:2px solid transparent;white-space:nowrap;cursor:pointer}
+.tab .n{display:inline-block;min-width:15px;padding:0 4px;margin-left:3px;border-radius:8px;
+  background:#eef1f5;color:var(--dim);font-size:9.5px;line-height:15px;text-align:center;font-weight:700}
+.tab.on{color:var(--ink);border-bottom-color:var(--teal);font-weight:800}
+.tab.on .n{background:var(--tealbg);color:var(--teal)}
+
+.fbar{padding:4px 0 6px;background:#fff}
+.frow{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:3px 12px;scrollbar-width:none}
+.frow::-webkit-scrollbar{display:none}
+.frow.fix{overflow:visible}
+.scrollx{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;flex:1 1 auto;min-width:0;padding:2px 0}
+.scrollx::-webkit-scrollbar{display:none}
+.scrollx .chip{padding:0 8px}
+.flab{flex:0 0 auto;font-size:10px;color:var(--dim2);letter-spacing:.04em;padding-right:1px}
+.chip{flex:0 0 auto;height:28px;padding:0 9px;border-radius:999px;border:1px solid var(--line);
+  background:#fff;color:var(--ink2);font:inherit;font-size:12px;font-weight:600;
+  display:inline-flex;align-items:center;gap:3px;cursor:pointer}
+.chip:active{background:#f3f5f8}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip.on.red{background:var(--red);border-color:var(--red)}
+.chip .c{font-size:10px;color:var(--dim2);font-weight:700}
+.chip.on .c{color:rgba(255,255,255,.75)}
+.fmore{display:none}
+.fmore.on{display:block;border-top:1px solid var(--line2);padding-top:3px;margin-top:1px;
+  max-height:42vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+
+/* ---------- 地図 ---------- */
+.mapcard{margin:10px 12px 0;border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  background:#eef1f4;position:relative;z-index:1}
+.fitbtn{position:absolute;right:9px;top:9px;z-index:600;height:29px;padding:0 9px;border-radius:8px;
+  border:1px solid var(--line);background:rgba(255,255,255,.94);color:var(--ink2);font:inherit;
+  font-size:11px;font-weight:700;cursor:pointer;box-shadow:0 1px 3px rgba(16,24,40,.12);line-height:1}
+#map{width:100%;background:#eef1f4}
+#map.leaflet-container{height:min(46vh,330px);font:inherit;background:#eef1f4}
+.leaflet-control-attribution{font-size:9px!important;background:rgba(255,255,255,.85)!important}
+.leaflet-bar{border:1px solid var(--line)!important;box-shadow:none!important}
+.leaflet-bar a{color:var(--ink2)!important;border-bottom-color:var(--line)!important}
+.legendrow{display:flex;gap:9px;align-items:center;flex-wrap:wrap;padding:6px 14px 0;font-size:9.5px;color:var(--dim)}
+.legendrow i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:3px;vertical-align:1px}
+.pin{border:none;background:none}
+.pin>div{width:26px;height:26px;border-radius:50%;background:#fff;border:2.5px solid var(--gray);
+  color:var(--gray);font-size:11px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(16,24,40,.18)}
+.pin.hot>div{background:var(--red);border-color:#fff;color:#fff}
+.pin.done>div{opacity:.35}
+.pin.home>div{background:var(--teal);border-color:#fff;font-size:12px}
+
+#list-anchor,.storebar{scroll-margin-top:126px}
+/* ---------- 店舗バー ---------- */
+.storebar{display:none;margin:8px 12px 0;background:var(--tealbg);border:1px solid #cfe7e1;
+  border-radius:12px;padding:8px 10px;align-items:center;gap:8px}
+.storebar.on{display:flex}
+.storebar .sbl{min-width:0;flex:1}
+.storebar b{display:block;font-size:12.5px;color:#0b5f53;line-height:1.3}
+.storebar span{display:block;font-size:10.5px;color:#3d6f66;margin-top:1px}
+.storebar .x{flex:0 0 auto;height:26px;padding:0 9px;border-radius:8px;border:1px solid #bfe0d9;
+  background:#fff;color:#0b5f53;font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+
+/* ---------- パネル ---------- */
+.panel{display:none}
+.panel.active{display:block}
+
+/* ---------- セクション／カード ---------- */
+.list{padding:0 12px}
+.sec{display:flex;align-items:baseline;gap:6px;margin:14px 2px 7px}
+.sec h2{font-size:12.5px;font-weight:800;color:var(--ink2);letter-spacing:.01em}
+.sec span{font-size:10.5px;color:var(--dim2)}
+.empty{background:#fff;border:1px dashed #d8dee6;border-radius:12px;padding:14px 12px;
+  font-size:12px;color:var(--dim);line-height:1.6;margin:6px 0 10px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 11px 11px;
+  margin-bottom:8px;position:relative;cursor:pointer}
+html.nojs .card{cursor:auto}
+.card:active{background:#fbfcfe}
+.card.applied{border-color:#c7e7db;background:#fbfefd}
+.card.skipped{opacity:.5}
+.crow{display:flex;align-items:center;gap:5px;margin-bottom:3px;flex-wrap:wrap}
+.tg{font-size:9.5px;font-weight:800;line-height:16px;padding:0 5px;border-radius:4px;
+  border:1px solid transparent;white-space:nowrap}
+.tg.poke{background:#fdf3d7;color:#8a5a00;border-color:#f3e0ae}
+.tg.wanpi{background:#e3f1fd;color:#0b5c8f;border-color:#c3e3f9}
+.tg.kind{background:#f1f3f6;color:#4a5563;border-color:#e3e7ec}
+.tg.box{background:#fdeee2;color:#9a3412;border-color:#f6d9c3}
+.tg.new{background:#e8eafd;color:#3730a3;border-color:#cfd3fb}
+.tg.ap{background:#e2f5ea;color:#08663a;border-color:#bfe9d2}
+.tg.sk{background:#f5f6f8;color:#8b95a3;border-color:#e6e9ee}
+.dl{margin-left:auto;font-size:11px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+.dl.red{color:var(--red)} .dl.amber{color:var(--amber)} .dl.blue{color:var(--blue)}
+.dl.violet{color:var(--violet)} .dl.gray{color:var(--dim2)}
+.card h3{font-size:14px;font-weight:800;line-height:1.35;letter-spacing:-.005em;margin:0 0 3px}
+.card .st{font-size:11px;color:var(--dim);line-height:1.5}
+.card .st b{color:var(--ink2);font-weight:700}
+.card .meta{font-size:10.5px;color:var(--dim);line-height:1.5;margin-top:3px}
+.card .meta b{color:var(--ink2);font-weight:700}
+.mn{display:flex;flex-wrap:wrap;gap:2px 10px;font-size:11px;color:var(--dim);margin-top:5px}
+.mn b{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums}
+.mn .df{color:var(--green);font-weight:800}
+.mn .df.m{color:var(--red)}
+.jd{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:800;margin-top:6px;
+  padding:4px 7px;border-radius:7px;line-height:1.45;white-space:nowrap;overflow:hidden}
+.jd em{font-style:normal;font-weight:500;font-size:10.5px;color:inherit;opacity:.75;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1 1 auto;text-align:right}
+.jd.go{background:#e9f7ef;color:#08663a}
+.jd.maybe{background:#fdf6e3;color:#8a5a00}
+.jd.no{background:#fdeceb;color:#b42318}
+.jd.wrap{white-space:normal;overflow:visible;align-items:flex-start}
+.jd.wrap em{text-align:left;white-space:normal;overflow:visible;text-overflow:clip}
+.jd.ship{background:#efeafd;color:#5b21b6}
+.resbar{display:flex;align-items:center;gap:6px;background:#e9f7ef;border:1px solid #c7e7db;
+  border-radius:8px;padding:5px 8px;margin-top:6px}
+.resbar .l{font-size:9.5px;color:#2f7d61;letter-spacing:.03em;line-height:1.2}
+.resbar .d{font-size:12.5px;font-weight:800;color:#08663a;line-height:1.25}
+.acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:4px;height:30px;padding:0 10px;border-radius:8px;
+  border:1px solid var(--line);background:#fff;color:var(--ink2);font:inherit;font-size:11.5px;
+  font-weight:700;white-space:nowrap;cursor:pointer;line-height:1}
+.btn:active{background:#f3f5f8}
+.btn.pri{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:800}
+.btn.pri:active{background:#0b6659}
+.btn.ap{border-color:#bfe9d2;color:#08663a}
+.btn.sk{border-color:#f3d1cd;color:#b42318}
+.btn.gh{background:#f7f8fa;color:var(--dim)}
+.btn.sm{height:27px;font-size:11px;padding:0 9px}
+
+/* ---------- 締切リスト ---------- */
+.dayhead{display:flex;align-items:baseline;gap:6px;margin:14px 2px 6px}
+.dayhead b{font-size:12.5px;font-weight:800;color:var(--ink2)}
+.dayhead span{font-size:10.5px;color:var(--dim2)}
+.dayhead .t{font-size:10.5px;font-weight:800;color:var(--red)}
+.dlrow{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);
+  border-radius:10px;padding:8px 10px;margin-bottom:6px;cursor:pointer}
+.dlrow:active{background:#fbfcfe}
+.dlrow .h{flex:0 0 42px;font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--ink)}
+.dlrow .h.r{color:var(--red)}
+.dlrow .b{flex:1;min-width:0}
+.dlrow .t{display:block;font-size:12px;font-weight:700;line-height:1.35;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.dlrow .s{display:block;font-size:10px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dlrow .a{flex:0 0 auto;font-size:10px;font-weight:800;padding:2px 6px;border-radius:5px;
+  background:#f1f3f6;color:var(--ink2)}
+.dlrow .a.go{background:#e9f7ef;color:#08663a}
+.dlrow .a.no{background:#fdeceb;color:#b42318}
+.dlrow .a.ship{background:#efeafd;color:#5b21b6}
+.dlrow .a.maybe{background:#fdf6e3;color:#8a5a00}
+.dlrow.done{opacity:.45}
+
+/* ---------- 復活の呪文 ---------- */
+.spell{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0 4px}
+.spell h2{font-size:13.5px;font-weight:800;display:flex;align-items:center;gap:6px}
+.spell .lead{font-size:11px;color:var(--dim);line-height:1.6;margin-top:4px}
+.spell .sum{font-size:10.5px;color:var(--ink2);font-weight:700;margin-top:6px}
+.srow{display:flex;gap:6px;margin-top:8px}
+.srow input{flex:1;min-width:0;height:34px;border:1px solid var(--line);border-radius:8px;
+  background:#fafbfc;color:var(--ink);font:inherit;font-size:12px;padding:0 9px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.02em}
+.srow input::placeholder{font-family:inherit;color:var(--dim2);letter-spacing:0}
+.srow .btn{flex:0 0 auto;height:34px}
+.smsg{font-size:11px;line-height:1.5;margin-top:7px;display:none}
+.smsg.on{display:block}
+.smsg.ok{color:#08663a}
+.smsg.ng{color:#b42318}
+
+/* ---------- 基準・保有（静的） ---------- */
+.info{padding:0 12px}
+.ibox{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0}
+.ibox h2{font-size:13px;font-weight:800;display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.ibox p{font-size:11.5px;color:var(--ink2);line-height:1.65;margin:0 0 5px}
+.ibox p:last-child{margin-bottom:0}
+.ibox .k{font-weight:800;color:var(--ink)}
+.ibox ul{margin:4px 0 0;padding-left:16px}
+.ibox li{font-size:11.5px;color:var(--ink2);line-height:1.6;margin-bottom:3px}
+.ibox a{color:var(--teal);font-weight:700}
+.zone{display:grid;grid-template-columns:1fr;gap:5px;margin-top:6px}
+.zr{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;
+  background:#f7f8fa;border-radius:8px;padding:6px 9px}
+.zr b{font-variant-numeric:tabular-nums}
+details{border-top:1px solid var(--line2);margin-top:8px;padding-top:7px}
+summary{font-size:11.5px;font-weight:800;color:var(--ink2);cursor:pointer;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::after{content:" ▾";color:var(--dim2)}
+details[open] summary::after{content:" ▴"}
+details .dbody{padding-top:6px}
+footer{padding:14px 12px 30px;font-size:10px;color:var(--dim2);line-height:1.7}
+
+/* ---------- 詳細シート ---------- */
+#backdrop{position:fixed;inset:0;background:rgba(17,24,39,.42);opacity:0;pointer-events:none;
+  transition:opacity .18s;z-index:900}
+#backdrop.on{opacity:1;pointer-events:auto}
+#sheet{position:fixed;left:0;right:0;bottom:0;z-index:1000;background:#fff;border-radius:16px 16px 0 0;
+  border-top:1px solid var(--line);max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  transform:translateY(101%);transition:transform .22s cubic-bezier(.2,.8,.2,1);
+  padding:4px 16px calc(20px + env(safe-area-inset-bottom))}
+#sheet.on{transform:translateY(0)}
+.grab{width:36px;height:4px;border-radius:2px;background:#dfe3e9;margin:6px auto 8px}
+.s-close{position:absolute;right:12px;top:14px;width:30px;height:30px;border-radius:50%;
+  border:1px solid var(--line);background:#fff;color:var(--dim);font-size:14px;line-height:1;cursor:pointer}
+.s-name{font-size:15.5px;font-weight:800;line-height:1.35;padding-right:36px}
+.s-pref{font-size:11px;color:var(--dim);margin-top:2px}
+.s-addr{font-size:10.5px;color:var(--dim2);margin:2px 0 8px;line-height:1.5}
+.trip{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 9px}
+.tchip{background:#f4f7fa;border:1px solid #e2e8ef;color:#3d5a75;font-size:11px;
+  padding:2px 8px;border-radius:6px;font-variant-numeric:tabular-nums}
+.tchip.gold{background:#fdf6e3;border-color:#f0e0b6;color:#8a5a00;font-weight:700}
+.lot{border:1px solid var(--line);border-radius:12px;padding:11px;margin-bottom:9px;background:#fff}
+.lot .t{font-weight:800;font-size:13.5px;line-height:1.4;margin-bottom:7px}
+.kv{display:grid;grid-template-columns:70px 1fr;gap:3px 8px;font-size:11.5px;margin:0 0 8px}
+.kv dt{color:var(--dim);font-size:10.5px}
+.kv dd{margin:0;color:var(--ink2)}
+.kv dd b{color:var(--ink)}
+.chipmini{display:inline-block;font-size:10px;font-weight:800;padding:1px 6px;border-radius:5px;
+  margin-left:4px;background:#f1f3f6;color:var(--ink2)}
+.chipmini.r{background:#fdeceb;color:#b42318}
+.chipmini.a{background:#fdf6e3;color:#8a5a00}
+.chipmini.b{background:#e8eefc;color:#1d4ed8}
+.chipmini.v{background:#efeafd;color:#5b21b6}
+.chipmini.g{background:#f1f3f6;color:#98a2b0}
+.warn{font-size:11px;color:#b42318;background:#fdeceb;border:1px solid #f3d1cd;border-radius:8px;
+  padding:6px 8px;margin:6px 0 8px;line-height:1.5}
+.foot-note{font-size:10px;color:var(--dim2);margin-top:4px;line-height:1.5}
+
+/* ---------- トースト ---------- */
+#toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));
+  transform:translate(-50%,16px);background:var(--ink);color:#fff;font-size:12px;font-weight:700;
+  padding:9px 15px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;
+  z-index:1200;max-width:88vw;text-align:center;line-height:1.4}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- 静的フォールバック地図（JSなし） ---------- */
+.qwrap{padding:10px 10px 12px;background:#eef1f4}
+.qhint{font-size:11px;color:var(--ink2);text-align:center;margin-bottom:7px;line-height:1.5}
+.qsvg{width:100%;max-width:420px;display:block;margin:0 auto;background:#e9eef3;border-radius:10px;
+  border:1px solid #dde4ec}
+.nojsnote{margin:10px 12px 0;background:#fdf6e3;border:1px solid #f0e0b6;border-radius:12px;
+  padding:10px 12px;font-size:11.5px;color:#7a5300;line-height:1.6}
+.nojsnote b{color:#5e3f00}
+.pin-panel{display:none;background:#fff;border:1px solid var(--line);border-radius:12px;
+  padding:11px 12px;margin-top:10px}
+.pin-panel:target{display:block}
+.pin-default{display:block;background:#fff;border:1px dashed #d8dee6;border-radius:12px;
+  padding:11px 12px;margin-top:10px;text-align:center;color:var(--dim);font-size:11.5px;line-height:1.6}
+.pin-panel:target ~ .pin-default{display:none}
+.pp-h{font-size:13.5px;font-weight:800;display:flex;align-items:baseline;gap:6px}
+.pp-h span{font-size:11px;font-weight:700;color:var(--dim)}
+.pp-sub{font-size:11px;color:var(--dim);margin-top:2px;line-height:1.5}
+.pp-acts{display:flex;gap:6px;margin:7px 0 4px;flex-wrap:wrap}
+.ptabs{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0 2px}
+.ptab-rad{display:none}
+.ptab-lbl{background:#fff;border:1px solid var(--line);color:var(--ink2);border-radius:999px;
+  padding:4px 9px;font-size:11px;font-weight:700;cursor:pointer;line-height:1.3}
+.ptab-box{display:none;border-top:1px solid var(--line2);padding-top:9px;margin-top:8px}
+.ptab-rad.r1:checked ~ .ptabs .l1,.ptab-rad.r2:checked ~ .ptabs .l2,
+.ptab-rad.r3:checked ~ .ptabs .l3,.ptab-rad.r4:checked ~ .ptabs .l4,
+.ptab-rad.r5:checked ~ .ptabs .l5{background:var(--ink);border-color:var(--ink);color:#fff}
+.ptab-rad.r1:checked ~ .b1,.ptab-rad.r2:checked ~ .b2,.ptab-rad.r3:checked ~ .b3,
+.ptab-rad.r4:checked ~ .b4,.ptab-rad.r5:checked ~ .b5{display:block}
+.pb-h{font-size:13px;font-weight:800;line-height:1.4}
+.pb-st{font-size:11px;color:var(--dim);margin:2px 0 5px;line-height:1.5}
+.pb-kv{font-size:11px;color:var(--ink2);line-height:1.6}
+.pb-kv i{font-style:normal;color:var(--dim);display:inline-block;width:34px;font-size:10px}
+.pb-mn{font-size:11px;color:var(--dim);margin-top:4px;line-height:1.7}
+.pb-mn b{color:var(--ink);font-variant-numeric:tabular-nums}
+.pb-mn .df{color:var(--green);font-weight:800}
+.pb-mn .df.m{color:var(--red)}
+.pb-cond{font-size:10.5px;color:var(--dim);margin-top:4px;line-height:1.55}
+
+@media (min-width:760px){
+  body{max-width:780px;margin:0 auto;background:#fff;border-left:1px solid var(--line);
+    border-right:1px solid var(--line);min-height:100vh}
+  #map{height:420px}
+  .qsvg{max-width:520px}
+  #sheet{max-width:620px;left:50%;transform:translate(-50%,101%)}
+  #sheet.on{transform:translate(-50%,0)}
+}
+
+</style>
+</head>
+<body>
+<div id="top"></div>
+<header class="hd">
+  <h1>大分 トレカ抽選マップ</h1>
+  <p class="sub">ポケカ・ワンピ 全19件｜2026/11/27 16:30 時点｜店頭は<a href="#rule" style="color:#0f7b6c;font-weight:700">大分県内の抽選</a>（1件）＋通販（18件）</p>
+  <button class="key" id="openSpell" aria-label="復活の呪文">🔑</button>
+  <div class="kpis" id="kpis">
+    <div class="kpi"><b>19</b><span>掲載</span></div>
+    <div class="kpi"><b>18</b><span>未応募</span></div>
+    <div class="kpi green"><b>1</b><span>応募済み</span></div>
+    <div class="kpi red"><b>4</b><span>本日締切</span></div>
+  </div>
+</header>
+
+<div class="sticky only-js">
+  <nav class="tabbar"><button class="tab on" data-tab="map">🗺️ 大分マップ</button><button class="tab" data-tab="online">📦 通販</button><button class="tab" data-tab="applied">✅ 応募済み<span class="n">1</span></button><button class="tab" data-tab="deadline">📅 締切<span class="n">14</span></button><button class="tab" data-tab="info">⚖️ 基準</button></nav>
+  <div class="fbar">
+    <div class="frow"><button class="chip on" data-f="cat" data-v="all">すべて</button><button class="chip" data-f="cat" data-v="poke">ポケカ</button><button class="chip" data-f="cat" data-v="wanpi">ワンピ</button><span style="flex:0 0 6px"></span><button class="chip on" data-f="st" data-v="active">📋 すべて</button><button class="chip" data-f="st" data-v="todo">🎯 応募</button><button class="chip" data-f="st" data-v="applied">✅ 応募済み</button><button class="chip" data-f="st" data-v="skipped">🚫 見送り</button></div>
+    <div class="frow fix"><span class="flab">並び</span><div class="scrollx"><button class="chip on" data-f="sort" data-v="deadline">締切順</button><button class="chip" data-f="sort" data-v="distance">近い順</button><button class="chip" data-f="sort" data-v="profit">💰差額順</button><button class="chip" data-f="sort" data-v="new">🆕新着</button></div><button class="chip" id="moreBtn">絞り込み ▾</button></div>
+    <div class="fmore" id="fmore"><div class="frow"><span class="flab">判定</span><button class="chip on" data-f="verdict" data-v="all">すべて</button><button class="chip" data-f="verdict" data-v="go">🟢 行く価値</button><button class="chip" data-f="verdict" data-v="maybe">🟡 ついで</button><button class="chip" data-f="verdict" data-v="no">🔴 見送り</button><button class="chip" data-f="verdict" data-v="ship">📦 通販</button></div><div class="frow"><span class="flab">受取</span><button class="chip on" data-f="kind" data-v="all">すべて</button><button class="chip" data-f="kind" data-v="store">🏙 大分の店頭</button><button class="chip" data-f="kind" data-v="online">📦 通販</button></div><div class="frow"><span class="flab">種類</span><button class="chip on" data-f="ptype" data-v="all">すべて</button><button class="chip" data-f="ptype" data-v="pokebox">ポケカBOX</button><button class="chip" data-f="ptype" data-v="wanpibox">ワンピBOX</button><button class="chip" data-f="ptype" data-v="other">その他</button></div><div class="frow"><span class="flab">条件</span><button class="chip on" data-f="cond" data-v="all">すべて</button><button class="chip" data-f="cond" data-v="none">会員・履歴 不要</button><button class="chip" data-f="cond" data-v="need">会員・履歴 必要</button></div><div class="frow"><span class="flab">締切</span><button class="chip on" data-f="when" data-v="all">すべて</button><button class="chip" data-f="when" data-v="today">本日締切</button><button class="chip" data-f="when" data-v="3days">3日以内</button></div></div>
+  </div>
+</div>
+
+<div class="nojsnote only-nojs">アプリ内プレビューでは<b>簡易表示</b>です（地図のピンをタップすると店ごとの抽選が開きます）。Safariで開くと、絞り込み・✅応募済み保存・🔑復活の呪文がすべて使えます。</div>
+
+<main>
+  <section class="panel active" id="panel-map" data-panel="map">
+    <div class="mapcard">
+      <button class="fitbtn only-js" id="fitOita" type="button">🗾 大分全体</button>
+      <div id="map">
+        <div class="qwrap">
+          <div class="qhint">👇 大分マップのピンをタップすると、この下にその店の抽選が開きます</div>
+          <svg class="qsvg" viewBox="0 0 400 382" role="img" aria-label="大分県の地図（自宅・中津・宇佐・別府・大分市・日出町）"><rect x="0" y="0" width="400" height="382" fill="#e6edf4"/><path d="M120.8 57.0 116.6 69.5 121.7 76.8 121.3 81.9 114.8 89.1 115.4 93.4 118.0 96.2 105.1 96.7 103.5 98.2 97.4 96.1 88.0 96.9 84.9 95.2 78.7 95.2 76.3 92.0 74.4 92.1 70.2 95.5 66.1 94.5 57.7 96.8 54.4 101.0 48.7 103.8 43.9 113.7 34.7 117.8 35.5 120.3 33.5 124.2 32.1 141.2 25.2 142.2 24.7 147.6 17.1 154.0 19.6 157.5 20.0 155.7 21.3 156.1 23.6 159.8 22.7 161.1 26.2 172.1 22.0 177.3 26.7 182.0 15.1 184.3 14.4 191.6 24.2 194.2 19.9 196.6 17.4 200.9 25.5 207.1 32.5 209.4 32.0 213.0 28.4 215.8 30.2 221.2 27.5 223.5 24.9 233.7 18.4 238.5 19.4 242.1 25.4 241.6 26.5 243.3 29.3 242.8 32.1 244.3 35.3 252.1 38.5 252.5 40.9 256.3 50.0 256.5 53.6 259.5 53.8 262.5 56.9 266.8 63.0 266.8 70.0 258.4 70.9 252.7 68.9 250.2 72.8 244.3 68.3 236.9 63.8 232.8 64.1 229.6 59.3 225.5 61.1 224.9 60.4 219.6 63.4 210.5 70.3 212.6 75.9 209.1 77.2 206.7 83.4 206.3 93.6 209.9 96.2 209.1 100.2 212.2 101.0 215.6 109.3 220.5 108.6 222.0 113.3 225.5 115.0 229.8 114.0 234.1 116.8 238.2 117.2 245.9 120.5 249.1 122.7 247.8 129.5 256.1 131.7 269.1 138.7 276.6 138.6 281.4 143.5 283.5 141.3 288.1 139.0 287.9 138.3 289.3 140.4 290.7 138.5 291.8 140.2 294.1 138.2 296.5 140.4 301.8 141.7 314.9 143.7 317.8 146.4 316.9 146.4 320.7 152.5 325.6 158.5 327.8 162.3 333.9 167.2 334.8 168.9 337.1 168.6 342.0 171.1 344.2 183.9 341.0 190.0 341.6 194.7 335.7 202.8 334.8 206.0 332.6 209.1 338.1 214.0 340.6 213.8 342.0 218.4 345.5 215.8 351.4 216.6 356.2 224.1 360.3 233.4 362.0 240.6 354.5 243.1 355.6 250.0 354.7 263.1 357.5 271.0 354.7 275.6 355.5 277.0 350.0 280.8 346.2 282.8 334.8 292.1 332.0 298.0 333.9 300.0 338.0 301.2 337.0 303.8 337.9 309.0 335.2 312.0 338.8 319.2 338.4 319.5 343.6 314.8 354.0 316.4 358.9 314.8 364.2 315.7 368.4 327.1 364.9 326.8 363.3 323.3 363.5 325.3 357.9 322.0 355.1 324.3 353.5 323.4 349.4 325.0 348.6 330.2 358.3 329.1 355.1 330.4 353.0 326.8 348.9 328.7 343.9 329.7 345.5 331.1 344.8 330.1 347.1 331.4 347.8 329.7 349.8 331.8 351.1 333.4 347.8 337.3 351.0 336.4 347.0 338.8 345.4 338.2 347.8 339.9 350.8 342.1 351.2 345.7 346.9 345.1 343.7 347.2 342.9 350.5 344.2 350.0 347.8 352.4 348.6 354.0 347.4 353.0 343.5 363.2 336.4 363.9 333.5 356.8 329.4 353.5 329.9 354.9 330.0 353.7 331.4 357.1 334.7 354.3 337.0 350.1 332.1 351.3 338.0 349.8 339.2 348.3 332.8 343.8 333.5 348.0 331.3 346.0 326.4 349.5 329.2 353.5 325.7 353.4 321.8 356.3 323.6 356.9 321.0 361.1 318.1 361.1 315.5 365.4 313.8 361.8 313.4 359.5 310.6 358.9 313.9 356.8 314.2 356.3 306.1 353.7 302.7 357.1 303.7 357.8 302.0 359.6 306.4 363.7 308.4 363.3 301.7 366.0 302.2 365.7 299.9 368.5 298.0 372.1 297.8 372.2 300.5 374.0 301.2 375.5 299.3 374.8 297.2 376.8 296.4 383.3 299.4 386.0 298.8 384.1 294.4 381.6 293.3 378.1 294.4 375.8 291.5 375.8 293.3 373.8 293.9 370.6 291.4 370.8 296.5 367.5 296.2 361.9 299.1 359.9 297.0 361.5 289.6 360.0 291.6 357.8 291.4 358.8 293.7 355.6 296.6 353.7 295.4 354.6 294.0 352.5 294.1 353.5 288.0 351.5 291.8 349.1 289.2 350.4 293.2 349.0 294.4 345.7 289.5 342.6 292.0 341.8 288.6 340.0 288.0 339.3 291.2 337.7 290.6 339.5 284.0 335.3 285.4 335.3 283.3 332.3 283.2 333.0 281.7 330.5 282.3 330.6 278.8 328.2 278.2 330.3 276.8 330.9 272.8 331.8 278.0 333.7 275.4 331.6 271.6 338.0 265.9 337.3 260.6 339.4 259.6 340.1 256.6 342.2 258.1 344.1 256.2 346.2 257.7 348.4 256.9 355.0 258.7 360.0 255.1 361.3 256.0 366.2 254.1 362.6 253.5 361.2 248.2 359.5 247.0 361.5 241.2 357.4 243.0 356.3 247.2 357.6 251.1 353.7 251.5 353.3 253.1 350.8 252.1 350.9 249.3 347.7 249.7 347.1 251.8 344.0 250.7 342.0 243.9 343.4 241.0 339.8 242.8 341.6 245.8 341.0 248.8 338.3 248.9 340.0 251.4 337.7 251.7 337.2 250.1 335.0 251.7 334.6 246.0 331.9 248.6 325.9 245.9 325.8 247.8 328.0 248.7 327.1 249.5 323.8 247.5 319.2 247.9 320.0 245.9 321.8 245.7 317.3 243.9 322.2 243.3 321.9 241.3 325.6 238.8 324.3 238.4 325.6 236.5 329.4 237.4 331.6 236.3 330.5 234.2 335.9 231.1 331.7 230.3 331.7 227.7 330.3 230.3 328.2 231.3 327.2 230.1 326.4 232.2 324.0 231.9 324.8 229.1 322.7 228.8 321.6 231.0 320.0 230.0 315.4 234.7 312.5 233.6 313.3 231.5 311.0 230.6 309.9 232.4 304.5 232.4 305.0 230.3 301.3 230.3 308.1 222.8 310.2 222.2 310.3 218.4 308.2 220.7 308.1 218.4 311.5 211.3 322.2 204.2 319.7 203.2 324.6 196.0 322.8 192.9 324.2 188.9 329.0 188.6 332.6 182.4 332.1 180.6 329.0 180.4 321.8 183.6 323.8 187.2 318.4 184.9 313.9 187.5 303.6 189.8 295.7 188.4 293.4 190.1 295.5 185.9 293.8 188.8 291.8 186.1 288.4 186.1 288.4 190.0 289.8 190.4 286.1 189.1 287.4 187.6 285.3 185.9 285.0 187.3 282.1 186.3 282.4 184.6 277.8 181.2 276.0 183.5 275.1 182.8 276.8 180.5 269.9 176.6 250.1 181.9 248.7 183.8 246.8 182.8 242.7 184.8 244.8 186.2 240.4 186.8 241.0 188.0 239.7 188.5 228.5 183.9 224.4 184.2 216.0 179.5 214.0 161.6 211.6 159.4 213.1 147.9 222.2 145.6 224.7 146.2 228.0 151.6 230.1 151.6 229.6 150.3 238.9 153.3 237.1 150.4 240.1 152.6 241.8 151.8 241.9 144.0 255.6 142.9 257.5 139.7 256.3 136.4 253.2 134.3 253.8 131.8 251.1 130.4 253.0 128.5 253.0 127.1 251.1 127.0 252.8 126.0 252.1 124.9 256.5 127.4 259.6 125.8 263.8 127.5 263.8 129.7 260.9 130.8 273.2 131.5 275.2 121.5 278.8 116.3 279.9 111.0 282.4 108.2 282.4 111.1 284.0 110.6 283.8 100.9 281.8 102.9 280.9 98.4 283.7 85.6 285.6 83.7 284.2 77.1 277.8 62.1 275.0 62.1 273.4 60.4 270.2 49.3 267.6 49.5 266.2 48.0 261.0 38.6 258.0 42.1 256.7 41.5 257.7 37.9 255.5 37.8 253.4 34.5 251.8 34.5 251.8 38.7 250.4 39.0 251.3 37.3 250.0 37.3 251.6 37.2 248.7 35.0 247.5 37.0 244.9 35.7 245.0 32.8 241.9 33.2 238.6 30.8 235.0 32.9 235.5 37.0 232.3 38.3 232.9 35.6 231.2 32.8 226.3 36.4 224.4 35.2 223.3 36.4 219.8 33.8 221.9 37.7 219.7 36.9 217.9 39.1 215.4 37.0 215.3 38.6 213.2 38.3 212.4 41.0 215.3 43.5 211.9 44.2 212.3 47.9 208.9 46.6 207.4 49.0 208.7 50.5 205.9 52.8 204.3 58.4 202.1 56.7 190.8 66.4 191.3 70.8 193.9 73.9 193.0 74.7 190.7 72.9 185.3 73.3 176.5 70.5 175.5 72.1 172.0 71.3 165.9 73.6 164.2 70.1 161.0 69.4 149.0 70.5 140.7 63.8 142.1 62.3 141.7 59.1 140.4 61.1 138.1 59.6 136.1 62.9 134.4 63.0 128.8 61.7 129.6 60.3 127.5 58.1 124.5 57.3 123.1 58.6 123.0 57.1 121.4 56.5 121.5 58.3 120.8 57.0Z" fill="#ffffff" stroke="#cfd8e3" stroke-width="1.2" stroke-linejoin="round"/><path d="M271.2 17.1 262.7 14.0 259.0 16.7 260.1 18.0 257.3 18.5 257.1 17.4 257.1 19.2 257.2 17.1 255.4 16.6 254.9 19.1 251.9 21.6 256.7 21.7 255.7 20.8 257.9 20.4 257.2 21.6 258.3 20.3 257.7 21.2 259.7 20.6 262.6 22.2 268.0 17.5 271.2 17.1Z" fill="#ffffff" stroke="#cfd8e3" stroke-width="1"/><path d="M338.3 356.3 338.1 354.5 334.3 353.1 334.6 356.7 338.3 356.3Z" fill="#ffffff" stroke="#cfd8e3" stroke-width="1"/><path d="M380.6 289.6 382.3 291.9 383.6 288.8 384.7 289.3 384.5 284.3 382.9 283.0 382.5 286.5 378.6 287.9 380.6 288.3 380.6 289.6Z" fill="#ffffff" stroke="#cfd8e3" stroke-width="1"/><path d="M338.6 274.2 334.4 279.0 336.2 281.8 338.6 282.1 340.4 278.7 344.6 276.6 339.0 276.3 344.2 269.5 340.1 269.3 338.4 271.6 337.1 270.6 337.8 272.9 336.4 273.8 338.5 272.8 338.6 274.2Z" fill="#ffffff" stroke="#cfd8e3" stroke-width="1"/><circle cx="168.4" cy="87.3" r="3.2" fill="#8fa0b2"/><circle cx="222.8" cy="144.8" r="3.2" fill="#8fa0b2"/><circle cx="210.6" cy="174.8" r="3.2" fill="#8fa0b2"/><circle cx="245.5" cy="190.6" r="3.2" fill="#8fa0b2"/><circle cx="281.6" cy="75.7" r="3.2" fill="#8fa0b2"/><circle cx="48.3" cy="161.8" r="2.6" fill="#b9c4d1"/><circle cx="331.2" cy="289.2" r="2.6" fill="#b9c4d1"/><text x="122.4" y="89.0" fill="#8a5a00" font-size="11" font-weight="800" text-anchor="middle" opacity="1">中津</text><text x="175.0" y="90.5" fill="#5b6879" font-size="10.5" font-weight="600" text-anchor="start" opacity="1">宇佐</text><text x="289.0" y="80.5" fill="#8fa0b2" font-size="10" font-weight="600" text-anchor="start" opacity="1">国東</text><text x="216.0" y="148.5" fill="#5b6879" font-size="10.5" font-weight="600" text-anchor="end" opacity="1">日出</text><text x="203.0" y="178.5" fill="#5b6879" font-size="10.5" font-weight="600" text-anchor="end" opacity="1">別府</text><text x="245.5" y="207.0" fill="#5b6879" font-size="10.5" font-weight="700" text-anchor="middle" opacity="1">大分</text><text x="56.0" y="165.5" fill="#b3bfcc" font-size="9.5" font-weight="600" text-anchor="start" opacity="1">日田</text><text x="323.0" y="292.5" fill="#b3bfcc" font-size="9.5" font-weight="600" text-anchor="end" opacity="1">佐伯</text><circle cx="253.3" cy="132.6" r="10" fill="#0f7b6c" stroke="#fff" stroke-width="2"/><text x="253.3" y="136.6" fill="#fff" font-size="10" text-anchor="middle">🏠</text><text x="266.0" y="136.0" fill="#0b5f53" font-size="10.5" font-weight="800" text-anchor="start" opacity="1">杵築・自宅</text><a href="#pin-nakatsu" aria-label="中津の抽選を見る"><circle cx="122.4" cy="62.7" r="19" fill="#b54708" opacity="0"/><circle cx="122.4" cy="62.7" r="11" fill="#ffffff" stroke="#b54708" stroke-width="2.5"/><text x="122.4" y="66.7" fill="#b54708" font-size="10.5" font-weight="800" text-anchor="middle">1</text></a><g opacity="0.75"><line x1="20" y1="368" x2="179" y2="368" stroke="#8fa0b2" stroke-width="1.5"/><line x1="20" y1="364" x2="20" y2="372" stroke="#8fa0b2" stroke-width="1.5"/><line x1="179" y1="364" x2="179" y2="372" stroke="#8fa0b2" stroke-width="1.5"/><text x="99" y="363" fill="#8fa0b2" font-size="8.5" text-anchor="middle">約50km</text></g></svg>
+          <div class="pin-panel" id="pin-nakatsu"><div class="pp-h">📍 中津 <span>1件</span></div><div class="pp-sub">🚗 自宅から片道約1時間14分（64.9km）・往復 約1,300円</div><div class="pp-acts"><a class="btn sm" href="https://www.google.com/maps/dir/?api=1&amp;origin=33.4041136,131.6358393&amp;destination=33.6021276,131.1922166&amp;travelmode=driving" target="_blank" rel="noopener">🛣 経路</a><a class="btn sm" href="https://www.google.com/maps/search/?api=1&amp;query=TSUTAYA 中津店（トレカコーナー） 中津市蛭子町2-10-2" target="_blank" rel="noopener">📍 店の場所</a></div><input class="ptab-rad r1" type="radio" name="grp-nakatsu" id="rad-nakatsu-1" checked><div class="ptabs"><label class="ptab-lbl l1" for="rad-nakatsu-1">ブースターパック 神の｜中津</label></div><div class="ptab-box b1"><div class="pb-h">ブースターパック 神の支配【OP-18】（2次抽選）</div><div class="pb-st">TSUTAYA 中津店（トレカコーナー）</div><div class="pb-kv"><i>受付</i>受付中 〜 11/29 23:59</div><div class="pb-kv"><i>発表</i>記載なし（過去回は締切翌日ごろ）</div><div class="pb-mn">定価 <b>5,760円</b> ・ 買取 <b>6,000〜8,100円</b> ・ 差額 <b class="df">+240〜+2,340</b></div><div class="pb-cond">📋 店頭受取・本人確認書類／1人1点まで</div><div class="jd no" style="margin-top:6px">🔴 見送り<em>差額+1,290 ＜ 現金ライン1,300円</em></div><div class="acts"><a class="btn pri sm" href="https://x.com/T_Nakatsu_TCG" target="_blank" rel="noopener">🎟️ 応募</a></div></div></div><div class="pin-default">👆 上の大分マップのピン（番号の丸）をタップすると、その店の商品・価格・応募リンクがここに開きます。</div>
+        </div>
+      </div>
+    </div>
+    <div class="legendrow">
+      <span><i style="background:#d92d20"></i>本日締切</span>
+      <span><i style="background:#b54708"></i>3日以内</span>
+      <span><i style="background:#1d4ed8"></i>4日以上</span>
+      <span><i style="background:#6941c6"></i>受付前</span>
+      <span><i style="background:#98a2b0"></i>期限なし</span>
+      <span><i style="background:#0f7b6c"></i>自宅（杵築）</span>
+      <span><i style="background:#8fa0b2"></i>町の目安</span>
+      <span><i style="background:#c3ccd8"></i>遠方（1時間半超）</span>
+    </div>
+    <div style="margin:8px 12px 0;padding:8px 10px;background:#e8f4f1;border:1px solid #cfe7e1;border-radius:10px;font-size:11px;color:#0b5f53;line-height:1.55">🗺 <b>表示ルール（2026/11/27）</b>：地図は<b>大分県だけ</b>。店頭抽選は<b>大分県内</b>をすべて掲載します（佐伯・日田など片道1時間半超の県内店舗だけ注記）。県外の店頭抽選は一覧から外し、店頭受取でも<b>郵送・配送があるもの</b>は通販として残しています。</div>
+    <div id="storebar" class="storebar"></div>
+    <div id="list-anchor"></div>
+    <div class="list only-js" id="list-map"></div>
+    <div class="only-nojs">
+      <div class="sec"><h2>🗺 大分県内の店頭抽選</h2><span>1件</span></div><div class="list"><article class="card"><div class="crow"><span class="tg new">🆕 新着</span><span class="tg wanpi">ワンピ</span><span class="tg box">BOX</span><span class="tg kind">店頭</span><span class="dl amber">残2日</span></div><h3>ブースターパック 神の支配【OP-18】（2次抽選）</h3><div class="st"><b>TSUTAYA 中津店（トレカコーナー）</b></div><div class="st">🏠 47km ・ 🚗 片道約1時間14分・往復 約1,300円</div><div class="mn"><span>定価 <b>5,760円</b></span><span>買取 <b>6,000〜8,100円</b></span><span>差額 <b class="df">+240〜+2,340</b></span></div><div class="meta">期間 <b>受付中 〜 11/29 23:59</b> ・ 発表 <b>記載なし（過去回は締切翌日ごろ）</b></div><div class="jd no">🔴 見送り<em>差額+1,290 ＜ 現金ライン1,300円</em></div><div class="acts"><a class="btn pri sm" href="https://x.com/T_Nakatsu_TCG" target="_blank" rel="noopener">🎟️ 応募</a></div></article></div><div class="sec"><h2>📦 通販・オンライン</h2><span>移動不要 18件</span></div>
+      <div class="list"><article class="card"><div class="crow"><span class="tg new">🆕 新着</span><span class="tg poke">ポケカ</span><span class="tg kind">通販</span><span class="dl gray">終了</span></div><h3>30th プレミアムデッキセット エーフィ・ブラッキー（Luruna Card・購入者限定）</h3><div class="st"><b>通販・オンライン</b>（全国から応募／自宅に届く）</div><div class="mn"><span>定価 <b>6,200円</b></span><span>買取 <b>8,000〜12,500円</b></span><span>差額 <b class="df">+1,800〜+6,300</b></span></div><div class="meta">期間 <b>10/28 21:15 〜 11/26 23:45</b> ・ 発表 <b>11/27（金）12:00</b></div><div class="jd ship">📦 通販<em>移動不要・差額+1,800〜+6,300円</em></div><div class="acts"><a class="btn pri sm" href="https://card.luruna.jp/items/164362360" target="_blank" rel="noopener">🎟️ 応募</a></div></article><article class="card"><div class="crow"><span class="tg wanpi">ワンピ</span><span class="tg box">BOX</span><span class="tg kind">通販</span><span class="dl gray">終了</span></div><h3>エクストラブースター ONE PIECE Heroines Edition【EB-03】</h3><div class="st"><b>通販・オンライン</b>（全国から応募／自宅に届く）</div><div class="mn"><span>定価 <b>—</b></span><span>買取 <b>—</b></span></div><div class="meta">期間 <b>11/24 22:00 〜 11/26 23:59</b> ・ 発表 <b>記載なし</b></div><div class="jd ship">📦 通販<em>移動不要・相場は要確認</em></div><div class="acts"><a class="btn pri sm" href="https://dorasuta.membercard.jp/lottery" target="_blank" rel="noopener">🎟️ 抽選ページ</a><a class="btn sm" href="https://x.com/ds_ecommerce" target="_blank" rel="noopener">𝕏</a></div></article><article class="card"><div class="crow"><span class="tg wanpi">ワンピ</span><span class="tg box">BOX</span><span class="tg kind">通販</span><span class="dl gray">終了</span></div><h3>神の支配【OP-18】／世界最強の戦士【OP-17】（Joshin web）</h3><div class="st"><b>通販・オンライン</b>（全国から応募／自宅に届く）</div><div class="mn"><span>定価 <b>5,760円</b></span><span>買取 <b>6,000〜8,100円</b></span><span>差額 <b class="df">+240〜+2,340</b></span></div><div class="meta">期間 <b>11/25 13:00 〜 11/27 9:59</b> ・ 発表 <b>案内メールで通知</b></div><div class="jd ship">📦 通販<em>移動不要・差額+240〜+2,340円</em></div><div class="acts"><a class="btn pri sm" href="https://shop.joshin.co.jp/app/" target="_blank" rel="noopener">📋 Joshin</a></div></article><article class="card"><div class="crow"><span class="tg poke">ポケカ</span><span class="tg box">BOX</span><span class="tg kind">通販</span><span class="dl gray">終了</span></div><h3>ハドウシーカー BOX（Toreca Port・送料無料）</h3><div class="st"><b>通販・オンライン</b>（全国から応募／自宅に届く）</div><div class="mn"><span>定価 <b>6,000円</b></span><span>買取 <b>7,500〜11,000円</b> <span style="font-size:9px;color:#8a5a00">予想</span></span><span>差額 <b class="df">+1,500〜+5,000</b></span></div><div class="meta">期間 <b>11/24 20:00 〜 11/27 10:00</b> ・ 発表 <b>11/27（金）12:00から順次メール</b></div><div class="jd ship">📦 通販<em>移動不要・差額+1,500〜+5,000円</em></div><div class="acts"><a class="btn pri sm" href="https://www.toreca-port.com/items/166900843" target="_blank" rel="noopener">🎟️ 応募</a></div></article><article class="card"><div class="crow"><span class="tg new">🆕 新着</span><span class="tg poke">ポケカ</span><span class="tg box">BOX</span><span class="tg kind">通販</span><span class="dl red">残7時間</span></div><h3>ハドウシーカー BOX（Luruna Card・購入者限定）</h3><div class="st"><b>通販・オンライン</b>（全国から応募／自宅に届く）</div><div class="mn"><span>定価 <b>6,000円</b></span><span>買取 <b>7,500〜11,000円</b> <span style="font-size:9px;color:#8a5a00">予想</span></span><span>差額 <b class="df">+1,500〜+5,000</b></span></div><div class="meta">期間 <b>11/7 17:45 〜 11/27 23:45</b> ・ 発表 <b>11/30（月）8:00以降 順次メール</b></div><div class="jd ship">📦 通販<em>移動不要・差額+1,500〜+5,000円</em></div><div class="acts"><a class="btn pri sm" href="https://card.luruna.jp/items/165349187" target="_blank" rel="noopener">🎟️ 応募</a></div></article><article class="card"><div class="crow"><span class="tg poke">ポケカ</span><span class="tg box">BOX</span><span class="tg kind">通販</span><span class="dl red">残7時間</span></div><h3>ハドウシーカー BOX（定価抽選・郵送可）</h3><div class="st"><b>通販・オンライン</b>（全国から応募／自宅に届く）</div><div class="st">📮 郵送可（送料別・銀行振込）／店頭受取も可：LIT天神・小倉</div><div class="mn"><span>定価 <b>6,000円</b></span><span>買取 <b>7,500〜11,000円</b> <span style="font-size:9px;color:#8a5a00">予想</span></span><span>差額 <b class="df">+1,500〜+5,000</b></span></div><div class="meta">期間 <b>受付中 〜 11/27 23:59</b> ・ 発表 <b>当選者への連絡をもって発表</b></div><div class="jd ship">📦 通販<em>移動不要・差額+1,500〜+5,000円</em></div><div class="acts"><a class="btn pri sm" href="https://x.com/lit_tenjin" target="_blank" rel="noopener">🎟️ 応募</a></div></article><article class="card"><div class="crow"><span class="tg poke">ポケカ</span><span class="tg box">BOX</span><span class="tg kind">通販</span><span class="dl red">残7時間</span></div><h3>ストームエメラルダ BOX（ドラゴンスター通販）</h3><div class="st"><b>通販・オンライン</b>（全国から応募／自宅に届く）</div><div class="mn"><span>定価 <b>6,000円</b></span><span>買取 <b>6,500〜7,200円</b></span><span>差額 <b class="df">+500〜+1,200</b></span></div><div class="meta">期間 <b>11/25 22:00 〜 11/27 23:59</b> ・ 発表 <b>11/29（日）</b></div><div class="jd ship">📦 通販<em>移動不要・差額+500〜+1,200円</em></div><div class="acts"><a class="btn pri sm" href="https://dorasuta.membercard.jp/lottery" target="_blank" rel="noopener">🎟️ 抽選ページ</a><a class="btn sm" href="https://x.com/ds_ecommerce" target="_blank" rel="noopener">𝕏</a></div></article><article class="card"><div class="crow"><span class="tg poke">ポケカ</span><span class="tg box">BOX</span><span class="tg kind">通販</span><span class="dl red">残7時間</span></div><h3>ハドウシーカー BOX（カーナベル・買取申込者限定）</h3><div class="st"><b>通販・オンライン</b>（全国から応募／自宅に届く）</div><div class="mn"><span>定価 <b>6,000円</b></span><span>買取 <b>7,500〜11,000円</b> <span style="font-size:9px;color:#8a5a00">予想</span></span><span>差額 <b class="df">+1,500〜+5,000</b></span></div><div class="meta">期間 <b>11/13 0:00 〜 11/27 23:59</b> ・ 発表 <b>11/30（月）</b></div><div class="jd ship">📦 通販<em>移動不要・差額+1,500〜+5,000円</em></div><div class="acts"><a class="btn pri sm" href="https://www.ka-nabell.com/ec/sell/pokemon/topics/rv4711onx" target="_blank" rel="noopener">🎟️ 応募</a></div></article><article class="card"><div class="crow"><span class="tg poke">ポケカ</span><span class="tg kind">通販</span><span class="dl amber">残2日</span></div><h3>30th プレミアムデッキセット エーフィ・ブラッキー（Loppi）</h3><div class="st"><b>通販・オンライン</b>（全国から応募／自宅に届く）</div><div class="mn"><span>定価 <b>6,200円</b></span><span>買取 <b>8,000〜12,500円</b></span><span>差額 <b class="df">+1,800〜+6,300</b></span></div><div class="meta">期間 <b>受付中 〜 11/29 23:30</b> ・ 発表 <b>記載なし</b></div><div class="jd ship">📦 通販<em>移動不要・差額+1,800〜+6,300円</em></div><div class="acts"><a class="btn pri sm" href="https://img.hmv.co.jp/cont/online/pkloppicard_lp/" target="_blank" rel="noopener">📋 Loppi</a></div></article><article class="card"><div class="crow"><span class="tg poke">ポケカ</span><span class="tg box">BOX</span><span class="tg kind">通販</span><span class="dl amber">残2日</span></div><h3>ハドウシーカー BOX（ドラゴンスター通販）</h3><div class="st"><b>通販・オンライン</b>（全国から応募／自宅に届く）</div><div class="mn"><span>定価 <b>6,000円</b></span><span>買取 <b>7,500〜11,000円</b> <span style="font-size:9px;color:#8a5a00">予想</span></span><span>差額 <b class="df">+1,500〜+5,000</b></span></div><div class="meta">期間 <b>11/20 0:00 〜 11/29 23:59</b> ・ 発表 <b>11/30（月）</b></div><div class="jd ship">📦 通販<em>移動不要・差額+1,500〜+5,000円</em></div><div class="acts"><a class="btn pri sm" href="https://dorasuta.membercard.jp/lottery" target="_blank" rel="noopener">🎟️ 抽選ページ</a><a class="btn sm" href="https://x.com/ds_ecommerce" target="_blank" rel="noopener">𝕏</a></div></article><article class="card"><div class="crow"><span class="tg new">🆕 新着</span><span class="tg poke">ポケカ</span><span class="tg box">BOX</span><span class="tg kind">通販</span><span class="dl amber">残2日</span></div><h3>30th CELEBRATION BOX（Luruna Card・購入者限定）</h3><div class="st"><b>通販・オンライン</b>（全国から応募／自宅に届く）</div><div class="mn"><span>定価 <b>7,200円</b></span><span>買取 <b>14,000〜17,300円</b></span><span>差額 <b class="df">+6,800〜+10,100</b></span></div><div class="meta">期間 <b>11/1 0:00 〜 11/30 0:00</b> ・ 発表 <b>当選メールで通知（発表日の記載なし）</b></div><div class="jd ship">📦 通販<em>移動不要・差額+6,800〜+10,100円</em></div><div class="acts"><a class="btn pri sm" href="https://card.luruna.jp/items/164670243" target="_blank" rel="noopener">🎟️ 応募</a></div></article><article class="card"><div class="crow"><span class="tg new">🆕 新着</span><span class="tg poke">ポケカ</span><span class="tg box">BOX</span><span class="tg kind">通販</span><span class="dl blue">残3日</span></div><h3>30th CELEBRATION BOX（トレカショップDANDAN BASE店）</h3><div class="st"><b>通販・オンライン</b>（全国から応募／自宅に届く）</div><div class="mn"><span>定価 <b>7,200円</b></span><span>買取 <b>14,000〜17,300円</b></span><span>差額 <b class="df">+6,800〜+10,100</b></span></div><div class="meta">期間 <b>11/26 0:00 〜 12/1 0:00</b> ・ 発表 <b>12/20（日）20:00以降 順次メール</b></div><div class="jd ship">📦 通販<em>移動不要・差額+6,800〜+10,100円</em></div><div class="acts"><a class="btn pri sm" href="https://gamesearch.base.ec/items/166839254" target="_blank" rel="noopener">🎟️ 応募</a></div></article><article class="card"><div class="crow"><span class="tg new">🆕 新着</span><span class="tg poke">ポケカ</span><span class="tg box">BOX</span><span class="tg kind">通販</span><span class="dl blue">残4日</span></div><h3>インフェルノX BOX（Luruna Card・購入者限定）</h3><div class="st"><b>通販・オンライン</b>（全国から応募／自宅に届く）</div><div class="mn"><span>定価 <b>5,400円</b></span><span>買取 <b>15,500〜16,500円</b></span><span>差額 <b class="df">+10,100〜+11,100</b></span></div><div class="meta">期間 <b>11/10 14:00 〜 12/1 23:45</b> ・ 発表 <b>12/2（水）8:00以降 順次メール</b></div><div class="jd ship">📦 通販<em>移動不要・差額+10,100〜+11,100円</em></div><div class="acts"><a class="btn pri sm" href="https://card.luruna.jp/items/165615393" target="_blank" rel="noopener">🎟️ 応募</a></div></article><article class="card"><div class="crow"><span class="tg new">🆕 新着</span><span class="tg wanpi">ワンピ</span><span class="tg kind">通販</span><span class="dl blue">残5日</span></div><h3>ガンギ HOBBYSHOP：500年後の未来 OP-07 BOX</h3><div class="st"><b>通販・オンライン</b>（全国から応募／自宅に届く）</div><div class="mn"><span>定価 <b>5,280円</b></span><span>買取 <b>14,600〜15,200円</b></span><span>差額 <b class="df">+9,320〜+9,920</b></span></div><div class="meta">期間 <b>11/26 00:00 〜 12/2 23:59</b> ・ 発表 <b>12/3（木）以降（当選者のみメール通知）</b></div><div class="jd ship">📦 通販<em>移動不要・差額+9,320〜+9,920円</em></div><div class="acts"><a class="btn pri sm" href="https://www.gangi.co.jp/blog/drawsale-723" target="_blank" rel="noopener">🎟️ 応募</a><a class="btn sm" href="https://x.com/MS_GANGI" target="_blank" rel="noopener">𝕏</a></div></article><article class="card"><div class="crow"><span class="tg poke">ポケカ</span><span class="tg box">BOX</span><span class="tg kind">通販</span><span class="dl violet">受付開始前</span></div><h3>ハドウシーカー（ゲオ・アプリ抽選）</h3><div class="st"><b>通販・オンライン</b>（全国から応募／自宅に届く）</div><div class="mn"><span>定価 <b>6,000円</b></span><span>買取 <b>7,500〜11,000円</b> <span style="font-size:9px;color:#8a5a00">予想</span></span><span>差額 <b class="df">+1,500〜+5,000</b></span></div><div class="meta">期間 <b>11/30 11:00 〜 12/3 17:59</b> ・ 発表 <b>メールで通知</b></div><div class="jd ship">📦 通販<em>移動不要・差額+1,500〜+5,000円</em></div><div class="acts"><a class="btn pri sm" href="https://torecabiyori.com/chusen/pk-hadou-seeker/#geo-hadou-seeker-20261203" target="_blank" rel="noopener">📋 公式</a></div></article><article class="card"><div class="crow"><span class="tg poke">ポケカ</span><span class="tg kind">通販</span><span class="dl violet">受付開始前</span></div><h3>30th CELEBRATION カードセット（ゲオ・アプリ抽選）</h3><div class="st"><b>通販・オンライン</b>（全国から応募／自宅に届く）</div><div class="mn"><span>定価 <b>1,200円</b></span><span>買取 <b>—</b></span></div><div class="meta">期間 <b>11/30 11:00 〜 12/3 17:59</b> ・ 発表 <b>メールで通知</b></div><div class="jd ship">📦 通販<em>移動不要・相場は要確認</em></div><div class="acts"><a class="btn pri sm" href="https://torecabiyori.com/chusen/pk-30th-cardset/#geo-30th-cardset-20261203" target="_blank" rel="noopener">📋 公式</a></div></article><article class="card"><div class="crow"><span class="tg wanpi">ワンピ</span><span class="tg box">BOX</span><span class="tg kind">通販</span><span class="dl violet">受付開始前</span></div><h3>世界最強の戦士【OP-17】（ゲオ・アプリ抽選）</h3><div class="st"><b>通販・オンライン</b>（全国から応募／自宅に届く）</div><div class="mn"><span>定価 <b>5,760円</b></span><span>買取 <b>6,200〜6,200円</b></span><span>差額 <b class="df">+440〜+440</b></span></div><div class="meta">期間 <b>11/30 11:00 〜 12/3 17:59</b> ・ 発表 <b>メールで通知</b></div><div class="jd ship">📦 通販<em>移動不要・差額+440〜+440円</em></div><div class="acts"><a class="btn pri sm" href="https://torecabiyori.com/chusen/op-op17/#geo-op17-20261203" target="_blank" rel="noopener">📋 公式</a></div></article><article class="card"><div class="crow"><span class="tg poke">ポケカ</span><span class="tg box">BOX</span><span class="tg kind">通販</span><span class="dl gray">期限なし</span></div><h3>ハドウシーカー BOX（Amazon 招待リクエスト）</h3><div class="st"><b>通販・オンライン</b>（全国から応募／自宅に届く）</div><div class="mn"><span>定価 <b>6,000円</b></span><span>買取 <b>7,500〜11,000円</b> <span style="font-size:9px;color:#8a5a00">予想</span></span><span>差額 <b class="df">+1,500〜+5,000</b></span></div><div class="meta">期間 <b>随時（招待リクエスト受付中）</b> ・ 発表 <b>招待メール（48時間以内に購入）</b></div><div class="jd ship">📦 通販<em>移動不要・差額+1,500〜+5,000円</em></div><div class="acts"><a class="btn pri sm" href="https://www.amazon.co.jp/s?k=%E3%83%8F%E3%83%89%E3%82%A6%E3%82%B7%E3%83%BC%E3%82%AB%E3%83%BC%20%E3%83%9D%E3%82%B1%E3%83%A2%E3%83%B3%E3%82%AB%E3%83%BC%E3%83%89" target="_blank" rel="noopener">🛒 Amazon</a></div></article></div>
+    </div>
+  </section>
+
+  <section class="panel only-js" id="panel-online" data-panel="online">
+    <div class="list" id="list-online"></div>
+  </section>
+
+  <section class="panel only-js" id="panel-applied" data-panel="applied">
+    <div class="list">
+<section class="spell" id="spellCard">
+  <h2>🔑 復活の呪文</h2>
+  <p class="lead">いまの「応募済み」「見送り」を短いコードにしました。別のブラウザで開いたときや、新しいファイルに更新したときに貼り付けると、そのまま元に戻せます。</p>
+  <p class="sum" id="spellSum">いま：応募済み 0件 ・ 見送り 0件</p>
+  <div class="srow"><input id="spellOut" readonly value="KTCG1-" aria-label="復活の呪文"><button class="btn pri" id="spellCopy">📋 コピー</button></div>
+  <div class="srow"><input id="spellIn" placeholder="KTCG1-… を貼り付け" aria-label="復活の呪文を入力"><button class="btn" id="spellLoad">✨ 復元</button></div>
+  <p class="smsg" id="spellMsg"></p>
+  <p class="lead" style="margin-top:6px;color:#98a2b0">※復元すると、いまの状態は上書きされます。</p>
+</section></div>
+    <div class="list" id="list-applied" style="padding-top:0"></div>
+  </section>
+
+  <section class="panel only-js" id="panel-deadline" data-panel="deadline">
+    <div class="list" id="list-deadline"></div>
+  </section>
+
+  <section class="panel active" id="panel-info" data-panel="info">
+    
+<div class="info">
+  <div class="ibox">
+    <h2>📦 保有BOXと3ゾーン判定</h2>
+    <p><span class="k">保有中</span>：ハドウシーカー×2（シュリンクあり・11/27発売・売りライン <b>9,000円</b>）／
+       ストームエメラルダ×2（あり <b>7,500円</b>＝1.25倍・なし <b>6,500円</b>＝1.08倍）</p>
+    <div class="zone">
+      <div class="zr"><span>1.25倍未満</span><b>保有（指数未達）</b></div>
+      <div class="zr"><span>1.25〜1.5倍未満</span><b>保有（指数超え）</b></div>
+      <div class="zr"><span>1.5倍以上</span><b>売却</b></div>
+    </div>
+    <p style="margin-top:6px">1.2倍は<b>店頭受取の下振れ判定</b>用（別府24km・大分36kmまで）。<br>
+      大分の出口：マンガ倉庫 大分東／わさだ・トレカ専門店 極KIWAMI・エースTCG大分店（店頭はシュリンクなし基準）。</p>
+  </div>
+  <div class="ibox">
+    <h2>⚖️ 行く価値の判定ルール</h2>
+    <p><span class="k">交通費（現金ライン）</span>＝<b>下道のみ・燃料10円/km・往復</b>。ETC・駐車場は含みません。</p>
+    <p><span class="k">完全コスト</span>＝現金ライン＋移動時間×時給1,125円（下道平均38km/h）。</p>
+    <p><span class="k">差額</span>＝買取相場 − 定価。未発売の商品は「予想」と表示し、<b>予想の下限</b>で保守的に計算します。</p>
+    <p><span class="k">判定</span>：🟢 差額 ≧ 完全コスト／🟡 差額 ≧ 現金ライン（暇な日ならアリ）／🔴 現金ライン割れ。
+       同じエリア（大分市内・別府など）の抽選は合算して判断します。📦は通販（移動不要）。</p>
+  </div>
+  <div class="ibox">
+    <h2 id="rule">📌 このマップについて</h2>
+    <p><span class="k">掲載ルール（2026/11/27 本人指示）</span>：地図は<b>大分県だけ</b>。店頭抽選は<b>大分県内なら全部載せる</b>（自宅・杵築から片道1時間半を超える佐伯・日田などは距離を注記）。県外の店頭受取のみの抽選は載せない（会場に取りに行けないため）。<b>全国通販・郵送可（配送あり）は必ず残す</b>。</p>
+    <p>データ基準：<b>2026年11月27日（金）16:30 JST</b>（11/27に地図を大分県だけに整理）。残り時間は端末の時計で再計算します。</p>
+    <p>対象：<b>大分県内の店頭抽選＋全国通販・郵送可</b>。<b>新弾BOX・記念BOX・プレミアムデッキ・地域限定品</b>と、
+       ワンピの定価超え見込みBOX・EB/PRB・限定セット。通常スタートデッキ・単品パック・サプライは除外。</p>
+    <p style="color:#727d8c">11/27時点で<b>大分県内の掲載は中津1件（片道1時間14分）</b>のみ。別府・大分市・宇佐・日出などの抽選が出たら、この大分マップに追加します。</p>
+    <p>✅応募済み／🚫見送りは<b>このブラウザに保存</b>（localStorage）。別の端末へは <b>🔑 復活の呪文</b> で引き継げます。</p>
+    <p>買取相場は毎日動きます（例：神の支配は発売5日で10,500→6,000円）。応募・購入の前に最新の買取表を確認してください。</p>
+  </div>
+  <div class="ibox">
+    <h2>⚠️ 未確認情報（応募前に公式で確認）</h2>
+    <p style="font-size:11.5px;color:#3d4653;line-height:1.65;margin:0">いま大分県内・通販ともに未確認の情報はありません。集約サイトにしか出ていない情報を見つけたときは、各店の公式告知を確認してから掲載します。</p>
+  </div>
+  <div class="ibox">
+    <h2>🗂 今回の除外・終了分</h2>
+    <details><summary>表示する（10件）</summary><div class="dbody"><ul><li><b>🗺 県外の店頭抽選（対象外・2026-11-27に一覧から除外）</b>：オレタン福岡天神(2時間20分)・ホビーステーション福岡天神/小倉(2時間20分/1時間51分・郵送なし)・インフェルノX TSUTAYAシュロアモール(1時間57分)・BOOKSあんとく久留米/荒尾/山鹿(2時間14分〜2時間34分)・マンガ倉庫武雄(2時間29分)・麦わらストア熊本(2時間56分)など <span style="color:#98a2b0">（会場に取りに行けないため。LIT天神/小倉は郵送可なので通販として残置。シュロアのインフェルノXは応募済み・11/28発表のため記録として残す）</span></li><li><b>🗾 大分県内で片道1時間半超</b>：いまは0件。佐伯・日田などで抽選が出たときは、距離を注記したうえで載せるか決めます。</li><li><b>イオン九州｜ONE PIECE プレミアムカードコレクション -熊本県スペシャル-</b>：11/21〜11/29／熊本の店頭受取のため対象外 <span style="color:#98a2b0">（集約サイト1件だけの情報で公式未確認）</span></li><li><b>ドラゴンボール FW「REACH THE GOD」</b>：TSUTAYA八女店(11/29まで)・JUMP SHOP福岡/ららぽーと福岡(11/28まで)・イエローサブマリン(11/26) <span style="color:#98a2b0">（対象作品外（ポケカ・ワンピのみ））</span></li><li><b>スタートデッキ／構築済み</b>：イオン九州 ST-37/ST-38(11/29まで・宮崎/鹿児島含む)・TSUTAYAシュロアモール スタートデッキ100(11/26) <span style="color:#98a2b0">（「通常スタートデッキ・一般構築済みは不要」の条件で除外）</span></li><li><b>ハドウシーカー（終了分）</b>：フルコンプ福岡天神(11/22)・キデイランド福岡パルコ/アミュプラザくまもと/おおいた/鹿児島(11/18)・カードラボ各店(11/8)・TSUTAYA各店(宮崎4店・田上店ほか)・古本市場(11/22)・トレカ・キャピタル(エディオン)(11/15) <span style="color:#98a2b0">（受付終了）</span></li><li><b>神の支配 OP-18（終了分）</b>：LIT天神・小倉(11/21)・駿河屋博多マルイ(11/20)・カードラボ各店(11/15)・HMV福津/HAKATA/パークプレイス大分(11/15)・麦わらストア福岡/熊本(11/15) <span style="color:#98a2b0">（受付終了）</span></li><li><b>30th／世界最強の戦士（終了分）</b>：麦わらストア福岡・熊本(11/22)・フルコンプ福岡天神・オレタン福岡天神(30th)・TSUTAYA鳥栖/武雄/鹿島ほか <span style="color:#98a2b0">（受付終了）</span></li><li><b>ポケモンセンターオンライン 30th フィギュア(11/27〜30)</b>：— <span style="color:#98a2b0">（カードではなくフィギュアのため掲載外）</span></li><li><b>トレカステーション「荒尾店」</b>：— <span style="color:#98a2b0">（店名は「荒尾」だが所在地は愛知県東海市。熊本県と誤解されやすいので注意）</span></li></ul></div></details>
+  </div>
+</div>
+  </section>
+</main>
+
+<footer>
+  情報は2026-11-27 16:30時点（地図・店頭は大分県内のみ／県外店頭は除外）。所要時間は同日17:00出発のGoogleマップ車ルート（有料道路）。<br>
+  買取相場は買取ホムラ・買取サーチ・トレカバンク・トレカガント・カードバリュー等の11/26時点の値。<br>
+  大分県の県境は geoBoundaries（OpenStreetMap・ODbL）を簡略化したものです。<br>
+  応募条件・締切は必ず各店の公式告知で確認してください。
+</footer>
+
+<div id="backdrop" class="only-js"></div>
+<div id="sheet" class="only-js" aria-live="polite">
+  <div class="grab"></div>
+  <button class="s-close" id="sheetClose" aria-label="閉じる">✕</button>
+  <div id="sheetBody"></div>
+</div>
+<div id="toast" role="status"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function(){
+'use strict';
+document.documentElement.className = 'js';
+
+/* ================= データ（2026-11-27 16:30 JST 基準・距離ルールで整理） ================= */
+const HOME = {"label": "大分県杵築市大字片野1150-51", "lat": 33.4041136, "lng": 131.6358393};
+const STORES = [{"id": "nakatsu", "name": "TSUTAYA 中津店（トレカコーナー）", "pref": "大分", "area": "中津", "addr": "中津市蛭子町2-10-2", "lat": 33.6021276, "lng": 131.1922166, "driveMin": 74, "driveKm": 64.9}];
+const ITEMS = [{"id": "gangi-op07", "storeIds": [], "kind": "online", "cat": "op", "ptype": "opbox", "pref": "全国", "title": "ガンギ HOBBYSHOP：500年後の未来 OP-07 BOX", "msrp": 5280, "price": "5,280円（税込）＋送料", "market": {"low": 14600, "high": 15200, "kind": "actual", "note": "11/26実績買取：買取ルデヤ ¥15,200／買取一丁目・買取商店 ¥15,000／買取ホムラ ¥14,600（定価の約2.88倍・+9,320〜9,920円）"}, "period": "11/26 00:00 〜 12/2 23:59", "deadline": "2026-12-02T23:59:00+09:00", "announce": "12/3（木）以降（当選者のみメール通知）", "buy": "当選メール内の専用ページより通販購入", "method": "ガンギHOBBYSHOP会員登録＋公式X（@MS_GANGI）フォロー＆対象ポストRP＋応募フォーム送信", "cond": "1人1BOXまで。キャリアメール（docomo/au/softbank/icloud等）は非推奨・Gmail推奨", "needsMember": true, "memberNote": "ガンギ HOBBYSHOP 無料会員登録", "url": "https://www.gangi.co.jp/blog/drawsale-723", "urlLabel": "🎟️ 応募ページへ", "xUrl": "https://x.com/MS_GANGI", "xLabel": "𝕏 公式Xへ", "note": "ユーザー指摘により追加（11/26）。定価5,280円に対し買取14,600〜15,200円の超優良枠。", "foundAt": "2026-11-26T21:55:00+09:00"}, {"id": "nakatsu-op18", "storeIds": ["nakatsu"], "kind": "store", "cat": "wanpi", "ptype": "wanpibox", "pref": "大分", "title": "ブースターパック 神の支配【OP-18】（2次抽選）", "msrp": 5760, "price": "5,760円", "market": {"low": 6000, "high": 8100, "kind": "actual", "note": "11/26 最高8,100円（買取マッチョ）／おたちゅう8,000円。発売5日で10,500→6,000円へ急落中"}, "period": "受付中 〜 11/29 23:59", "deadline": "2026-11-29T23:59:00+09:00", "announce": "記載なし（過去回は締切翌日ごろ）", "buy": "店頭で購入（本人確認あり）", "method": "トレカコーナーの柱に掲示のQR→LivePocket", "cond": "店頭受取・本人確認書類／1人1点まで", "needsMember": true, "memberNote": "LivePocket会員登録", "url": "https://x.com/T_Nakatsu_TCG", "urlLabel": "🎟️ 応募QRの告知へ", "xUrl": "https://x.com/T_Nakatsu_TCG", "xLabel": "𝕏 ポストへ", "note": "自宅からいちばん近い大分県内の店頭抽選（車74分）。", "foundAt": "2026-11-26T09:00:00+09:00"}, {"id": "lit-hd", "storeIds": [], "kind": "online", "cat": "poke", "ptype": "pokebox", "pref": "通販", "title": "ハドウシーカー BOX（定価抽選・郵送可）", "msrp": 6000, "price": "6,000円", "market": {"low": 7500, "high": 11000, "kind": "forecast", "note": "11/27発売前で相場未確定（予想10,300円／1万円以下予想が多数）"}, "period": "受付中 〜 11/27 23:59", "deadline": "2026-11-27T23:59:00+09:00", "announce": "当選者への連絡をもって発表", "buy": "店頭受取（LIT天神・小倉）or 郵送（送料別・銀行振込のみ）", "method": "Xで @lit_tenjin と @lit_kokura の両方をフォロー＋対象ポストをリポスト", "cond": "SNS応募。会員登録・本人確認は不要。当選DMが届いた人が対象", "needsMember": false, "memberNote": "Xアカウントのみ（フォロー＋RP）", "url": "https://x.com/lit_tenjin", "urlLabel": "🎟️ 応募（告知ポスト）へ", "xUrl": "https://x.com/lit_tenjin", "xLabel": "𝕏 ポストへ", "note": "天神・小倉の2店まとめての抽選。郵送可なので自宅からでも応募可。※2026-11-27：天神まで2時間20分・小倉1時間51分のため地図の店頭枠からは外し、郵送可の通販枠として残置。", "foundAt": "2026-11-25T15:00:00+09:00"}, {"id": "ds-hd", "kind": "online", "cat": "poke", "ptype": "pokebox", "pref": "通販", "title": "ハドウシーカー BOX（ドラゴンスター通販）", "msrp": 6000, "price": "6,000円", "market": {"low": 7500, "high": 11000, "kind": "forecast", "note": "11/27発売前で相場未確定（予想10,300円／1万円以下予想が多数）"}, "period": "11/20 0:00 〜 11/29 23:59", "deadline": "2026-11-29T23:59:00+09:00", "announce": "11/30（月）", "buy": "当選後、購入手続き→宅配便で到着", "method": "ドラゴンスター会員サイトの抽選ページ（告知はX @ds_ecommerce）", "cond": "会員登録が必要／1BOX", "needsMember": true, "memberNote": "ドラゴンスター会員登録", "url": "https://dorasuta.membercard.jp/lottery", "urlLabel": "🎟️ 通販の抽選ページへ", "xUrl": "https://x.com/ds_ecommerce", "xLabel": "𝕏 ポストへ", "note": "情報源により「Xフォロー＆リポスト」表記もあり。応募ページで条件を確認。", "foundAt": "2026-11-20T00:00:00+09:00"}, {"id": "ds-storm", "kind": "online", "cat": "poke", "ptype": "pokebox", "pref": "通販", "title": "ストームエメラルダ BOX（ドラゴンスター通販）", "msrp": 6000, "price": "6,000円", "market": {"low": 6500, "high": 7200, "kind": "actual", "note": "11/26 6,500〜7,200円（店により差）"}, "period": "11/25 22:00 〜 11/27 23:59", "deadline": "2026-11-27T23:59:00+09:00", "announce": "11/29（日）", "buy": "当選後、購入手続き→宅配便", "method": "ドラゴンスター会員サイト", "cond": "会員登録が必要", "needsMember": true, "memberNote": "ドラゴンスター会員登録", "url": "https://dorasuta.membercard.jp/lottery", "urlLabel": "🎟️ 通販の抽選ページへ", "xUrl": "https://x.com/ds_ecommerce", "xLabel": "𝕏 ポストへ", "note": "差額は小さめ（+500〜1,200円）。", "foundAt": "2026-11-25T22:00:00+09:00"}, {"id": "ds-eb03", "kind": "online", "cat": "wanpi", "ptype": "wanpibox", "pref": "通販", "title": "エクストラブースター ONE PIECE Heroines Edition【EB-03】", "msrp": null, "price": "パック220円（BOX単位の案内は要確認）", "market": {"kind": "unknown", "note": "BOX単位の定価・買取表を確認できず"}, "period": "11/24 22:00 〜 11/26 23:59", "deadline": "2026-11-26T23:59:00+09:00", "announce": "記載なし", "buy": "11/27〜12/3 に購入手続き→発送", "method": "ドラゴンスター会員サイト", "cond": "会員登録が必要", "needsMember": true, "memberNote": "ドラゴンスター会員登録", "url": "https://dorasuta.membercard.jp/lottery", "urlLabel": "🎟️ 通販の抽選ページへ", "xUrl": "https://x.com/ds_ecommerce", "xLabel": "𝕏 ポストへ", "note": "", "foundAt": "2026-11-24T22:00:00+09:00"}, {"id": "port-hd", "kind": "online", "cat": "poke", "ptype": "pokebox", "pref": "通販", "title": "ハドウシーカー BOX（Toreca Port・送料無料）", "msrp": 6000, "price": "6,000円・送料無料", "market": {"low": 7500, "high": 11000, "kind": "forecast", "note": "11/27発売前で相場未確定（予想10,300円／1万円以下予想が多数）"}, "period": "11/24 20:00 〜 11/27 10:00", "deadline": "2026-11-27T10:00:00+09:00", "announce": "11/27（金）12:00から順次メール", "buy": "発売日以降に発送", "method": "Toreca Portの通販サイトで応募", "cond": "海外発送なし／1BOX", "needsMember": false, "memberNote": "サイトでの応募のみ", "url": "https://www.toreca-port.com/items/166900843", "urlLabel": "🎟️ 応募ページへ", "xUrl": "", "xLabel": "", "note": "締切が朝10時なので注意。送料無料は大きい。", "foundAt": "2026-11-24T20:00:00+09:00"}, {"id": "nabell-hd", "kind": "online", "cat": "poke", "ptype": "pokebox", "pref": "通販", "title": "ハドウシーカー BOX（カーナベル・買取申込者限定）", "msrp": 6000, "price": "6,000円", "market": {"low": 7500, "high": 11000, "kind": "forecast", "note": "11/27発売前で相場未確定（予想10,300円／1万円以下予想が多数）"}, "period": "11/13 0:00 〜 11/27 23:59", "deadline": "2026-11-27T23:59:00+09:00", "announce": "11/30（月）", "buy": "当選後、発送", "method": "カーナベルの通販サイトで応募", "cond": "ポケカのまとめ買取（1,000枚以上・事前見積り）を申し込みカードを送った人が対象／条件達成100件で早期終了", "needsMember": true, "memberNote": "まとめ買取の利用履歴が必要", "url": "https://www.ka-nabell.com/ec/sell/pokemon/topics/rv4711onx", "urlLabel": "🎟️ 応募ページへ", "xUrl": "", "xLabel": "", "note": "カードを売る予定がないと応募できないタイプ。", "foundAt": "2026-11-13T00:00:00+09:00"}, {"id": "joshin-web", "kind": "online", "cat": "wanpi", "ptype": "wanpibox", "pref": "通販", "title": "神の支配【OP-18】／世界最強の戦士【OP-17】（Joshin web）", "msrp": 5760, "price": "BOX（24パック）でお届け", "market": {"low": 6000, "high": 8100, "kind": "actual", "note": "OP-18は6,000〜8,100円／OP-17は6,200円前後（11/25 ホムラ）"}, "period": "11/25 13:00 〜 11/27 9:59", "deadline": "2026-11-27T09:59:00+09:00", "announce": "案内メールで通知", "buy": "クレジットカード・PayPay・楽天ペイ・au PAY・d払い", "method": "対象会員にだけ応募URLをメール案内", "cond": "11/3時点でVIP・プラチナスマイル会員＋メールマガジン希望、かつ同商品の当選・購入履歴がない人", "needsMember": true, "memberNote": "VIP・プラチナ会員＋購入履歴なしが条件", "url": "https://shop.joshin.co.jp/app/", "urlLabel": "📋 Joshin公式（会員案内）", "xUrl": "", "xLabel": "", "note": "会員限定。案内メールが来ていない場合は応募できません。", "foundAt": "2026-11-25T13:00:00+09:00"}, {"id": "lawson-30", "kind": "online", "cat": "poke", "ptype": "other", "pref": "通販", "title": "30th プレミアムデッキセット エーフィ・ブラッキー（Loppi）", "msrp": 6200, "price": "6,200円", "market": {"low": 8000, "high": 12500, "kind": "actual", "note": "11/26 最高12,500円（買取ミナト）／ソムリエ12,000円・中央値10,000円"}, "period": "受付中 〜 11/29 23:30", "deadline": "2026-11-29T23:30:00+09:00", "announce": "記載なし", "buy": "Loppi／受取方法は告知で確認", "method": "ローソン店頭のLoppi、またはWeb（Loppi）から応募", "cond": "全国の対象店舗／1人1点", "needsMember": false, "memberNote": "会員登録不要（Loppi）", "url": "https://img.hmv.co.jp/cont/online/pkloppicard_lp/", "urlLabel": "📋 Loppi抽選の案内", "xUrl": "", "xLabel": "", "note": "近所のローソンのLoppi端末から応募できる。差額が大きく、移動ゼロで狙える。", "foundAt": "2026-11-22T00:00:00+09:00"}, {"id": "geo-hd", "kind": "online", "cat": "poke", "ptype": "pokebox", "pref": "通販", "title": "ハドウシーカー（ゲオ・アプリ抽選）", "msrp": 6000, "price": "定価6,000円", "market": {"low": 7500, "high": 11000, "kind": "forecast", "note": "11/27発売前で相場未確定（予想10,300円／1万円以下予想が多数）"}, "period": "11/30 11:00 〜 12/3 17:59", "deadline": "2026-12-03T17:59:00+09:00", "announce": "メールで通知", "buy": "当選店舗の店頭で本人確認のうえ購入（外箱なし・パックのみ）", "method": "ゲオアプリ／GEO抽選販売専用サイト（GEO IDでログイン）", "cond": "Ponta会員でGEO IDとPonta会員IDを連携済み／1人1点1回／代理購入不可", "needsMember": true, "memberNote": "Ponta会員＋GEO ID連携", "url": "https://torecabiyori.com/chusen/pk-hadou-seeker/#geo-hadou-seeker-20261203", "urlLabel": "📋 詳細（公式リンク集）", "xUrl": "", "xLabel": "", "note": "受付前（11/30開始）。受取は最寄りのゲオ店頭。", "foundAt": "2026-11-24T00:00:00+09:00", "startsLater": true, "pickup": "store"}, {"id": "geo-30", "kind": "online", "cat": "poke", "ptype": "other", "pref": "通販", "title": "30th CELEBRATION カードセット（ゲオ・アプリ抽選）", "msrp": 1200, "price": "定価（各種1,200円）", "market": {"kind": "unknown", "note": "カードセットは単品ごとに相場が分かれる"}, "period": "11/30 11:00 〜 12/3 17:59", "deadline": "2026-12-03T17:59:00+09:00", "announce": "メールで通知", "buy": "当選店舗の店頭で購入", "method": "ゲオアプリ／GEO抽選販売専用サイト", "cond": "Ponta会員＋GEO ID連携／1人1点1回", "needsMember": true, "memberNote": "Ponta会員＋GEO ID連携", "url": "https://torecabiyori.com/chusen/pk-30th-cardset/#geo-30th-cardset-20261203", "urlLabel": "📋 詳細（公式リンク集）", "xUrl": "", "xLabel": "", "note": "受付前（11/30開始）。", "foundAt": "2026-11-24T00:00:00+09:00", "startsLater": true, "pickup": "store"}, {"id": "geo-wanpi", "kind": "online", "cat": "wanpi", "ptype": "wanpibox", "pref": "通販", "title": "世界最強の戦士【OP-17】（ゲオ・アプリ抽選）", "msrp": 5760, "price": "定価5,760円", "market": {"low": 6200, "high": 6200, "kind": "actual", "note": "11/25 買取ホムラ6,200円（店により差）"}, "period": "11/30 11:00 〜 12/3 17:59", "deadline": "2026-12-03T17:59:00+09:00", "announce": "メールで通知", "buy": "当選店舗の店頭で購入", "method": "ゲオアプリ／GEO抽選販売専用サイト", "cond": "Ponta会員＋GEO ID連携／1人1点1回", "needsMember": true, "memberNote": "Ponta会員＋GEO ID連携", "url": "https://torecabiyori.com/chusen/op-op17/#geo-op17-20261203", "urlLabel": "📋 詳細（公式リンク集）", "xUrl": "", "xLabel": "", "note": "受付前（11/30開始）。差額は+440円程度と薄い。", "foundAt": "2026-11-24T00:00:00+09:00", "startsLater": true, "pickup": "store"}, {"id": "amazon-hd", "kind": "online", "cat": "poke", "ptype": "pokebox", "pref": "通販", "title": "ハドウシーカー BOX（Amazon 招待リクエスト）", "msrp": 6000, "price": "6,000円（販売元 Amazon.co.jp の場合）", "market": {"low": 7500, "high": 11000, "kind": "forecast", "note": "11/27発売前で相場未確定（予想10,300円／1万円以下予想が多数）"}, "period": "随時（招待リクエスト受付中）", "deadline": null, "announce": "招待メール（48時間以内に購入）", "buy": "Amazonから発送", "method": "商品ページで「招待リクエスト」", "cond": "招待された人のみ購入可／出品者がAmazon以外の場合は対象外", "needsMember": true, "memberNote": "招待制（購入履歴なし）", "url": "https://www.amazon.co.jp/s?k=%E3%83%8F%E3%83%89%E3%82%A6%E3%82%B7%E3%83%BC%E3%82%AB%E3%83%BC%20%E3%83%9D%E3%82%B1%E3%83%A2%E3%83%B3%E3%82%AB%E3%83%BC%E3%83%89", "urlLabel": "🎟️ Amazonで探す", "xUrl": "", "xLabel": "", "note": "11/25時点で商品ページ（ASIN B0H4PQ6LR5）に「招待された方のみご購入いただけます」表示。", "foundAt": "2026-11-20T00:00:00+09:00"}, {"id": "luruna-infernox", "storeIds": [], "kind": "online", "cat": "poke", "ptype": "pokebox", "pref": "通販", "title": "インフェルノX BOX（Luruna Card・購入者限定）", "msrp": 5400, "price": "5,400円（定価・シュリンク付き未開封）＋送料800円", "market": {"low": 15500, "high": 16500, "kind": "actual", "note": "11/26 最高16,500円（ラントゥ・買取エノキング）／ホムラ15,500円。定価の約2.9〜3.1倍（+10,100〜11,100円）"}, "period": "11/10 14:00 〜 12/1 23:45", "deadline": "2026-12-01T23:45:00+09:00", "announce": "12/2（水）8:00以降 順次メール", "buy": "当選後に発送（応募時に与信枠を確保し、発送時に決済）", "method": "Luruna Card（BASE）の商品ページでカートから注文手続き＝抽選応募", "cond": "同店で11/10以降に500円以上購入＋そのレビュー投稿／PAY IDでフォロー。当選メール受取から24時間以内にレビュー画面のスクショ提出。落選時の返金は1.5〜2か月かかる場合あり", "needsMember": true, "memberNote": "Luruna Cardでの購入履歴＋PAY IDフォロー", "url": "https://card.luruna.jp/items/165615393", "urlLabel": "🎟️ 応募ページへ", "xUrl": "", "xLabel": "", "note": "いまいちばん差額が大きい商品。ただし購入履歴＋レビューが条件なので、まず500円以上の購入が必要。", "foundAt": "2026-11-26T22:20:00+09:00"}, {"id": "luruna-30th", "storeIds": [], "kind": "online", "cat": "poke", "ptype": "pokebox", "pref": "通販", "title": "30th CELEBRATION BOX（Luruna Card・購入者限定）", "msrp": 7200, "price": "7,200円（定価・シュリンク付き未開封）＋送料800円", "market": {"low": 14000, "high": 17300, "kind": "actual", "note": "30th CELEBRATION BOXは14,000〜17,300円（11/26時点の参考値）。定価の約1.9〜2.4倍"}, "period": "11/1 0:00 〜 11/30 0:00", "deadline": "2026-11-30T00:00:00+09:00", "announce": "当選メールで通知（発表日の記載なし）", "buy": "当選後に発送", "method": "Luruna Card（BASE）の商品ページ「Add to cart」から抽選応募", "cond": "同店で11/1以降に1,000円以上購入＋そのレビュー投稿／PAY IDでフォロー。当選メール受取から24時間以内にレビューのスクショ提出", "needsMember": true, "memberNote": "Luruna Cardでの購入履歴＋PAY IDフォロー", "url": "https://card.luruna.jp/items/164670243", "urlLabel": "🎟️ 応募ページへ", "xUrl": "", "xLabel": "", "note": "締切が11/30の0:00（29日の深夜）なので注意。", "foundAt": "2026-11-26T22:20:00+09:00"}, {"id": "luruna-hd", "storeIds": [], "kind": "online", "cat": "poke", "ptype": "pokebox", "pref": "通販", "title": "ハドウシーカー BOX（Luruna Card・購入者限定）", "msrp": 6000, "price": "6,000円（定価・シュリンク付き未開封）＋送料800円", "market": {"low": 7500, "high": 11000, "kind": "forecast", "note": "11/27発売前で相場未確定（予想10,300円／1万円以下予想が多数）"}, "period": "11/7 17:45 〜 11/27 23:45", "deadline": "2026-11-27T23:45:00+09:00", "announce": "11/30（月）8:00以降 順次メール", "buy": "当選後に発送（発売日以降）", "method": "Luruna Card（BASE）の商品ページから抽選応募", "cond": "同店で11/7以降に600円以上購入＋そのレビュー投稿／PAY IDでフォロー。当選メール受取から24時間以内にレビューとPAYIDフォロー画面のスクショ提出", "needsMember": true, "memberNote": "Luruna Cardでの購入履歴＋PAY IDフォロー", "url": "https://card.luruna.jp/items/165349187", "urlLabel": "🎟️ 応募ページへ", "xUrl": "", "xLabel": "", "note": "発売前の定価抽選で発送あり。購入履歴条件があるため当日の新規応募は不可。", "foundAt": "2026-11-26T22:20:00+09:00"}, {"id": "luruna-pd30", "storeIds": [], "kind": "online", "cat": "poke", "ptype": "other", "pref": "通販", "title": "30th プレミアムデッキセット エーフィ・ブラッキー（Luruna Card・購入者限定）", "msrp": 6200, "price": "6,200円（定価・未開封）＋送料800円", "market": {"low": 8000, "high": 12500, "kind": "actual", "note": "11/26 最高12,500円（買取ミナト）／ソムリエ12,000円・中央値10,000円。定価の約1.3〜2.0倍"}, "period": "10/28 21:15 〜 11/26 23:45", "deadline": "2026-11-26T23:45:00+09:00", "announce": "11/27（金）12:00", "buy": "当選後に発送（宅急便・送料800円）", "method": "Luruna Card（BASE）の商品ページから抽選応募", "cond": "XまたはPAY IDでフォロー＋同店で10/28以降に1,000円以上購入＋そのレビュー投稿", "needsMember": true, "memberNote": "Luruna Cardでの購入履歴＋X/PAY IDフォロー", "url": "https://card.luruna.jp/items/164362360", "urlLabel": "🎟️ 応募ページへ", "xUrl": "", "xLabel": "", "note": "本日23:45締切（いちばん近い）。プレミアムデッキセットでBOXではないが差額が大きい。", "foundAt": "2026-11-26T22:20:00+09:00"}, {"id": "dandan-30th", "storeIds": [], "kind": "online", "cat": "poke", "ptype": "pokebox", "pref": "通販", "title": "30th CELEBRATION BOX（トレカショップDANDAN BASE店）", "msrp": 7200, "price": "7,200円（定価・未開封シュリンク付き）＋ゆうパック送料", "market": {"low": 14000, "high": 17300, "kind": "actual", "note": "30th CELEBRATION BOXは14,000〜17,300円（11/26時点の参考値）。定価の約1.9〜2.4倍"}, "period": "11/26 0:00 〜 12/1 0:00", "deadline": "2026-12-01T00:00:00+09:00", "announce": "12/20（日）20:00以降 順次メール", "buy": "当選後に発送（ゆうパック60サイズ）", "method": "DANDAN BASE店の商品ページから抽選応募（応募時点でカード決済、落選なら取消）", "cond": "11/24〜11/30に同ECサイトで3,300円以上（送料除く）の購入履歴がある人。履歴なしでも応募はできるが当選後キャンセル", "needsMember": true, "memberNote": "DANDAN BASE店での3,300円以上の購入履歴", "url": "https://gamesearch.base.ec/items/166839254", "urlLabel": "🎟️ 応募ページへ", "xUrl": "", "xLabel": "", "note": "商品説明本文には旧回の日付（11/13〜11/16受付・12/11発表）が残っており、抽選ウィジェットは11/26〜12/1・12/20発表。応募前にページで最終確認を。", "foundAt": "2026-11-26T22:20:00+09:00"}];
+const OITA_BOUNDS = [[32.7359, 130.8249], [33.7402, 132.0853]]; // 大分県の表示範囲（北端姫島〜南端佐伯・西端日田）
+const OITA_PAN_BOUNDS = [[32.58, 130.60], [33.90, 132.26]]; // 地図を大分県の外まで動かさないための余白付き範囲
+const OITA_HINT = {"url": "https://torecabiyori.com/chusen/area/oita/"};
+
+const S = {};
+STORES.forEach(function(s){ S[s.id] = s; });
+const DATA_AT = new Date('2026-11-27T16:30:00+09:00');
+
+/* ================= 保存状態 ================= */
+const LS_KEY = 'kyushu_tcg_lottery_status_v1';
+const DEFAULT_STATUS = {"nakatsu-op18": "applied"};
+let STATUS = Object.assign({}, DEFAULT_STATUS);
+try { const raw = localStorage.getItem(LS_KEY); if(raw) Object.assign(STATUS, JSON.parse(raw) || {}); } catch(e){}
+function saveStatus(){ try { localStorage.setItem(LS_KEY, JSON.stringify(STATUS)); } catch(e){} }
+function getStatus(id){ const v = STATUS[id]; return (v === 'applied' || v === 'skipped') ? v : 'todo'; }
+
+/* ================= 小道具 ================= */
+function now(){ return new Date(); }
+function yen(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+function signed(n){ return (n >= 0 ? '+' : '') + yen(n); }
+function minText(m){
+  if(m == null) return '—';
+  if(m < 60) return '約' + m + '分';
+  const h = Math.floor(m/60), r = m%60;
+  return '約' + h + '時間' + (r ? r + '分' : '');
+}
+function kmText(km){ return km < 10 ? km.toFixed(1) + 'km' : Math.round(km) + 'km'; }
+function distKm(a,b){
+  const rad = x => x*Math.PI/180;
+  const dLat = rad(b.lat-a.lat), dLng = rad(b.lng-a.lng);
+  const h = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLng/2)*Math.sin(dLng/2);
+  return 2*6371*Math.asin(Math.min(1, Math.sqrt(h)));
+}
+function storeOf(it){
+  const ids = it.storeIds || (it.storeId ? [it.storeId] : []);
+  return ids.map(id => S[id]).filter(Boolean);
+}
+function nearest(it){
+  const st = storeOf(it);
+  if(!st.length) return null;
+  return st.map(s => ({s:s, km:distKm(HOME,s)})).sort((a,b) => a.km - b.km)[0];
+}
+/* 移動モデル：下道のみ・燃料10円/km・往復の現金ライン */
+function tripCost(s){ return s ? Math.round((s.driveKm*10*2)/100)*100 : null; }
+function fullCost(s){ if(!s) return null; const fuel = s.driveKm*10*2; const hours = (s.driveKm*2)/38; return Math.round((fuel + hours*1125)/100)*100; }
+function gmapUrl(s){ return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(s.name+' '+s.addr); }
+function dirUrl(s, mode){
+  return 'https://www.google.com/maps/dir/?api=1&origin=' + HOME.lat + ',' + HOME.lng +
+         '&destination=' + s.lat + ',' + s.lng + '&travelmode=' + (mode || 'driving');
+}
+function urgency(it){
+  if(!it.deadline) return 'gray';
+  const d = new Date(it.deadline);
+  const h = (d - now())/36e5;
+  if(h < 0) return 'gray';
+  if(h <= 24) return 'red';
+  if(h <= 72) return 'amber';
+  return 'blue';
+}
+function effUrg(it){
+  if(getStatus(it.id) === 'skipped') return 'gray';
+  return it.startsLater ? 'violet' : urgency(it);
+}
+function fmtLeft(it){
+  if(!it.deadline) return '期限なし';
+  const h = (new Date(it.deadline) - now())/36e5;
+  if(h < 0) return '終了';
+  if(h <= 24) return '残' + Math.max(1, Math.floor(h)) + '時間';
+  return '残' + Math.floor(h/24) + '日';
+}
+function dlShort(it){
+  if(!it.deadline) return '期限なし';
+  const d = new Date(it.deadline);
+  return (d.getMonth()+1) + '/' + d.getDate() + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+function dayKey(it){
+  if(!it.deadline) return 'none';
+  const d = new Date(it.deadline);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function dayLabel(key){
+  if(key === 'none') return '期限の記載なし';
+  const p = key.split('-').map(Number);
+  const d = new Date(p[0], p[1]-1, p[2]);
+  const n = now(); const t0 = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+  const diff = Math.round((d - t0)/864e5);
+  const WD = ['日','月','火','水','木','金','土'][d.getDay()];
+  const base = (d.getMonth()+1) + '/' + d.getDate() + '（' + WD + '）';
+  if(diff === 0) return '今日 ' + base;
+  if(diff === 1) return '明日 ' + base;
+  if(diff < 0) return base;
+  return base;
+}
+function isNew(it){ return it.foundAt ? (DATA_AT - new Date(it.foundAt)) < 36*36e5 : false; }
+
+function marketText(it){
+  const m = it.market;
+  if(!m || m.kind === 'unknown') return '相場未確認';
+  return yen(m.low) + '〜' + yen(m.high) + '円';
+}
+function profitRange(it){
+  const m = it.market;
+  if(!m || m.kind === 'unknown' || it.msrp == null) return null;
+  return {low: m.low - it.msrp, high: m.high - it.msrp};
+}
+function profitBase(it){
+  const m = it.market;
+  if(!m || m.kind === 'unknown' || it.msrp == null) return null;
+  if(m.kind === 'forecast') return m.low - it.msrp;
+  return Math.round(((m.low + m.high)/2) - it.msrp);
+}
+function areasOf(it){
+  const set = [];
+  storeOf(it).forEach(s => { if(set.indexOf(s.area) < 0) set.push(s.area); });
+  return set;
+}
+function areaProfit(areas){
+  if(!areas || !areas.length) return 0;
+  let sum = 0;
+  ITEMS.forEach(x => {
+    if(getStatus(x.id) === 'skipped') return;
+    const p = profitBase(x);
+    if(!p || p <= 0) return;
+    if(areasOf(x).some(a => areas.indexOf(a) >= 0)) sum += p;
+  });
+  return sum;
+}
+/* 判定：{key,label,reason,cls} */
+function judge(it){
+  if(it.kind === 'online'){
+    const pr = profitRange(it);
+    if(it.pickup === 'store'){
+      return {key:'ship', label:'📦 ネット応募（受取は店頭）', cls:'ship',
+        reason:'応募はアプリ・ネットで完結。受取は最寄りの対象店なので、当選したときだけ取りに行けばOK。'};
+    }
+    const reason = pr
+      ? '移動不要・送料のみ。差額 ' + signed(pr.low) + '〜' + signed(pr.high) + '円が見込めれば応募するだけでOK。'
+      : '移動不要。相場は要確認だが、応募の手間だけ。';
+    return {key:'ship', label:'📦 通販（移動不要）', cls:'ship', reason:reason};
+  }
+  const nr = nearest(it);
+  if(!nr) return {key:'ship', label:'📦 通販', cls:'ship', reason:'受取店舗の指定なし。'};
+  const t = nr.s.driveMin, c = tripCost(nr.s), fc = fullCost(nr.s);
+  const p = profitBase(it);
+  const ap = areaProfit(areasOf(it));
+  const P = Math.max(p == null ? 0 : p, ap);
+  const areaNote = (ap > 0 && p != null && ap > p) ? '（' + nr.s.area + 'など対象エリアの合計 +' + yen(ap) + '円）' : '';
+  const travelTxt = '片道' + minText(t);
+  const costTxt = '往復の交通費 約' + yen(c) + '円';
+  if(p == null){
+    if(ap > 0) return {key:'maybe', label:'🟡 ついでならアリ', cls:'maybe',
+      reason:'この商品の買取相場は未確認。それでも同じ' + nr.s.area + 'の他商品で +' + yen(ap) + '円見込めるので、行くなら同時に応募するのが前提（' + travelTxt + '・' + costTxt + '）。'};
+    return {key:'no', label:'🔴 見送り推奨', cls:'no',
+      reason:'買取相場が未確認で利益を見込めない。' + travelTxt + '・' + costTxt + 'をかける根拠が薄い。'};
+  }
+  if(P <= 0) return {key:'no', label:'🔴 見送り推奨', cls:'no',
+    reason:'定価と買取相場がほぼ同じで差額が出ない。' + travelTxt + '・' + costTxt + 'が持ち出しになる。'};
+  if(P >= fc) return {key:'go', label:'🟢 行く価値あり（完全コスト超）', cls:'go',
+    reason:'差額 ' + signed(P) + '円' + areaNote + ' が時給込み完全コスト 約' + yen(fc) + '円（燃料現金ライン ' + yen(c) + '円）も上回る。'};
+  if(P >= c) return {key:'maybe', label:'🟡 暇な日ならアリ（現金ライン内）', cls:'maybe',
+    reason:'差額 ' + signed(P) + '円' + areaNote + ' が燃料現金ライン（下道往復 約' + yen(c) + '円）を上回る（完全コスト 約' + yen(fc) + '円）。シフト外の暇な日ならアリ。'};
+  return {key:'no', label:'🔴 現金ライン割れ（見送り）', cls:'no',
+    reason:'差額 ' + signed(P) + '円' + areaNote + ' が下道燃料代（往復 約' + yen(c) + '円）を下回る。通販・別府/大分圏内に絞るのが合理的。'};
+}
+/* カード用の短い根拠 */
+function judgeNote(it){
+  if(it.kind === 'online'){
+    if(it.pickup === 'store') return 'ネット応募・受取は店頭';
+    const pr = profitRange(it);
+    return pr ? '移動不要・差額' + signed(pr.low) + '〜' + signed(pr.high) + '円' : '移動不要・相場は要確認';
+  }
+  const nr = nearest(it);
+  if(!nr) return '';
+  const p = profitBase(it);
+  if(p == null) return '相場未確認';
+  const ap = areaProfit(areasOf(it));
+  const P = Math.max(p, ap);
+  const c = tripCost(nr.s), fc = fullCost(nr.s);
+  const k = judge(it).key;
+  const head = (ap > p) ? 'エリア計' : '差額';
+  if(k === 'go') return head + signed(P) + ' ≧ 完全コスト' + yen(fc) + '円';
+  if(k === 'maybe') return head + signed(P) + ' ≧ 現金ライン' + yen(c) + '円';
+  return head + signed(P) + ' ＜ 現金ライン' + yen(c) + '円';
+}
+
+/* ================= 絞り込み状態 ================= */
+const state = {tab:'map', cat:'all', verdict:'all', kind:'all', ptype:'all',
+  cond:'all', when:'all', sort:'deadline', st:'active', picked:null};
+
+function passesCore(it){
+  if(state.cat !== 'all' && it.cat !== state.cat) return false;
+  if(state.verdict !== 'all' && judge(it).key !== state.verdict) return false;
+  if(state.kind !== 'all' && it.kind !== state.kind) return false;
+  if(state.ptype !== 'all' && it.ptype !== state.ptype) return false;
+  if(state.cond !== 'all'){
+    if(state.cond === 'none' && it.needsMember) return false;
+    if(state.cond === 'need' && !it.needsMember) return false;
+  }
+  if(state.when !== 'all'){
+    if(!it.deadline) return false;
+    const h = (new Date(it.deadline) - now())/36e5;
+    if(h < 0) return false;
+    if(state.when === 'today' && dayKey(it) !== dayKey({deadline: now().toISOString()})) return false;
+    if(state.when === '3days' && h > 72) return false;
+  }
+  return true;
+}
+function statusOk(it){
+  const st = getStatus(it.id);
+  if(state.st === 'todo') return st === 'todo';
+  if(state.st === 'applied') return st === 'applied';
+  if(state.st === 'skipped') return st === 'skipped';
+  return st !== 'skipped';
+}
+function dlKey(it){
+  if(!it.deadline) return Number.MAX_SAFE_INTEGER - 1;
+  return new Date(it.deadline).getTime() + (it.startsLater ? 1e12 : 0);
+}
+function sortItems(a,b){
+  if(state.sort === 'distance'){
+    const da = nearest(a), db = nearest(b);
+    const va = da ? da.km : 1e9, vb = db ? db.km : 1e9;
+    if(Math.abs(va - vb) > 1e-4) return va - vb;
+    return dlKey(a) - dlKey(b);
+  }
+  if(state.sort === 'profit'){
+    const pa = profitBase(a), pb = profitBase(b);
+    const va = pa == null ? -1e9 : pa, vb = pb == null ? -1e9 : pb;
+    if(va !== vb) return vb - va;
+    return dlKey(a) - dlKey(b);
+  }
+  if(state.sort === 'new'){
+    const fa = a.foundAt ? new Date(a.foundAt).getTime() : 0;
+    const fb = b.foundAt ? new Date(b.foundAt).getTime() : 0;
+    if(fa !== fb) return fb - fa;
+    return dlKey(a) - dlKey(b);
+  }
+  return dlKey(a) - dlKey(b);
+}
+function mapSet(){ return ITEMS.filter(it => passesCore(it) && statusOk(it) && storeOf(it).length > 0).sort(sortItems); }
+function onlineSet(){ return ITEMS.filter(it => passesCore(it) && statusOk(it) && it.kind === 'online').sort(sortItems); }
+function appliedSet(){ return ITEMS.filter(it => passesCore(it) && getStatus(it.id) === 'applied').sort((a,b) => dlKey(a) - dlKey(b)); }
+function deadlineSet(){ return ITEMS.filter(it => passesCore(it) && statusOk(it)).sort(sortItems); }
+
+function oitaHintHtml(){
+  return '<div class="empty">大分県内の店頭抽選は、見つけ次第ここに追加します（別府・大分市・宇佐・日出など）。<br>' +
+    '<a href="' + OITA_HINT.url + '" target="_blank" rel="noopener" style="color:#0f7b6c;font-weight:700">→ 大分県の抽選一覧を見る</a></div>';
+}
+
+/* ================= カード ================= */
+function whereHtml(it){
+  const st = storeOf(it);
+  const nr = nearest(it);
+  if(!st.length) return '<div class="st"><b>通販・オンライン</b>（全国から応募／自宅に届く）</div>';
+  const names = st.length > 1 ? st[0].name + ' ほか' + (st.length-1) + '店' : st[0].name;
+  let h = '<div class="st"><b>' + names + '</b>' + (st.length > 1 ? '（1店だけ選んで応募）' : '') + '</div>';
+  h += '<div class="st">🏠 ' + kmText(distKm(HOME, st[0])) + ' ・ 🚗 片道' + minText(st[0].driveMin) +
+       (it.kind === 'online' ? ' ・ 郵送可' : '') + '</div>';
+  return h;
+}
+function moneyHtml(it){
+  const m = it.market || {kind:'unknown'};
+  const pr = profitRange(it);
+  let h = '<div class="mn">';
+  h += '<span>定価 <b>' + (it.msrp != null ? yen(it.msrp) + '円' : '—') + '</b></span>';
+  h += '<span>買取 <b>' + (m.kind === 'unknown' ? '—' : marketText(it)) + '</b>' + (m.kind === 'forecast' ? ' <span style="font-size:9px;color:#8a5a00">予想</span>' : '') + '</span>';
+  if(pr) h += '<span>差額 <b class="df' + (pr.high < 0 ? ' m' : '') + '">' + signed(pr.low) + '〜' + signed(pr.high) + '</b></span>';
+  h += '</div>';
+  return h;
+}
+function judgeShort(it){
+  const k = judge(it).key;
+  if(k === 'go') return '🟢 行く価値あり';
+  if(k === 'maybe') return '🟡 ついでなら';
+  if(k === 'no') return '🔴 見送り';
+  return it.pickup === 'store' ? '📦 ネット応募' : '📦 通販';
+}
+function shortUrlLabel(it){
+  const l = it.urlLabel || '開く';
+  if(/LivePocket/i.test(l)) return '🎟️ LivePocket';
+  if(/応募/.test(l)) return '🎟️ 応募';
+  if(/告知/.test(l)) return '📢 告知';
+  if(/Loppi/i.test(l)) return '📋 Loppi';
+  if(/抽選/.test(l)) return '🎟️ 抽選ページ';
+  if(/Joshin/i.test(l)) return '📋 Joshin';
+  if(/Amazon/i.test(l)) return '🛒 Amazon';
+  return '📋 公式';
+}
+function cardHtml(it){
+  const st = getStatus(it.id), u = effUrg(it), j = judge(it);
+  const isBox = (it.ptype === 'pokebox' || it.ptype === 'wanpibox');
+  let h = '<article class="card' + (st === 'applied' ? ' applied' : '') + (st === 'skipped' ? ' skipped' : '') + '" data-id="' + it.id + '">';
+  h += '<div class="crow">';
+  if(isNew(it)) h += '<span class="tg new">🆕 新着</span>';
+  h += '<span class="tg ' + (it.cat === 'poke' ? 'poke' : 'wanpi') + '">' + (it.cat === 'poke' ? 'ポケカ' : 'ワンピ') + '</span>';
+  if(isBox) h += '<span class="tg box">BOX</span>';
+  h += '<span class="tg kind">' + (it.kind === 'store' ? '店頭' : '通販') + '</span>';
+  if(st === 'applied') h += '<span class="tg ap">✅ 応募済み</span>';
+  if(st === 'skipped') h += '<span class="tg sk">🚫 見送り</span>';
+  h += '<span class="dl ' + u + '">' + (it.startsLater ? '受付開始前' : it.deadline ? fmtLeft(it) : '期限なし') + '</span>';
+  h += '</div>';
+  h += '<h3>' + it.title + '</h3>';
+  h += whereHtml(it);
+  if(st === 'applied'){
+    h += '<div class="resbar"><div><div class="l">結果発表</div><div class="d">' + it.announce + '</div></div></div>';
+  }
+  h += moneyHtml(it);
+  if(!it.startsLater) h += '<div class="meta">締切 <b>' + dlShort(it) + '</b></div>';
+  else h += '<div class="meta">受付開始 <b>' + it.period.split('〜')[0].trim() + '</b></div>';
+  if(st !== 'applied') h += '<div class="jd ' + j.cls + '">' + judgeShort(it) + '<em>' + judgeNote(it) + '</em></div>';
+  h += '<div class="acts">';
+  if(st !== 'todo') h += '<button class="btn gh sm" data-act="todo" data-i="' + it.id + '">🎯 応募に戻す</button>';
+  if(st !== 'applied') h += '<button class="btn ap sm" data-act="applied" data-i="' + it.id + '">✅ 応募済み</button>';
+  if(st !== 'skipped') h += '<button class="btn sk sm" data-act="skipped" data-i="' + it.id + '">🚫 見送り</button>';
+  if(it.url) h += '<a class="btn pri sm" href="' + it.url + '" target="_blank" rel="noopener">' + shortUrlLabel(it) + '</a>';
+  if(it.xUrl && it.xUrl !== it.url) h += '<a class="btn sm" href="' + it.xUrl + '" target="_blank" rel="noopener">𝕏</a>';
+  h += '<button class="btn sm" data-act="open" data-i="' + it.id + '">詳細</button>';
+  h += '</div></article>';
+  return h;
+}
+function secHtml(title, sub, items){
+  if(!items.length) return '';
+  return '<div class="sec"><h2>' + title + '</h2><span>' + sub + '</span></div>' + items.map(cardHtml).join('');
+}
+
+/* ================= 描画：KPI・タブ ================= */
+let toastTimer = null;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('on'); }, 2400);
+}
+function renderKpis(){
+  const applied = ITEMS.filter(i => getStatus(i.id) === 'applied').length;
+  const todo = ITEMS.filter(i => getStatus(i.id) === 'todo').length;
+  const todayKey = dayKey({deadline: now().toISOString()});
+  const todayN = ITEMS.filter(i => i.deadline && dayKey(i) === todayKey && new Date(i.deadline) >= now() && getStatus(i.id) === 'todo').length;
+  document.getElementById('kpis').innerHTML =
+    '<div class="kpi"><b>' + ITEMS.length + '</b><span>掲載</span></div>' +
+    '<div class="kpi"><b>' + todo + '</b><span>未応募</span></div>' +
+    '<div class="kpi green"><b>' + applied + '</b><span>応募済み</span></div>' +
+    '<div class="kpi red"><b>' + todayN + '</b><span>本日締切</span></div>';
+}
+function renderTabs(){
+  const mapN = mapSet().length, onN = onlineSet().length, apN = appliedSet().length;
+  const upN = deadlineSet().filter(i => i.deadline && new Date(i.deadline) >= now()).length;
+  const c = {map:mapN, online:onN, applied:apN, deadline:upN, info:0};
+  document.querySelectorAll('.tab').forEach(function(b){
+    const on = b.dataset.tab === state.tab;
+    b.classList.toggle('on', on);
+    const n = b.querySelector('.n');
+    if(n) n.textContent = c[b.dataset.tab] || '';
+  });
+}
+
+/* ================= 描画：地図タブ ================= */
+function renderStorebar(){
+  const bar = document.getElementById('storebar');
+  const sid = state.picked;
+  if(!sid || !S[sid]){ bar.className = 'storebar'; bar.innerHTML = ''; return; }
+  const s = S[sid];
+  const list = mapSet().filter(it => storeOf(it).some(x => x.id === sid));
+  bar.className = 'storebar on';
+  bar.innerHTML =
+    '<div class="sbl"><b>📍 ' + s.area + '・' + s.name + '</b>' +
+    '<span>' + list.length + '件 ・ 🏠' + kmText(distKm(HOME,s)) + ' ・ 🚗片道' + minText(s.driveMin) + ' ・ 💰往復約' + yen(tripCost(s)) + '円</span></div>' +
+    '<a class="btn sm" href="' + dirUrl(s,'driving') + '" target="_blank" rel="noopener">🛣 経路</a>' +
+    '<button class="x" data-act="unpick">解除</button>';
+}
+function renderMapList(){
+  const el = document.getElementById('list-map');
+  const all = mapSet();
+  let h = '';
+  if(state.picked && S[state.picked]){
+    const s = S[state.picked];
+    const mine = all.filter(it => storeOf(it).some(x => x.id === state.picked));
+    const rest = all.filter(it => !storeOf(it).some(x => x.id === state.picked));
+    h += mine.length ? secHtml('📍 ' + s.area + ' の抽選', mine.length + '件', mine)
+                     : '<div class="empty">この条件では、この店の抽選はありません。絞り込みを広げてください。</div>';
+    h += rest.length ? secHtml('そのほかの店頭抽選', rest.length + '件', rest) : '';
+  } else {
+    h += all.length ? secHtml('🗺 大分県内の店頭抽選', all.length + '件', all)
+                    : oitaHintHtml() + '<div class="empty">この条件に合う店頭抽選はありません。上の絞り込みを広げてみてください。</div>';
+  }
+  el.innerHTML = h;
+}
+function renderOnlineList(){
+  const el = document.getElementById('list-online');
+  const all = onlineSet();
+  let h = '<div class="sec"><h2>📦 通販・オンライン</h2><span>移動不要 ' + all.length + '件</span></div>';
+  if(!all.length){ el.innerHTML = h + '<div class="empty">この条件に合う通販はありません。</div>'; return; }
+  h += '<div class="empty" style="margin:0 0 8px">応募はネットで完結。締切が朝の回（Toreca Port 10:00／Joshin 9:59）は前夜までに。</div>';
+  h += all.map(cardHtml).join('');
+  el.innerHTML = h;
+}
+function renderAppliedList(){
+  const el = document.getElementById('list-applied');
+  const all = appliedSet();
+  let h = '<div class="sec"><h2>✅ 応募済み・結果待ち</h2><span>' + all.length + '件</span></div>';
+  if(!all.length){
+    h += '<div class="empty">まだ「応募済み」がありません。カードの<b>✅ 応募済み</b>を押すと、ここに結果発表日つきで並びます。</div>';
+  } else {
+    h += all.map(cardHtml).join('');
+  }
+  el.innerHTML = h;
+  renderSpell();
+}
+function renderDeadlineList(){
+  const el = document.getElementById('list-deadline');
+  const all = deadlineSet();
+  const groups = {};
+  all.forEach(it => { const k = dayKey(it); (groups[k] = groups[k] || []).push(it); });
+  const keys = Object.keys(groups).sort(function(a,b){
+    if(a === 'none') return 1; if(b === 'none') return -1;
+    return a < b ? -1 : 1;
+  });
+  let h = '';
+  const past = [];
+  keys.forEach(function(k){
+    const sorted = groups[k].slice().sort(function(a,b){
+      if(!a.deadline) return 1; if(!b.deadline) return -1;
+      return new Date(a.deadline) - new Date(b.deadline);
+    });
+    /* 同じ日でも、もう締め切った時刻の分だけを「終了」へ移す（未締切は残す） */
+    const items = sorted.filter(function(it){ return !it.deadline || new Date(it.deadline) >= now(); });
+    sorted.forEach(function(it){ if(it.deadline && new Date(it.deadline) < now()) past.push(it); });
+    if(!items.length) return;
+    h += '<div class="dayhead"><b>' + dayLabel(k) + '</b><span>' + items.length + '件</span></div>';
+    h += items.map(function(it){
+      const j = judge(it), st = getStatus(it.id);
+      const d = it.deadline ? new Date(it.deadline) : null;
+      const hh = d ? String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0') : '—';
+      const stName = storeOf(it).length ? (storeOf(it)[0].area + '・' + storeOf(it)[0].name) : '通販・オンライン';
+      return '<div class="dlrow' + (st === 'applied' ? ' done' : '') + '" data-id="' + it.id + '">' +
+        '<div class="h' + (urgency(it) === 'red' ? ' r' : '') + '">' + hh + '</div>' +
+        '<div class="b"><span class="t">' + it.title + '</span><span class="s">' + stName + (st === 'applied' ? ' ・ 応募済み' : '') + '</span></div>' +
+        '<div class="a ' + j.cls + '">' + judgeShort(it).replace(/^[^ ]+ /, '') + '</div></div>';
+    }).join('');
+  });
+  if(!h) h = '<div class="empty">これから締切の抽選はありません（絞り込みを確認してください）。</div>';
+  if(past.length){
+    h += '<details><summary>終了した締切（' + past.length + '件）</summary><div class="dbody">' +
+      past.map(function(it){
+        return '<div class="dlrow done" data-id="' + it.id + '"><div class="h">終了</div><div class="b">' +
+          '<span class="t">' + it.title + '</span><span class="s">' + dlShort(it) + ' 締切</span></div></div>';
+      }).join('') + '</div></details>';
+  }
+  el.innerHTML = h;
+}
+
+/* ================= 地図 ================= */
+let map = null, layer = null, mapFitted = false;
+const COLORS = {red:'#d92d20', amber:'#b54708', blue:'#1d4ed8', violet:'#6941c6', gray:'#98a2b0'};
+function initMap(){
+  if(map) return;
+  const el = document.getElementById('map');
+  if(typeof L === 'undefined'){
+    /* オフライン等：簡易地図（HTML+CSS）を残してピン操作を維持 */
+    const note = document.createElement('div');
+    note.className = 'qhint';
+    note.style.cssText = 'background:#fdf6e3;color:#7a5300;padding:6px 10px;border-radius:8px;margin:0 4px 8px';
+    note.textContent = '地図ライブラリを読み込めなかったため、簡易地図で表示しています（ピンのタップは使えます）。';
+    el.insertBefore(note, el.firstChild);
+    const fb = document.getElementById('fitOita'); if(fb) fb.style.display = 'none';
+    return;
+  }
+  el.innerHTML = '';
+  map = L.map(el, {zoomControl:true, scrollWheelZoom:false, attributionControl:true, maxBounds:OITA_PAN_BOUNDS, maxBoundsViscosity:0.6});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom:19, subdomains:'abc', attribution:'&copy; OpenStreetMap contributors'
+  }).addTo(map);
+  L.marker([HOME.lat, HOME.lng], {
+    icon:L.divIcon({className:'pin home', iconSize:[26,26], iconAnchor:[13,13],
+      html:'<div>🏠</div>'})
+  }).addTo(map).bindTooltip('自宅：' + HOME.label);
+  layer = L.layerGroup().addTo(map);
+}
+function drawMarkers(){
+  if(!map || !layer) return;
+  layer.clearLayers();
+  const all = mapSet();
+  const byStore = {};
+  all.forEach(function(it){
+    storeOf(it).forEach(function(s){ (byStore[s.id] = byStore[s.id] || []).push(it); });
+  });
+  const order = ['red','amber','violet','blue','gray'];
+  Object.keys(byStore).forEach(function(sid){
+    const s = S[sid]; if(!s) return;
+    const list = byStore[sid];
+    let worst = 'gray', allDone = true;
+    list.forEach(function(it){
+      if(getStatus(it.id) === 'todo') allDone = false;
+      const u = effUrg(it);
+      if(order.indexOf(u) < order.indexOf(worst)) worst = u;
+    });
+    const sel = state.picked === sid;
+    const icon = L.divIcon({
+      className:'pin' + (worst === 'red' ? ' hot' : '') + (allDone ? ' done' : ''),
+      iconSize: sel ? [34,34] : [26,26], iconAnchor: sel ? [17,17] : [13,13],
+      html:'<div style="' + (worst === 'red' ? '' : 'border-color:' + COLORS[worst] + ';color:' + COLORS[worst]) +
+           (sel ? ';box-shadow:0 0 0 3px rgba(15,123,108,.25)' : '') + '">' + list.length + '</div>'
+    });
+    const m = L.marker([s.lat, s.lng], {icon:icon, title:s.name});
+    m.on('click', function(){
+      /* ピンが重なっている所は、まず近くまで寄る（参考サイトと同じ操作感） */
+      if(map.getZoom() < 12){
+        const pt = map.latLngToContainerPoint(m.getLatLng());
+        let near = 0;
+        Object.keys(byStore).forEach(function(o){
+          const os = S[o]; if(!os) return;
+          const q = map.latLngToContainerPoint([os.lat, os.lng]);
+          if(Math.abs(q.x - pt.x) < 34 && Math.abs(q.y - pt.y) < 34) near++;
+        });
+        if(near > 1){ map.setView(m.getLatLng(), Math.min(12, map.getZoom() + 2)); return; }
+      }
+      pickStore(sid);
+    });
+    m.addTo(layer);
+  });
+}
+function pickStore(sid){
+  state.picked = (state.picked === sid) ? null : sid;
+  renderStorebar(); renderMapList(); drawMarkers();
+  const anchor = document.getElementById('storebar');
+  if(state.picked && anchor) anchor.scrollIntoView({block:'start', behavior:'smooth'});
+}
+
+/* ================= 詳細シート ================= */
+function lotHtml(it, showTitle){
+  const u = effUrg(it), st = getStatus(it.id), j = judge(it), m = it.market || {kind:'unknown'};
+  const pr = profitRange(it);
+  let h = '<div class="lot">';
+  if(showTitle !== false) h += '<div class="t">' + it.title + '</div>';
+  h += '<dl class="kv">';
+  h += '<dt>受付期間</dt><dd>' + it.period + '<span class="chipmini ' + (u === 'red' ? 'r' : u === 'amber' ? 'a' : u === 'blue' ? 'b' : u === 'violet' ? 'v' : 'g') + '">' + fmtLeft(it) + '</span></dd>';
+  h += '<dt>締切</dt><dd><b>' + dlShort(it) + '</b></dd>';
+  h += '<dt>結果発表</dt><dd>' + (st === 'applied' ? '📢 <b style="color:#08663a">' + it.announce + '</b>' : it.announce) + '</dd>';
+  h += '<dt>定価</dt><dd>' + (it.msrp != null ? yen(it.msrp) + '円' : '—') + '</dd>';
+  h += '<dt>買取相場</dt><dd>' + (m.kind === 'unknown' ? '相場未確認' : marketText(it) + (m.kind === 'forecast' ? ' <span class="chipmini a">予想</span>' : '')) + '</dd>';
+  h += '<dt>見込み差額</dt><dd>' + (pr ? '<b style="color:' + (pr.high >= 0 ? '#067647' : '#b42318') + '">' + signed(pr.low) + '〜' + signed(pr.high) + '円</b>' : '—') + '</dd>';
+  h += '<dt>相場の根拠</dt><dd style="font-size:10.5px;color:#727d8c">' + (m.note || '—') + '</dd>';
+  h += '<dt>購入・受取</dt><dd>' + it.buy + '</dd>';
+  h += '<dt>応募方法</dt><dd>' + it.method + '</dd>';
+  h += '<dt>応募条件</dt><dd>' + it.cond + '</dd>';
+  h += '<dt>会員/履歴</dt><dd>' + (it.needsMember ? '🔒 ' + it.memberNote : '✅ 会員登録・購入履歴は不要') + '</dd>';
+  h += '</dl>';
+  if(it.note) h += '<div class="foot-note">※ ' + it.note + '</div>';
+  h += '<div class="jd ' + j.cls + ' wrap" style="margin-top:8px">' + judgeShort(it) + '<em>' + j.reason + '</em></div>';
+  h += '<div class="acts">';
+  if(it.url) h += '<a class="btn pri" href="' + it.url + '" target="_blank" rel="noopener">' + it.urlLabel + '</a>';
+  if(it.xUrl && it.xUrl !== it.url) h += '<a class="btn" href="' + it.xUrl + '" target="_blank" rel="noopener">' + (it.xLabel || '𝕏 ポスト') + '</a>';
+  if(storeOf(it).length){
+    const s = nearest(it).s;
+    h += '<a class="btn" href="' + dirUrl(s,'driving') + '" target="_blank" rel="noopener">🛣 車の経路</a>';
+    h += '<a class="btn" href="' + dirUrl(s,'transit') + '" target="_blank" rel="noopener">🚃 電車</a>';
+    h += '<a class="btn" href="' + gmapUrl(s) + '" target="_blank" rel="noopener">📍 地図</a>';
+  }
+  h += '</div><div class="acts">';
+  if(st !== 'applied') h += '<button class="btn ap" data-act="applied" data-i="' + it.id + '">✅ 応募済みにする</button>';
+  if(st !== 'skipped') h += '<button class="btn sk" data-act="skipped" data-i="' + it.id + '">🚫 応募に出さない</button>';
+  if(st !== 'todo') h += '<button class="btn gh" data-act="todo" data-i="' + it.id + '">↩︎ 元に戻す</button>';
+  h += '</div></div>';
+  return h;
+}
+function openItem(id){
+  const it = ITEMS.filter(x => x.id === id)[0];
+  if(!it) return;
+  const st = storeOf(it), nr = nearest(it);
+  let h = '';
+  h += '<div class="s-name">' + it.title + '</div>';
+  h += '<div class="s-pref">' + (st.length ? st[0].pref + '県｜' + st[0].area : '通販・オンライン（全国から応募可）') + '</div>';
+  h += '<div class="s-addr">' + (st.length ? (st.length > 1 ? st.map(x => x.name + '（' + x.pref + '）').join(' / ') : st[0].name + '｜' + st[0].addr) : '自宅に届きます') + '</div>';
+  h += '<div class="trip">';
+  if(nr){
+    h += '<span class="tchip">🏠 直線' + kmText(nr.km) + '</span>';
+    h += '<span class="tchip">🚗 片道' + minText(nr.s.driveMin) + '（' + nr.s.driveKm.toFixed(1) + 'km）</span>';
+    h += '<span class="tchip gold">💰 往復 約' + yen(tripCost(nr.s)) + '円</span>';
+    h += '<span class="tchip">完全コスト 約' + yen(fullCost(nr.s)) + '円</span>';
+  }
+  h += '</div>';
+  if(st.length > 1) h += '<div class="warn">同じチェーンの複数店が対象です。<b>1店だけ</b>選んで応募してください。</div>';
+  h += lotHtml(it, false);
+  h += '<div class="foot-note">所要時間は2026-11-26 17:00出発のGoogleマップ車ルート。交通費は下道10円/kmの往復＋時給1,125円/h込みの概算。</div>';
+  showSheet(h, {type:'item', id:id});
+}
+function openStore(sid){
+  const s = S[sid]; if(!s) return;
+  const items = mapSet().filter(it => storeOf(it).some(x => x.id === sid));
+  let h = '<div class="s-name">' + s.name + '</div>';
+  h += '<div class="s-pref">' + s.pref + '県｜' + s.area + '</div>';
+  h += '<div class="s-addr">' + s.addr + '</div>';
+  h += '<div class="trip"><span class="tchip">🏠 直線' + kmText(distKm(HOME,s)) + '</span>' +
+       '<span class="tchip">🚗 片道' + minText(s.driveMin) + '（' + s.driveKm.toFixed(1) + 'km）</span>' +
+       '<span class="tchip gold">💰 往復 約' + yen(tripCost(s)) + '円</span></div>';
+  h += '<div class="acts" style="margin:0 0 10px"><a class="btn pri" href="' + dirUrl(s,'driving') + '" target="_blank" rel="noopener">🛣 車の経路</a>' +
+       '<a class="btn" href="' + dirUrl(s,'transit') + '" target="_blank" rel="noopener">🚃 電車</a>' +
+       '<a class="btn" href="' + gmapUrl(s) + '" target="_blank" rel="noopener">📍 店の場所</a></div>';
+  if(!items.length) h += '<div class="empty">この条件では、この店の抽選は表示されていません。</div>';
+  else items.forEach(it => { h += lotHtml(it); });
+  showSheet(h, {type:'store', id:sid});
+}
+let sheetCtx = null;
+function showSheet(html, ctx){
+  if(ctx) sheetCtx = ctx;
+  document.getElementById('sheetBody').innerHTML = html;
+  document.getElementById('sheet').classList.add('on');
+  document.getElementById('backdrop').classList.add('on');
+}
+function closeSheet(){
+  document.getElementById('sheet').classList.remove('on');
+  document.getElementById('backdrop').classList.remove('on');
+}
+
+/* ================= 復活の呪文 ================= */
+const SPR = 'KTCG1-';
+const B64C = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+function b64enc(bytes){
+  let out = '';
+  for(let i = 0; i < bytes.length; i += 3){
+    const b0 = bytes[i], b1 = bytes[i+1], b2 = bytes[i+2];
+    const n = (b0 << 16) | ((b1 || 0) << 8) | (b2 || 0);
+    out += B64C[(n >> 18) & 63] + B64C[(n >> 12) & 63];
+    if(b1 !== undefined) out += B64C[(n >> 6) & 63];
+    if(b2 !== undefined) out += B64C[n & 63];
+  }
+  return out;
+}
+function b64dec(str){
+  const out = [];
+  let buf = 0, bits = 0;
+  for(let i = 0; i < str.length; i++){
+    const v = B64C.indexOf(str.charAt(i));
+    if(v < 0) throw new Error('bad char');
+    buf = (buf << 6) | v; bits += 6;
+    if(bits >= 8){ bits -= 8; out.push((buf >> bits) & 255); }
+  }
+  return out;
+}
+/* 形式: KTCG1- / [件数][並びの指紋2byte][2bit×件数][チェックサム] をbase64url */
+function idHash(){
+  let h = 5381;
+  ITEMS.forEach(function(it){
+    const s = String(it.id);
+    for(let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) & 0xffff;
+  });
+  return h & 0xffff;
+}
+function spellMake(){
+  const n = ITEMS.length;
+  const h = idHash();
+  const bytes = [n, (h >> 8) & 255, h & 255];
+  for(let i = 0; i < n; i += 4){
+    let v = 0;
+    for(let k = 0; k < 4; k++){
+      const it = ITEMS[i+k]; if(!it) continue;
+      const st = getStatus(it.id);
+      const c = st === 'applied' ? 1 : st === 'skipped' ? 2 : 0;
+      v |= (c << (k*2));
+    }
+    bytes.push(v & 255);
+  }
+  let sum = 0xA7;
+  bytes.forEach(function(b){ sum = (sum + b) & 255; });
+  bytes.push(sum);
+  return SPR + b64enc(bytes);
+}
+function spellLoad(text){
+  const raw = String(text || '').replace(/[\s\u200b\u200c\u3000]/g, '');
+  if(!raw) return {ok:false, msg:'呪文を貼り付けてください。'};
+  if(!/^ktcg1-/i.test(raw)) return {ok:false, msg:'呪文の形式が違います（KTCG1- で始まるコードです）。'};
+  const body = raw.slice(6).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  if(!/^[A-Za-z0-9\-_]+$/.test(body)) return {ok:false, msg:'呪文に使えない文字が入っています。コピーし直してください。'};
+  let bytes;
+  try { bytes = b64dec(body); } catch(e){ return {ok:false, msg:'呪文を読み取れませんでした。'}; }
+  if(bytes.length < 2) return {ok:false, msg:'呪文が短すぎます。'};
+  const sum = bytes.pop();
+  let calc = 0xA7;
+  bytes.forEach(function(b){ calc = (calc + b) & 255; });
+  if(sum !== calc) return {ok:false, msg:'呪文が壊れています（1文字違うかも）。コピーし直してください。'};
+  const n = bytes[0];
+  if(n < 1 || n > 200) return {ok:false, msg:'呪文の中身が想定外です。'};
+  if(bytes.length < 3) return {ok:false, msg:'呪文が短すぎます。'};
+  const hash = (bytes[1] << 8) | bytes[2];
+  const packed = bytes.slice(3);
+  if(packed.length < Math.ceil(n/4)) return {ok:false, msg:'呪文が途中で切れています。'};
+  const layoutMismatch = (hash !== idHash());
+  const next = {};
+  let applied = 0, skipped = 0, unknown = 0;
+  for(let i = 0; i < n; i++){
+    const v = packed[Math.floor(i/4)];
+    const c = (v >> ((i % 4) * 2)) & 3;
+    if(c !== 1 && c !== 2) continue;
+    const it = ITEMS[i];
+    if(!it){ unknown++; continue; }
+    next[it.id] = (c === 1) ? 'applied' : 'skipped';
+    if(c === 1) applied++; else skipped++;
+  }
+  STATUS = next; saveStatus();
+  renderAll();
+  return {ok:true, applied:applied, skipped:skipped, unknown:unknown, n:n, layoutMismatch:layoutMismatch};
+}
+function renderSpell(){
+  const out = document.getElementById('spellOut');
+  if(!out) return;
+  const applied = ITEMS.filter(i => getStatus(i.id) === 'applied').length;
+  const skipped = ITEMS.filter(i => getStatus(i.id) === 'skipped').length;
+  out.value = spellMake();
+  const sumEl = document.getElementById('spellSum');
+  if(sumEl) sumEl.textContent = 'いま：応募済み ' + applied + '件 ・ 見送り ' + skipped + '件';
+}
+
+/* ================= 全体描画 ================= */
+function renderPanels(){
+  document.querySelectorAll('.panel').forEach(function(p){
+    p.classList.toggle('active', p.dataset.panel === state.tab);
+  });
+  if(state.tab === 'map'){
+    initMap();
+    if(map) setTimeout(function(){
+      map.invalidateSize();
+      if(!mapFitted){ map.fitBounds(OITA_BOUNDS, {maxZoom:10}); mapFitted = true; }
+    }, 30);
+    renderStorebar(); renderMapList(); drawMarkers();
+  } else if(state.tab === 'online'){ renderOnlineList(); }
+  else if(state.tab === 'applied'){ renderAppliedList(); }
+  else if(state.tab === 'deadline'){ renderDeadlineList(); }
+}
+function renderAll(){
+  renderKpis(); renderTabs(); renderPanels();
+}
+
+/* ================= 操作 ================= */
+function setStatus(id, v){
+  if(v === 'todo') delete STATUS[id]; else STATUS[id] = v;
+  saveStatus();
+  renderAll();
+  const sheet = document.getElementById('sheet');
+  if(sheetCtx && sheet.classList.contains('on')){
+    if(sheetCtx.type === 'item') openItem(sheetCtx.id); else openStore(sheetCtx.id);
+  }
+  const msg = v === 'applied' ? '✅ 応募済みにしました' : v === 'skipped' ? '🚫 見送りにしました' : '↩︎ 元に戻しました';
+  toast(msg);
+}
+document.addEventListener('click', function(ev){
+  const tabBtn = ev.target.closest('.tab');
+  if(tabBtn){ state.tab = tabBtn.dataset.tab; renderAll(); window.scrollTo({top:0, behavior:'smooth'}); return; }
+
+  const chip = ev.target.closest('.chip[data-f]');
+  if(chip){
+    const f = chip.dataset.f, v = chip.dataset.v;
+    state[f] = v;
+    syncChips();
+    renderAll();
+    return;
+  }
+  const act = ev.target.closest('[data-act]');
+  if(act){
+    ev.preventDefault(); ev.stopPropagation();
+    const a = act.dataset.act, id = act.dataset.i;
+    if(a === 'open'){ openItem(id); return; }
+    if(a === 'unpick'){ state.picked = null; renderStorebar(); renderMapList(); drawMarkers(); return; }
+    if(a === 'store'){ openStore(act.dataset.s); return; }
+    if(a === 'sheetClose'){ closeSheet(); return; }
+    if(a === 'applied' || a === 'skipped' || a === 'todo'){ setStatus(id, a); return; }
+  }
+  if(ev.target.closest('a')) return;
+  const card = ev.target.closest('.card[data-id], .dlrow[data-id]');
+  if(card){ openItem(card.dataset.id); }
+});
+document.getElementById('backdrop').addEventListener('click', closeSheet);
+document.getElementById('sheetClose').addEventListener('click', closeSheet);
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeSheet(); });
+
+document.getElementById('moreBtn').addEventListener('click', function(){
+  const ex = document.getElementById('fmore');
+  ex.classList.toggle('on');
+  this.classList.toggle('on');
+  this.textContent = ex.classList.contains('on') ? '絞り込み ▴' : '絞り込み ▾';
+});
+document.getElementById('fitOita').addEventListener('click', function(){
+  if(map) map.fitBounds(OITA_BOUNDS, {maxZoom:10});
+});
+document.getElementById('openSpell').addEventListener('click', function(){
+  state.tab = 'applied'; renderAll();
+  const sp = document.getElementById('spellCard');
+  if(sp) sp.scrollIntoView({block:'center', behavior:'smooth'});
+});
+document.getElementById('spellCopy').addEventListener('click', function(){
+  const el = document.getElementById('spellOut');
+  const code = el.value;
+  const done = function(){ toast('📋 呪文をコピーしました'); };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(code).then(done, function(){ selectFallback(el); });
+  } else { selectFallback(el); }
+  function selectFallback(inp){
+    inp.focus(); inp.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch(e){ ok = false; }
+    toast(ok ? '📋 呪文をコピーしました' : '選択しました。長押しでコピーしてください');
+  }
+});
+document.getElementById('spellLoad').addEventListener('click', function(){
+  const msg = document.getElementById('spellMsg');
+  const r = spellLoad(document.getElementById('spellIn').value);
+  msg.className = 'smsg on ' + (r.ok ? 'ok' : 'ng');
+  if(r.ok){
+    if(r.layoutMismatch){
+      msg.className = 'smsg on ng';
+      msg.textContent = '⚠ 復元しましたが、商品の並びが前回と違うファイルです（応募済みの対応がずれている可能性）。応募済み ' + r.applied + '件・見送り ' + r.skipped + '件。';
+    } else {
+      msg.textContent = '✨ 復元しました（応募済み ' + r.applied + '件・見送り ' + r.skipped + '件）' +
+        (r.unknown ? '／このファイルに無い ' + r.unknown + '件はスキップ' : '');
+    }
+    document.getElementById('spellIn').value = '';
+    renderSpell();
+  } else {
+    msg.textContent = '⚠ ' + r.msg;
+  }
+});
+document.getElementById('spellIn').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') document.getElementById('spellLoad').click();
+});
+
+function syncChips(){
+  document.querySelectorAll('.chip[data-f]').forEach(function(c){
+    const f = c.dataset.f, v = c.dataset.v;
+    c.classList.toggle('on', state[f] === v);
+  });
+}
+syncChips();
+renderAll();
+})();
+
+</script>
+</body>
+</html>
