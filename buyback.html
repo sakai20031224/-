@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>減額なし 買取店マップ＆手取り比較（2026-11-28）</title>
+<title>九州の店頭だけ 買取マップ＆手取り比較（2026-11-28）</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script>document.documentElement.className='js';</script>
 <style>
@@ -89,7 +89,7 @@ main{padding:0 0 6px}
 .plan.on .tag{background:var(--tealbg);color:var(--teal)}
 .plan .nm{font-size:12px;font-weight:800}
 .plan .mon{margin-left:auto;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
-.plan .mon.s{font-size:12px}
+.plan .mon.s{font-size:11.5px}
 .plan .ps{font-size:12px}
 .plan .ps b.plus{color:var(--green)}
 .plan .ps b.minus{color:var(--red)}
@@ -114,8 +114,7 @@ main{padding:0 0 6px}
 .st{font-size:11px;color:var(--dim);line-height:1.55}
 .mn{display:flex;flex-wrap:wrap;gap:2px 10px;font-size:11px;color:var(--dim);margin-top:4px}
 .mn b{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums}
-.mn b.pos{color:var(--green)} .mn b.neg{color:var(--red)}
-.prices,.prs{display:grid;gap:3px;margin-top:6px}
+.prices{display:grid;gap:3px;margin-top:6px}
 .pr{display:flex;align-items:baseline;gap:6px;background:#f7f8fa;border-radius:7px;padding:4px 8px;font-size:11px}
 .pr i{font-style:normal;color:var(--dim);flex:1 1 auto;min-width:0}
 .pr b{font-size:12px;font-weight:800;font-variant-numeric:tabular-nums}
@@ -125,9 +124,6 @@ main{padding:0 0 6px}
   border-radius:4px;padding:0 5px;margin-right:5px}
 .plus,.minus{font-size:10.5px;line-height:1.55;margin-top:4px}
 .plus{color:#08663a} .minus{color:#b42318}
-.warn{font-size:10.5px;color:#b42318;background:#fdeceb;border:1px solid #f3d1cd;border-radius:8px;
-  padding:5px 8px;margin-top:5px;line-height:1.55}
-.memo{font-size:10.5px;color:#0b5f53;background:var(--tealbg);border-radius:8px;padding:5px 8px;margin-top:5px;line-height:1.55}
 .acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 .btn{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 9px;border-radius:8px;
   border:1px solid var(--line);background:#fff;color:var(--ink2);font:inherit;font-size:11px;
@@ -140,16 +136,19 @@ main{padding:0 0 6px}
 .cmps{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px}
 .cmpbox{border:1px solid var(--line);border-radius:10px;padding:7px 8px;background:#fcfcfd}
 .cmpbox.win{border-color:#9cd3c7;background:#f4fbf9}
+.cmpbox.hold{grid-column:1 / -1;background:#f7f9fe;border-color:#dbe4f6}
 .cb-h{font-size:10.5px;font-weight:700;color:var(--dim)}
 .cb-h b{display:block;font-size:15px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;margin-top:1px}
 .cmpbox.win .cb-h b{color:var(--teal)}
+.cmpbox.hold .cb-h b{font-size:11.5px;margin-top:2px}
 .cb-s{font-size:10px;color:var(--ink2);line-height:1.45;margin-top:3px}
 .cb-n{font-size:9.5px;color:var(--dim2);line-height:1.4;margin-top:3px}
 .jd{display:block;font-size:11px;font-weight:800;margin-top:7px;padding:6px 8px;border-radius:7px;line-height:1.5}
 .jd b{display:block;font-size:11px;font-weight:800}
 .jd span{display:block;margin-top:2px;font-weight:500;font-size:10.5px;color:inherit;opacity:.82;line-height:1.55}
-.jd.mail{background:#efeafd;color:#5b21b6}
-.jd.shop{background:#fdf6e3;color:#8a5a00}
+.jd.oita{background:#fdf6e3;color:#8a5a00}
+.jd.hold{background:#e9f7ef;color:#08663a}
+.jd.wait{background:#eef4ff;color:#1e3a8a}
 
 /* 地図 */
 .mapcard{margin:10px 12px 0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#eef1f4;position:relative;z-index:1}
@@ -184,7 +183,7 @@ main{padding:0 0 6px}
 .ibox ul{margin:4px 0 0;padding-left:16px}
 .ibox li{font-size:11.5px;color:var(--ink2);line-height:1.65;margin-bottom:4px}
 .ibox a{color:var(--teal);font-weight:700}
-.rules{width:100%;min-width:660px;border-collapse:collapse;margin-top:4px}
+.rules{width:100%;min-width:720px;border-collapse:collapse;margin-top:4px}
 .rules th,.rules td{font-size:10.5px;line-height:1.5;padding:5px 6px;border-bottom:1px solid var(--line2);vertical-align:top;text-align:left}
 .rules th{color:var(--dim);font-weight:700;background:#f7f8fa;white-space:nowrap}
 .rules td b{color:var(--ink)}
@@ -195,6 +194,8 @@ main{padding:0 0 6px}
 .chk{display:grid;gap:5px;margin-top:4px}
 .chk div{font-size:11.5px;line-height:1.55;background:#f7f8fa;border-radius:8px;padding:6px 9px;color:var(--ink2)}
 .chk b{color:var(--ink)}
+.chk .hi{background:#fdf6e3;color:#8a5a00}
+.chk .ng{background:#fdeceb;color:#b42318}
 .three-step{display:grid;gap:4px;margin-top:4px}
 .step{display:flex;gap:7px;font-size:11.5px;line-height:1.55;color:var(--ink2)}
 .step i{flex:0 0 auto;width:17px;height:17px;border-radius:50%;background:#eef1f5;color:var(--ink2);
@@ -211,23 +212,22 @@ footer b{color:var(--dim)}
 <body>
 <a id="top"></a>
 <header class="hd">
-  <h1>減額なし 買取店マップ</h1>
-  <p class="sub">保有7箱の手取り比較｜2026/11/28 04:17 時点｜店頭は大分県内7店＋福岡2店／郵送11店</p>
+  <h1>九州店頭 買取マップ</h1>
+  <p class="sub">保有7箱の手取り比較｜2026/11/28 04:45 時点｜九州の店頭12店（大分7・福岡5）｜郵送は使わない</p>
   <div class="keys">
     <a class="key" href="index.html" title="抽選マップへ">🎟️</a>
   </div>
   <div class="kpis">
     <div class="kpi teal"><b>7箱</b><span>保有</span></div>
-    <div class="kpi green"><b>58,180</b><span>推奨の手取り</span></div>
-    <div class="kpi green"><b>+11,090</b><span>仕入47,090円比</span></div>
-    <div class="kpi red"><b>2社</b><span>減額ゼロ明記</span></div>
+    <div class="kpi amber"><b>30,000</b><span>4箱の採算ライン</span></div>
+    <div class="kpi green"><b>720</b><span>大分の往復燃料</span></div>
+    <div class="kpi red"><b>3,100</b><span>福岡の往復燃料</span></div>
   </div>
 </header>
 
 <nav class="tabbar sticky only-js" id="tabbar">
   <button class="tab on" data-tab="money">💰 手取り比較</button>
-  <button class="tab" data-tab="map">🗺 店頭マップ</button>
-  <button class="tab" data-tab="mail">📦 郵送買取</button>
+  <button class="tab" data-tab="map">🗺 九州店頭マップ</button>
   <button class="tab" data-tab="rule">⚖️ 減額なしの条件</button>
 </nav>
 
@@ -236,80 +236,107 @@ footer b{color:var(--dim)}
 <section class="panel active" id="panel-money" data-panel="money">
   <div class="hero">
     <div class="k">結論｜2026/11/28 土</div>
-    <div class="t">ハドウ2＋フクオカ1は郵送、古代3＋ワイルド1は大分店頭で3店比較。</div>
-    <div class="n"><b>58,180</b><span>円の手取り</span><em>仕入47,090円 → +11,090円</em></div>
+    <div class="t">郵送はしない。売るのは大分の店頭で4箱だけ。ハドウ2とフクオカ1は値上がり待ち。</div>
+    <div class="n"><b>36,380</b><span>円（4箱を大分3店で売った場合の目安）</span><em>仕入33,000円 → +3,380円</em></div>
     <ul>
-      <li><b>郵送 3箱</b>：ハドウ×2＝ナナイロ16,400／フクオカ＝ひよこ10,000 → 送料・梱包を引いて <b>21,800円</b></li>
-      <li><b>店頭 4箱</b>：古代9,200×3＋ワイルド9,500＝37,100 → 燃料720円を引いて <b>36,380円</b>（現金・その場）</li>
-      <li>4箱を郵送に回すと +4,020円だが、ミシン目浮きは減額ゼロ対象外で返送リスク。ホムラは購入経路でも通らない。</li>
+      <li><b>古代3＋ワイルド1</b>：大分3店で査定 → 合計<b>30,000円以上なら売却</b>、25,000円前後なら持ち帰り保有</li>
+      <li><b>ハドウ×2</b>：極KIWAMI 6,500×2−燃料720＝<b>12,280円</b>。仕入12,000の1.08倍で保有ゾーン → 値上がり待ち</li>
+      <li><b>フクオカ×1</b>：九州の店頭表にまだ載っていない（取扱い未確認）。今日は売れない → 出口を探す</li>
     </ul>
   </div>
 
   <div class="plans">
     <div class="plan on">
-      <div class="ph"><span class="tag">A 推奨</span><span class="nm">ハドウ2＋フクオカ1＝郵送／4箱＝店頭</span><span class="mon">58,180</span></div>
-      <div class="ps"><b class="plus">+11,090円</b>（仕入47,090円）</div>
-      <div class="pd">現金36,380円＋振込21,800円。リスクは送料と、フクオカの下落だけ。</div>
+      <div class="ph"><span class="tag">A 推奨</span><span class="nm">大分3店で4箱を査定</span><span class="mon">36,380</span></div>
+      <div class="ps"><b class="plus">+3,380円</b>（仕入33,000円・目安）</div>
+      <div class="pd">往復燃料720円・約45分。金額を見て持ち帰れる。30,000円を割ったら売らない。</div>
     </div>
     <div class="plan">
-      <div class="ph"><span class="tag">B</span><span class="nm">全部を大分の店頭で売る</span><span class="mon">48,660</span></div>
-      <div class="ps"><b class="plus">+1,570円</b></div>
-      <div class="pd">フクオカは大分で取扱いが確認できず、この金額では売れない前提。ハドウも1箱500〜1,000円安い。</div>
+      <div class="ph"><span class="tag">B</span><span class="nm">福岡の店頭まで持って行く</span><span class="mon">34,400</span></div>
+      <div class="ps"><b class="minus">−1,980円</b>（大分の目安より安い）</div>
+      <div class="pd">マフィア37,500−燃料3,100。トレカハブなら35,500円。往復310km・7〜8時間＋傷は規約第7条で減額リスク → 行かない。</div>
     </div>
     <div class="plan">
-      <div class="ph"><span class="tag">C</span><span class="nm">4箱も郵送（無傷が通れば）</span><span class="mon">62,200</span></div>
-      <div class="ps"><b class="plus">+15,110円</b>／ただし未確定</div>
-      <div class="pd">古代11,000×3＋ワイルド12,000＝45,000が前提。ミシン目浮きで減額・着払い返送になれば0円。2社に分かれるので送料2口。</div>
+      <div class="ph"><span class="tag">C</span><span class="nm">全部を持ったまま値上がり待ち</span><span class="mon s">今日の入金 0円</span></div>
+      <div class="ps">7箱・仕入47,090円を保有</div>
+      <div class="pd">相場は全面安（古代30日11,800→11,000、ワイルド12,300→12,000）。戻り待ちは分が悪く、フクオカは30日−3,000円で下げが速い。</div>
     </div>
   </div>
 
-  <div class="sec"><h2>箱ごとの手取り</h2><span>送料は元払い1口1,800円＋梱包500円で計算</span></div>
+  <div class="sec"><h2>箱ごとの手取り</h2><span>大分は往復720円・福岡は往復3,100円を引いた額</span></div>
   
 <article class="card bx" id="bx-hado">
   <div class="crow"><h3>ハドウシーカー</h3><span class="tg state">シュリンクあり</span><span class="dl">2箱</span></div>
-  <div class="mn"><span>原価 <b>12,000円</b>（1箱6,000円）</span><span>差 <b class="pos">郵送が +1,820円</b></span></div>
-  <div class="cmps"><div class="cmpbox win">
-      <div class="cb-h">📦 郵送 <b>14,100円</b></div>
-      <div class="cb-s">ナナイロ 8,200×2＝16,400<br>−送料1,800−梱包500</div>
-      <div class="cb-n">次点 ひよこ7,100／買取expo7,000</div></div><div class="cmpbox ">
-      <div class="cb-h">🏬 店頭 <b>12,280円</b></div>
+  <div class="mn"><span>仕入 <b>12,000円</b>（1箱6,000円）</span></div>
+  <div class="cmps">
+    <div class="cmpbox win">
+      <div class="cb-h">🏪 大分市内3店 <b>12,280円</b></div>
       <div class="cb-s">極KIWAMI 6,500×2＝13,000<br>−燃料720</div>
-      <div class="cb-n">わさだ6,000／ポケカん6,300</div></div></div>
-  <div class="jd mail"><b>🟣 郵送</b><span>店頭より+1,820円。ただし本人ルールでは保有ゾーン（8,200/6,000＝1.37倍・売りライン9,000円）なので、急いで売る箱ではない。売るなら郵送2箱を1口で。</span></div>
+      <div class="cb-n">わさだ6,000／ポケカん6,300。6,500は11/27の数量限定なので当日の提示を確認</div>
+    </div>
+    <div class="cmpbox ">
+      <div class="cb-h">🏬 福岡店頭 <b>値段なし</b></div>
+      <div class="cb-s">トレカハブ・マフィア・BR・一丁目にハドウの掲載なし<br></div>
+      <div class="cb-n">行っても値段が読めない（「画像外も高価買取中」＝要問い合わせ）</div>
+    </div>
+    <div class="cmpbox hold">
+      <div class="cb-h">⏳ 値上がり待ち（保有） <b>13,000 ÷ 12,000＝1.08倍（保有ゾーン）</b></div>
+      <div class="cb-n">売りラインは1.5倍＝1箱9,000円（2箱18,000円）。フリマ相場は8,500→7,000に下落中</div>
+    </div>
+  </div>
+  <div class="jd hold"><b>⏳ 値上がり待ち</b><span>大分店頭12,280円は仕入12,000円とほぼ同じ（+280円）。1.08倍は本人ルールの保有ゾーンで、売る意味が薄い。1箱9,000円に届いたら店頭で売り、届かなければ持ったまま。</span></div>
 </article>
 <article class="card bx" id="bx-fukuoka">
-  <div class="crow"><h3>スペシャルBOX ポケモンセンターフクオカ</h3><span class="tg state">シュリンクあり</span><span class="dl">1箱</span></div>
-  <div class="mn"><span>原価 <b>2,090円</b></span><span>差 <b class="pos">店頭の選択肢なし</b></span></div>
-  <div class="cmps"><div class="cmpbox win">
-      <div class="cb-h">📦 郵送 <b>7,700円</b></div>
-      <div class="cb-s">ひよこ 10,000（ファストバイも同額）<br>−送料1,800−梱包500</div>
-      <div class="cb-n">シンソク9,800／ホムラ8,500</div></div><div class="cmpbox ">
-      <div class="cb-h">🏬 店頭 <b>—</b></div>
-      <div class="cb-s">大分で取扱い 未確認<br>店頭では売れない前提</div>
-      <div class="cb-n">店頭では売れない前提で計算</div></div></div>
-  <div class="jd mail"><b>🟢 郵送・今週中</b><span>10,000/2,090＝4.8倍で売りゾーン。30日で13,000→10,000（−3,000）と下落中。ホムラの5箱送料無料はスペシャルBOXが対象外なので、1箱単独で送る。</span></div>
+  <div class="crow"><h3>スペシャルBOX ポケモンセンターフクオカ</h3><span class="tg state">未開封</span><span class="dl">1箱</span></div>
+  <div class="mn"><span>仕入 <b>2,090円</b></span></div>
+  <div class="cmps">
+    <div class="cmpbox ">
+      <div class="cb-h">🏪 大分市内3店 <b>値段なし</b></div>
+      <div class="cb-s">大分7店のBOX表にスペシャルBOXの掲載なし<br></div>
+      <div class="cb-n">大分の店頭では売れない前提</div>
+    </div>
+    <div class="cmpbox ">
+      <div class="cb-h">🏬 福岡店頭 <b>値段なし</b></div>
+      <div class="cb-s">マフィア・トレカハブ・BR・一丁目とも掲載なし（ホムラは減額ゼロ対象外）<br></div>
+      <div class="cb-n">福岡の店頭でも値段が出ていない</div>
+    </div>
+    <div class="cmpbox hold">
+      <div class="cb-h">⏳ 値上がり待ち（保有） <b>仕入2,090円（定価）／出口の値段なし</b></div>
+      <div class="cb-n">参考：市場の最高値は30日で13,000→10,000（−3,000）。下げが速く、待つほど弱い</div>
+    </div>
+  </div>
+  <div class="jd wait"><b>🔎 出口を探す（保有）</b><span>九州の店頭表に載っている店がまだ無いので、今日は売れない。値上がり待ちに向く箱ではなく（30日で−3,000円）、店頭表に載った日か、買取強化の告知が出た日に持って行く。</span></div>
 </article>
 <article class="card bx" id="bx-koda">
   <div class="crow"><h3>古代の咆哮×3 ＋ ワイルドフォース×1</h3><span class="tg state">ミシン目浮き（シュリンクあり）</span><span class="dl">4箱</span></div>
-  <div class="mn"><span>原価 <b>33,000円</b>（1箱8,250円）</span><span>差 <b class="pos">郵送が +4,020円</b></span></div>
-  <div class="cmps"><div class="cmpbox ">
-      <div class="cb-h">📦 郵送 <b>40,400円</b></div>
-      <div class="cb-s">古代11,000×3＋ワイルド12,000＝45,000<br>−送料3,600−梱包1,000（2口）</div>
-      <div class="cb-n">無傷が通った場合の2社合計</div></div><div class="cmpbox win">
-      <div class="cb-h">🏬 店頭 <b>36,380円</b></div>
-      <div class="cb-s">古代9,200×3＋ワイルド9,500＝37,100<br>−燃料720</div>
-      <div class="cb-n">シュリンクなし水準</div></div></div>
-  <div class="jd shop"><b>🟡 店頭3店比較</b><span>郵送は「減額ゼロ対象外→減額か着払い返送」＋ホムラは二次流通購入を買取不可。店頭なら金額を見て持ち帰れる。4箱合計30,000円以上なら売り、下回るなら持ち帰り（33,000/33,000で保有ゾーン）。</span></div>
+  <div class="mn"><span>仕入 <b>33,000円</b>（1箱8,250円）</span></div>
+  <div class="cmps">
+    <div class="cmpbox win">
+      <div class="cb-h">🏪 大分市内3店 <b>36,380円</b></div>
+      <div class="cb-s">古代9,200×3＋ワイルド9,500＝37,100（シュリンクなし水準で仮置き）<br>−燃料720</div>
+      <div class="cb-n">昨日のマンガ倉庫 大分東店の実績は4箱25,000円（1箱6,250円）</div>
+    </div>
+    <div class="cmpbox ">
+      <div class="cb-h">🏬 福岡店頭 <b>34,400円</b></div>
+      <div class="cb-s">マフィア福岡 古代9,000×3＋ワイルド10,500＝37,500<br>−燃料3,100</div>
+      <div class="cb-n">トレカハブなら古代9,200×3＋ワイルド11,000＝38,600−3,100＝35,500。ただし傷は規約第7条で減額・返却リスク</div>
+    </div>
+    <div class="cmpbox hold">
+      <div class="cb-h">⏳ 値上がり待ち（保有） <b>37,100 ÷ 33,000＝1.12倍（保有ゾーン）</b></div>
+      <div class="cb-n">売りラインは1.5倍＝49,500円。相場は全面安で、傷物は「シュリンクなし」の価格に上限を縛られる</div>
+    </div>
+  </div>
+  <div class="jd oita"><b>🟡 大分3店で査定→30,000円以上なら売却</b><span>福岡まで行っても34,400円（マフィア）で、大分の目安36,380円より安い。7〜8時間と燃料3,100円を払う理由がない。大分3店の合計が30,000円以上なら売り、25,000円前後なら持ち帰って保有。</span></div>
 </article>
 
   <div class="ibox" style="margin-top:4px">
-    <h2>🧾 数字の前提と、効いてくる注意</h2>
+    <h2>🧾 この表の決め方と、数字の前提</h2>
     <ul>
-      <li><span class="k">同梱できるのは同じ店だけ。</span>ナナイロ（ハドウ）とひよこ（フクオカ）は別口なので、送料は2口分で計算しています。両方をひよこにまとめると 14,200＋10,000−2,300＝<b>21,900円</b>で、上の21,800円とほぼ同じ。</li>
-      <li><span class="k">ホムラの5箱送料無料はスペシャルBOXが対象外。</span>ハドウ2＋フクオカ1では5箱に届かず、4箱だけでも元払い。</li>
-      <li><span class="k">ホムラは「フリマアプリ・インターネットオークション・個人間取引・その他二次流通で購入した商品」を買取不可と明記。</span>古代・ワイルドの4箱は11/27にマンガ倉庫大分東店で買ったもので、この「二次流通」に当たる可能性が高い。申込時に購入経路を確認されるため、5箱まとめてホムラに送る形は実質つくれません。</li>
-      <li><span class="k">4箱をホムラ1社に送った場合</span>：古代9,500×3＋ワイルド11,200＝39,700−2,300＝<b>37,400円</b>。店頭36,380円とほぼ同じで、返送リスクだけ増えます。</li>
-      <li><span class="k">価格は11/27〜28の各店公開値。</span>ホムラの週次比較では85種中55種が下落、価格推移17種は全17種が下落の全面安。実行の直前に各店の最新表を見てください。</li>
+      <li><span class="k">郵送・宅配の比較は全部はずしました。</span>本人の確定方針は「郵送はしない・九州圏内の実店舗のみ・それ以外は値上がり待ち」。判断に使うのは<b>店頭で出た現金の額</b>だけです。</li>
+      <li><span class="k">移動は杵築市起点・下道・燃料10円/km。</span>大分市内は往復約36km＝<b>720円</b>、福岡市は往復約310km＝<b>3,100円</b>（片道3.5〜4時間）。</li>
+      <li><span class="k">4箱の36,380円は目安です。</span>大分3店は古代・ワイルドのBOX価格を公表していないため、「シュリンクなし水準」（古代9,200×3＋ワイルド9,500）で仮置き。昨日のマンガ倉庫 大分東店の実績は4箱25,000円でした。</li>
+      <li><span class="k">ハドウの6,500円は11/27の数量限定。</span>カード天国・ポケカんはBOXの価格を出していないので、当日の提示額で見てください。</li>
+      <li><span class="k">4箱は「ミシン目浮き（シュリンクあり）」。</span>浮きなら軽微な傷み扱い、「切れ」なら開封扱いで減額なしの外に出ます（→ ⚖️タブ）。</li>
     </ul>
   </div>
 
@@ -334,28 +361,29 @@ footer b{color:var(--dim)}
   <div class="legendrow">
     <span><i style="background:#d92d20"></i>今日まわる3店</span>
     <span><i style="background:#0f7b6c"></i>大分県内</span>
-    <span><i style="background:#6941c6"></i>福岡（参考）</span>
+    <span><i style="background:#6941c6"></i>福岡</span>
     <span><i style="background:#0f7b6c"></i>🏠 自宅（杵築）</span>
   </div>
   <div class="mapnote">
-    🗺 <b>見方</b>：ピンの数字は今日の動線順。赤＝今日まわる3店、緑＝大分県内、紫＝福岡（往復310km・燃料3,100円なので行かない前提）。ピンを押すと下の店カードが開きます。
+    🗺 <b>見方</b>：ピンの数字は店カードの番号。赤＝今日まわる3店、緑＝大分県内7店、紫＝福岡5店。ピンを押すと下の店カードが開きます。<b>福岡は往復310km・燃料3,100円</b>なので、行くのは価格差が移動を上回るときだけ。
   </div>
 
   <div class="fbar only-js" style="margin-top:8px;border-top:0">
     <div class="frow">
-      <button class="chip on" data-f="area" data-v="all">すべて <span class="c">9</span></button>
+      <button class="chip on" data-f="area" data-v="all">すべて <span class="c">12</span></button>
       <button class="chip" data-f="area" data-v="oita">大分県内 <span class="c">7</span></button>
-      <button class="chip" data-f="area" data-v="fuku">福岡 <span class="c">2</span></button>
+      <button class="chip" data-f="area" data-v="fuku">福岡 <span class="c">5</span></button>
       <button class="chip" data-f="area" data-v="route">今日の3店 <span class="c">3</span></button>
+      <button class="chip" data-f="area" data-v="zero">減額なし表記 <span class="c">5</span></button>
     </div>
   </div>
 
   <div class="wrap" id="storelist">
     
-<article class="card store" id="st-tengoku" data-area="oita" data-route="1">
+<article class="card store" id="st-tengoku" data-area="oita" data-route="1" data-zero="1">
   <div class="crow"><span class="num">1</span><h3>カード天国 大分店</h3><span class="tg go">満額 明言</span><span class="dl">大分市</span></div>
   <div class="st">大分市高城南町7-13<br>12:00〜19:00</div>
-  <div class="mn"><span>🚗 往復約36km・約45分</span><span>燃料 <b>720円</b></span></div>
+  <div class="mn"><span>🚗 往復約36km・約45分</span><span>往復燃料 <b>720円</b></span></div>
   <div class="prices"><div class="pr"><i>古代の咆哮</i><b>未公表</b></div><div class="pr"><i>ハドウシーカー</i><b>未公表</b></div><div class="pr"><i>4箱まとめ</i><b>要査定</b></div></div>
   <div class="rate"><b>状態の扱い</b>店頭査定。BOXの買取表は未公表（XはPSA10・シングルの表のみ）</div>
   <div class="rate"><b>減額なし</b>BOXは「シュリンク・傷なしなら満額買取」とXで明言（11/27）</div>
@@ -363,10 +391,10 @@ footer b{color:var(--dim)}
   <div class="minus">👎 BOX価格が未公表。シュリンク・傷なしの条件から外れると減額</div>
   <div class="acts"><a class="btn sm" href="https://www.google.com/maps/dir/?api=1&origin=33.4041136,131.6358393&destination=33.242672,131.659424&travelmode=driving" target="_blank" rel="noopener">🛣 経路</a><a class="btn sm" href="https://www.google.com/maps/search/?api=1&query=カード天国+大分店+大分市高城南町7-13" target="_blank" rel="noopener">📍 店の場所</a><a class="btn sm" href="https://x.com/card_tengoku" target="_blank" rel="noopener">𝕏 @card_tengoku</a></div>
 </article>
-<article class="card store" id="st-kiwami" data-area="oita" data-route="1">
+<article class="card store" id="st-kiwami" data-area="oita" data-route="1" data-zero="0">
   <div class="crow"><span class="num">2</span><h3>極 KIWAMI 大分店</h3><span class="tg gray">表記なし</span><span class="dl">大分市</span></div>
   <div class="st">大分市羽田194-3 コミュニティ羽田7番館102｜☎ 080-7518-5717<br>13:00〜22:00（日替わり・出発前にX確認）</div>
-  <div class="mn"><span>🚗 往復約36km・約45分</span><span>燃料 <b>720円</b></span></div>
+  <div class="mn"><span>🚗 往復約36km・約45分</span><span>往復燃料 <b>720円</b></span></div>
   <div class="prices"><div class="pr"><i>ハドウシーカー</i><b>6,500円</b><em>11/27・数量限定</em></div><div class="pr"><i>古代の咆哮</i><b>未公表</b></div><div class="pr"><i>4箱まとめ</i><b>要査定</b></div></div>
   <div class="rate"><b>状態の扱い</b>状態は店頭で現物査定。ハドウは「シュリンク付き」条件で提示</div>
   <div class="rate"><b>減額なし</b>減額ゼロ表記なし（店頭査定）</div>
@@ -374,21 +402,21 @@ footer b{color:var(--dim)}
   <div class="minus">👎 営業時間が日替わり（13:00〜22:00／10:00〜19:00など）。BOX価格は未公表</div>
   <div class="acts"><a class="btn sm" href="https://www.google.com/maps/dir/?api=1&origin=33.4041136,131.6358393&destination=33.217495,131.636978&travelmode=driving" target="_blank" rel="noopener">🛣 経路</a><a class="btn sm" href="https://www.google.com/maps/search/?api=1&query=極+KIWAMI+大分店+大分市羽田194-3" target="_blank" rel="noopener">📍 店の場所</a><a class="btn sm" href="https://x.com/kiwami_oita" target="_blank" rel="noopener">𝕏 @kiwami_oita</a></div>
 </article>
-<article class="card store" id="st-ms-higashi" data-area="oita" data-route="1">
+<article class="card store" id="st-ms-higashi" data-area="oita" data-route="1" data-zero="0">
   <div class="crow"><span class="num">3</span><h3>マンガ倉庫 大分東店</h3><span class="tg no">減額あり</span><span class="dl">大分市</span></div>
   <div class="st">大分市皆春604｜☎ 097-522-2700<br>10:00〜24:00（買取23:00まで）</div>
-  <div class="mn"><span>🚗 往復約42km・約50分</span><span>燃料 <b>840円</b></span></div>
+  <div class="mn"><span>🚗 往復約42km・約50分</span><span>往復燃料 <b>840円</b></span></div>
   <div class="prices"><div class="pr"><i>古代×3＋ワイルド×1</i><b>25,000円</b><em>11/27の実績（4箱）</em></div><div class="pr"><i>ハドウシーカー</i><b>未公表</b></div></div>
   <div class="rate"><b>状態の扱い</b>過去告知「シュリンクの破れ、穴、箱のイタミがないものに限ります」</div>
   <div class="rate"><b>減額なし</b>減額ゼロ表記なし。BOXの状態で減額あり</div>
   <div class="plus">👍 昨日4箱に25,000円の実績。買取は23:00までで寄りやすい</div>
-  <div class="minus">👎 買取水準そのものが郵送より2〜4割低い。マンガ倉庫で買って戻す往復は構造的に負ける</div>
+  <div class="minus">👎 買取水準そのものが低い（福岡の減額なし表は同じ4箱で37,500円）。ここで買って ここへ戻す往復は構造的に負ける</div>
   <div class="acts"><a class="btn sm" href="https://www.google.com/maps/dir/?api=1&origin=33.4041136,131.6358393&destination=33.23214,131.68277&travelmode=driving" target="_blank" rel="noopener">🛣 経路</a><a class="btn sm" href="https://www.google.com/maps/search/?api=1&query=マンガ倉庫+大分東店+大分市皆春604" target="_blank" rel="noopener">📍 店の場所</a><a class="btn sm" href="https://mangasouko.jp/" target="_blank" rel="noopener">🏠 店のサイト</a></div>
 </article>
-<article class="card store" id="st-ms-wasada" data-area="oita" data-route="0">
+<article class="card store" id="st-ms-wasada" data-area="oita" data-route="0" data-zero="0">
   <div class="crow"><span class="num">4</span><h3>マンガ倉庫 大分わさだ店</h3><span class="tg no">減額あり</span><span class="dl">大分市</span></div>
   <div class="st">大分市田尻85-1｜☎ 097-541-7788<br>10:00〜24:00（買取23:00まで）</div>
-  <div class="mn"><span>🚗 往復約60km・約60分</span><span>燃料 <b>1,200円</b></span></div>
+  <div class="mn"><span>🚗 往復約60km・約60分</span><span>往復燃料 <b>1,200円</b></span></div>
   <div class="prices"><div class="pr"><i>ハドウシーカー</i><b>6,000円</b><em>11/27・美品のみ</em></div><div class="pr"><i>古代の咆哮</i><b>未公表</b></div></div>
   <div class="rate"><b>状態の扱い</b>ハドウは「シュリンク未開封、美品のみ」6,000円（11/27）</div>
   <div class="rate"><b>減額なし</b>減額ゼロ表記なし</div>
@@ -396,10 +424,10 @@ footer b{color:var(--dim)}
   <div class="minus">👎 極KIWAMIより500円低い。往復60kmで燃料1,200円かかる</div>
   <div class="acts"><a class="btn sm" href="https://www.google.com/maps/dir/?api=1&origin=33.4041136,131.6358393&destination=33.191414,131.59375&travelmode=driving" target="_blank" rel="noopener">🛣 経路</a><a class="btn sm" href="https://www.google.com/maps/search/?api=1&query=マンガ倉庫+大分わさだ店+大分市田尻85-1" target="_blank" rel="noopener">📍 店の場所</a><a class="btn sm" href="https://mangasouko-shop.jp/oitawasada/" target="_blank" rel="noopener">🏠 店のサイト</a></div>
 </article>
-<article class="card store" id="st-pokekan" data-area="oita" data-route="0">
+<article class="card store" id="st-pokekan" data-area="oita" data-route="0" data-zero="0">
   <div class="crow"><span class="num">5</span><h3>ポケカん！大分本店</h3><span class="tg gray">表記なし</span><span class="dl">大分市</span></div>
   <div class="st">大分市中央町2-3-10 二八堂ビル406<br>金17:00〜21:00／土14:00〜（曜日で変動）</div>
-  <div class="mn"><span>🚗 往復約36km・約45分</span><span>燃料 <b>720円</b></span></div>
+  <div class="mn"><span>🚗 往復約36km・約45分</span><span>往復燃料 <b>720円</b></span></div>
   <div class="prices"><div class="pr"><i>ハドウシーカー</i><b>6,300円</b><em>「買取は6,300円とかかな」</em></div><div class="pr"><i>古代の咆哮</i><b>未公表</b></div></div>
   <div class="rate"><b>状態の扱い</b>「BOXは力を入れない」とXで明言（11/23・24）</div>
   <div class="rate"><b>減額なし</b>減額ゼロ表記なし</div>
@@ -407,10 +435,10 @@ footer b{color:var(--dim)}
   <div class="minus">👎 BOX買取に力を入れていない。営業時間が短く曜日で変わる</div>
   <div class="acts"><a class="btn sm" href="https://www.google.com/maps/dir/?api=1&origin=33.4041136,131.6358393&destination=33.236225,131.606003&travelmode=driving" target="_blank" rel="noopener">🛣 経路</a><a class="btn sm" href="https://www.google.com/maps/search/?api=1&query=ポケカん+大分本店+大分市中央町2-3-10" target="_blank" rel="noopener">📍 店の場所</a><a class="btn sm" href="https://x.com/pokekan777" target="_blank" rel="noopener">𝕏 @pokekan777</a></div>
 </article>
-<article class="card store" id="st-ace" data-area="oita" data-route="0">
+<article class="card store" id="st-ace" data-area="oita" data-route="0" data-zero="0">
   <div class="crow"><span class="num">6</span><h3>エーストレカ 大分店</h3><span class="tg gray">未確認</span><span class="dl">大分市</span></div>
   <div class="st">大分市向原西1-3-5 西ノ洲ビル201-1<br>12:00〜16:00（火・水 定休）</div>
-  <div class="mn"><span>🚗 往復約40km・約50分</span><span>燃料 <b>800円</b></span></div>
+  <div class="mn"><span>🚗 往復約40km・約50分</span><span>往復燃料 <b>800円</b></span></div>
   <div class="prices"><div class="pr"><i>BOX買取</i><b>条件 未確認</b></div></div>
   <div class="rate"><b>状態の扱い</b>BOX買取表は高額品のみ（11/12）。条件は未確認</div>
   <div class="rate"><b>減額なし</b>未確認</div>
@@ -418,10 +446,10 @@ footer b{color:var(--dim)}
   <div class="minus">👎 営業が短く定休日あり。古代・ワイルドのBOX買取可否が未確認</div>
   <div class="acts"><a class="btn sm" href="https://www.google.com/maps/dir/?api=1&origin=33.4041136,131.6358393&destination=33.252224,131.656128&travelmode=driving" target="_blank" rel="noopener">🛣 経路</a><a class="btn sm" href="https://www.google.com/maps/search/?api=1&query=エーストレカ+大分店+大分市向原西1-3-5" target="_blank" rel="noopener">📍 店の場所</a><a class="btn sm" href="https://x.com/ace_toreca_oita" target="_blank" rel="noopener">𝕏 @ace_toreca_oita</a></div>
 </article>
-<article class="card store" id="st-labo" data-area="oita" data-route="0">
+<article class="card store" id="st-labo" data-area="oita" data-route="0" data-zero="0">
   <div class="crow"><span class="num">7</span><h3>カードラボ 大分店</h3><span class="tg gray">未確認</span><span class="dl">大分市</span></div>
   <div class="st">大分市金池町1-1-17 TKP大分ビル2F｜☎ 097-594-8162<br>11:00〜20:00（買取 平日13:00〜19:00・金土日祝11:00〜19:00）</div>
-  <div class="mn"><span>🚗 往復約36km・約45分</span><span>燃料 <b>720円</b></span></div>
+  <div class="mn"><span>🚗 往復約36km・約45分</span><span>往復燃料 <b>720円</b></span></div>
   <div class="prices"><div class="pr"><i>ポケカBOX</i><b>取扱い 未確認</b></div></div>
   <div class="rate"><b>状態の扱い</b>買取表はデュエマ・ワンピのみ。ポケカBOXの買取は未確認</div>
   <div class="rate"><b>減額なし</b>未確認</div>
@@ -429,169 +457,68 @@ footer b{color:var(--dim)}
   <div class="minus">👎 ポケカBOXの買取実績が見えない。今回の出口候補としては弱い</div>
   <div class="acts"><a class="btn sm" href="https://www.google.com/maps/dir/?api=1&origin=33.4041136,131.6358393&destination=33.233948,131.607559&travelmode=driving" target="_blank" rel="noopener">🛣 経路</a><a class="btn sm" href="https://www.google.com/maps/search/?api=1&query=カードラボ+大分店+大分市金池町1-1-17" target="_blank" rel="noopener">📍 店の場所</a><a class="btn sm" href="https://www.c-labo.jp/shop/oita/" target="_blank" rel="noopener">🏠 店のサイト</a></div>
 </article>
-<article class="card store" id="st-hub" data-area="fuku" data-route="0">
-  <div class="crow"><span class="num">8</span><h3>トレカハブ 福岡博多店</h3><span class="tg gray">表記なし</span><span class="dl">福岡</span></div>
-  <div class="st">福岡市博多区博多駅前2-5-9 歯臓ビル6F｜☎ 080-2758-1857<br>12:00〜20:00（月 定休）</div>
-  <div class="mn"><span>🚗 往復約310km・片道3.5〜4時間</span><span>燃料 <b>3,100円</b></span></div>
-  <div class="prices"><div class="pr"><i>ハドウシーカー</i><b>記載なし</b></div><div class="pr"><i>ストームエメラルダ</i><b>6,900円</b><em>11/26</em></div></div>
-  <div class="rate"><b>状態の扱い</b>ハドウは記載なし。ストーム6,900円（11/26）</div>
-  <div class="rate"><b>減額なし</b>減額ゼロ表記なし（当日限りの表）</div>
-  <div class="plus">👍 郵送買取も可・1BOXから</div>
-  <div class="minus">👎 往復310km・燃料3,100円＋7〜8時間。1箱あたり+1,000〜2,000では確実に赤字</div>
+<article class="card store" id="st-hub" data-area="fuku" data-route="0" data-zero="1">
+  <div class="crow"><span class="num">8</span><h3>トレカハブ 福岡博多店</h3><span class="tg go">減額なし</span><span class="dl">福岡</span></div>
+  <div class="st">福岡市博多区博多駅前2-5-9 歯臓ビル6F-A<br>12:00〜20:00（月 定休）</div>
+  <div class="mn"><span>🚗 往復約310km・片道3.5〜4時間</span><span>往復燃料 <b>3,100円</b></span></div>
+  <div class="prices"><div class="pr"><i>古代の咆哮</i><b>9,200円</b><em>11/26表</em></div><div class="pr"><i>ワイルドフォース</i><b>11,000円</b><em>11/26表</em></div><div class="pr"><i>ハドウシーカー</i><b>表になし</b></div><div class="pr"><i>スペシャルBOX フクオカ</i><b>表になし</b></div></div>
+  <div class="rate"><b>状態の扱い</b>買取表は「シュリンク付きの未開封のみ」。表は日付記載の当日のみ有効</div>
+  <div class="rate"><b>減額なし</b>「未開封シュリンク付きBOX 無制限で減額なし」。過度な潰れ・シュリンク破れ・カットは返却対象</div>
+  <div class="plus">👍 4箱で38,600円（軽い浮きなら通る書き方）。福岡では いちばん素直な減額なし</div>
+  <div class="minus">👎 往復310km・燃料3,100円＋7〜8時間。手取り35,500円は大分の目安36,380円より安い</div>
   <div class="acts"><a class="btn sm" href="https://www.google.com/maps/dir/?api=1&origin=33.4041136,131.6358393&destination=33.589886,130.416168&travelmode=driving" target="_blank" rel="noopener">🛣 経路</a><a class="btn sm" href="https://www.google.com/maps/search/?api=1&query=トレカハブ+福岡博多店+福岡市博多区博多駅前2-5-9" target="_blank" rel="noopener">📍 店の場所</a><a class="btn sm" href="https://x.com/torekahub" target="_blank" rel="noopener">𝕏 @torekahub</a></div>
 </article>
-<article class="card store" id="st-itchome-fukuoka" data-area="fuku" data-route="0">
-  <div class="crow"><span class="num">9</span><h3>買取一丁目 福岡店</h3><span class="tg gray">表記なし</span><span class="dl">福岡</span></div>
+<article class="card store" id="st-mafia" data-area="fuku" data-route="0" data-zero="1">
+  <div class="crow"><span class="num">9</span><h3>トレカマフィア 福岡店</h3><span class="tg amber">条件付き</span><span class="dl">福岡</span></div>
+  <div class="st">福岡市中央区天神3-4-19 WITH天神1F｜☎ 092-600-1340<br>月〜金12:00〜20:00／土12:00〜17:00／日12:00〜20:00</div>
+  <div class="mn"><span>🚗 往復約310km・片道3.5〜4時間</span><span>往復燃料 <b>3,100円</b></span></div>
+  <div class="prices"><div class="pr"><i>古代の咆哮</i><b>9,000円</b><em>11/27表・赤</em></div><div class="pr"><i>ワイルドフォース</i><b>10,500円</b><em>11/27表・赤</em></div><div class="pr"><i>ハドウシーカー</i><b>表になし</b></div><div class="pr"><i>スペシャルBOX フクオカ</i><b>表になし</b></div></div>
+  <div class="rate"><b>状態の扱い</b>表はシュリンクあり前提。ミシン目浮き・角凹みは「傷」と見られ得る</div>
+  <div class="rate"><b>減額なし</b>Xは「赤文字＝減額なし」。ただし利用規約第7条が「折れ・傷・汚れ・日焼け・白かけ等の損傷は減額または買取をお断り」</div>
+  <div class="plus">👍 4箱で37,500円。天神で立ち寄りやすく、赤文字のBOXは表の全点</div>
+  <div class="minus">👎 規約がSNSの表記を上書き。傷物を持ち込む先としては九州でいちばん危ない</div>
+  <div class="acts"><a class="btn sm" href="https://www.google.com/maps/dir/?api=1&origin=33.4041136,131.6358393&destination=33.592049,130.395554&travelmode=driving" target="_blank" rel="noopener">🛣 経路</a><a class="btn sm" href="https://www.google.com/maps/search/?api=1&query=トレカマフィア+福岡店+福岡市中央区天神3-4-19" target="_blank" rel="noopener">📍 店の場所</a><a class="btn sm" href="https://x.com/mugen_kaitori" target="_blank" rel="noopener">𝕏 @mugen_kaitori</a></div>
+</article>
+<article class="card store" id="st-bluerocket" data-area="fuku" data-route="0" data-zero="1">
+  <div class="crow"><span class="num">10</span><h3>Blue Rocket 福岡</h3><span class="tg amber">条件付き</span><span class="dl">福岡</span></div>
+  <div class="st">福岡市中央区大名2-7-11 斎藤ビル4F<br>12:30〜20:30（最終受付20:00）</div>
+  <div class="mn"><span>🚗 往復約310km・片道3.5〜4時間</span><span>往復燃料 <b>3,100円</b></span></div>
+  <div class="prices"><div class="pr"><i>古代・ワイルド</i><b>掲載 未確認</b><em>当日表で確認</em></div><div class="pr"><i>5万円以上</i><b>振込払い</b><em>現金上限あり</em></div></div>
+  <div class="rate"><b>状態の扱い</b>減額なしの対象は「買取表に掲載の未開封BOXのみ」。載りのないBOXは取扱いなし。状態により返却の場合あり</div>
+  <div class="rate"><b>減額なし</b>「重度のダメージ品（ケース割れ・インクド・日焼けなど）を除き、減額なし」</div>
+  <div class="plus">👍 重度以外は減額なしと明言。大名の同じビル4F／401にホムラ福岡が入る</div>
+  <div class="minus">👎 掲載BOX限定で、当方の4箱が載っているか未確認。現金は1日の上限まで</div>
+  <div class="acts"><a class="btn sm" href="https://www.google.com/maps/dir/?api=1&origin=33.4041136,131.6358393&destination=33.590137,130.394623&travelmode=driving" target="_blank" rel="noopener">🛣 経路</a><a class="btn sm" href="https://www.google.com/maps/search/?api=1&query=Blue+Rocket+福岡+福岡市中央区大名2-7-11" target="_blank" rel="noopener">📍 店の場所</a><a class="btn sm" href="https://x.com/BR_fukuoka" target="_blank" rel="noopener">𝕏 @BR_fukuoka</a></div>
+</article>
+<article class="card store" id="st-homura-fukuoka" data-area="fuku" data-route="0" data-zero="1">
+  <div class="crow"><span class="num">11</span><h3>買取ホムラ 福岡店</h3><span class="tg amber">条件付き</span><span class="dl">福岡</span></div>
+  <div class="st">福岡市中央区大名2-7-11 斉藤ビル401<br>日・月 定休（営業時間は店のX・電話で確認）</div>
+  <div class="mn"><span>🚗 往復約310km・片道3.5〜4時間</span><span>往復燃料 <b>3,100円</b></span></div>
+  <div class="prices"><div class="pr"><i>古代の咆哮</i><b>9,500円</b><em>11/27表・減額ゼロ対象</em></div><div class="pr"><i>ワイルドフォース</i><b>11,200円</b><em>11/27表・減額ゼロ対象</em></div><div class="pr"><i>スペシャルBOX フクオカ</i><b>8,500円</b><em>減額ゼロ対象外</em></div></div>
+  <div class="rate"><b>状態の扱い</b>外箱・内箱の破損・汚れ・へこみ・傷みは減額か買取不可。スペシャルBOXは減額ゼロの対象外</div>
+  <div class="rate"><b>減額なし</b>「減額ゼロ」＝シュリンク有BOXの対象38タイトル。状態が査定基準を満たさない／開封・再包装の疑いは対象外＝買取不可か返送</div>
+  <div class="plus">👍 古代9,500／ワイルド11,200は福岡で最高水準。減額ゼロの38タイトルに入っている</div>
+  <div class="minus">👎 フリマ・オークション・二次流通で買った箱は買取不可。マンガ倉庫で買った4箱は該当リスク</div>
+  <div class="acts"><a class="btn sm" href="https://www.google.com/maps/dir/?api=1&origin=33.4041136,131.6358393&destination=33.590137,130.394623&travelmode=driving" target="_blank" rel="noopener">🛣 経路</a><a class="btn sm" href="https://www.google.com/maps/search/?api=1&query=買取ホムラ+福岡店+福岡市中央区大名2-7-11" target="_blank" rel="noopener">📍 店の場所</a><a class="btn sm" href="https://kaitori-homura.com/cautions" target="_blank" rel="noopener">⚠️ 注意事項</a></div>
+</article>
+<article class="card store" id="st-itchome-fukuoka" data-area="fuku" data-route="0" data-zero="0">
+  <div class="crow"><span class="num">12</span><h3>買取一丁目 福岡店</h3><span class="tg gray">表記なし</span><span class="dl">福岡</span></div>
   <div class="st">福岡市中央区天神2-13-18 天神ホワイトビル1F｜☎ 092-401-6218<br>10:00〜19:00（日 定休）</div>
-  <div class="mn"><span>🚗 往復約310km・片道3.5〜4時間</span><span>燃料 <b>3,100円</b></span></div>
-  <div class="prices"><div class="pr"><i>古代の咆哮</i><b>11,000円</b><em>郵送の最高値と同額</em></div><div class="pr"><i>ハドウシーカー</i><b>未公表</b></div></div>
-  <div class="rate"><b>状態の扱い</b>郵送は元払いのみ（福岡店宛は着払い不可）</div>
-  <div class="rate"><b>減額なし</b>減額ゼロ表記なし（箱の傷で減額の記録多）</div>
-  <div class="plus">👍 古代の咆哮11,000円は郵送最高値と同額。福岡店への郵送は元払いのみ</div>
-  <div class="minus">👎 店頭に行く価値はない（往復310km）。郵送なら自宅から出せる</div>
-  <div class="acts"><a class="btn sm" href="https://www.google.com/maps/dir/?api=1&origin=33.4041136,131.6358393&destination=33.591888,130.397415&travelmode=driving" target="_blank" rel="noopener">🛣 経路</a><a class="btn sm" href="https://www.google.com/maps/search/?api=1&query=買取一丁目+福岡店+福岡市中央区天神2-13-18" target="_blank" rel="noopener">📍 店の場所</a><a class="btn sm" href="https://www.1-chome.com/mailPurchase" target="_blank" rel="noopener">🏠 郵送買取</a></div>
+  <div class="mn"><span>🚗 往復約310km・片道3.5〜4時間</span><span>往復燃料 <b>3,100円</b></span></div>
+  <div class="prices"><div class="pr"><i>古代の咆哮</i><b>11,000円</b><em>11/28 公表値・店頭提示は要確認</em></div><div class="pr"><i>ハドウシーカー</i><b>未公表</b></div></div>
+  <div class="rate"><b>状態の扱い</b>店頭査定。シュリンクなし品は別価格</div>
+  <div class="rate"><b>減額なし</b>減額ゼロの表記なし（箱の傷で減額の記録多）</div>
+  <div class="plus">👍 古代11,000円は九州の公表値で最高。天神で歩いて回れる</div>
+  <div class="minus">👎 傷での減額記録が多く、公表値をそのまま信じない。日曜定休</div>
+  <div class="acts"><a class="btn sm" href="https://www.google.com/maps/dir/?api=1&origin=33.4041136,131.6358393&destination=33.591888,130.397415&travelmode=driving" target="_blank" rel="noopener">🛣 経路</a><a class="btn sm" href="https://www.google.com/maps/search/?api=1&query=買取一丁目+福岡店+福岡市中央区天神2-13-18" target="_blank" rel="noopener">📍 店の場所</a><a class="btn sm" href="https://www.1-chome.com/" target="_blank" rel="noopener">🏠 店のサイト</a></div>
 </article>
   </div>
 
   <div class="ibox">
-    <h2>🚗 なぜ福岡に行かないか</h2>
-    <p>トレカハブ博多・買取一丁目 福岡店まで片道155km・往復310km。下道3.5〜4時間で、燃料は往復<b>3,100円</b>。1箱あたり+1,000〜2,000円の差では、2箱売っても移動で消えて赤字です。福岡の高値は<b>郵送</b>で拾うのが正解（一丁目 福岡店への郵送は元払いのみ）。</p>
-    <p style="font-size:10.5px;color:#727d8c">※ 大分市内は往復36km・約45分・燃料720円（下道10円/km）で計算。わさだ店は往復約60km・1,200円、東店は約42km・840円としています。</p>
-  </div>
-</section>
-
-<!-- ============ 郵送買取 ============ -->
-<section class="panel" id="panel-mail" data-panel="mail">
-  <div class="hero" style="background-image:linear-gradient(150deg,#2b1a52,#4c2a8a 70%,#5b21b6)">
-    <div class="k">郵送｜2026/11/28 04:17 時点</div>
-    <div class="t">「減額ゼロ」を実際に明記しているのは、ホムラとシンソクの2社だけ。</div>
-    <div class="n"><b>2</b><span>社／掲載11社</span></div>
-    <ul>
-      <li>どちらも「状態が基準内」「開封の疑いなし」が前提。箱の傷・ミシン目浮きは保証の外です。</li>
-      <li>価格だけなら ナナイロ（ハドウ8,200）・ひよこ／ファストバイ（フクオカ10,000）・携帯空間・一丁目（古代11,000）・ラントゥ（ワイルド12,000）が最高値。</li>
-    </ul>
-  </div>
-
-  <div class="fbar only-js" style="margin-top:8px;border-top:0">
-    <div class="frow">
-      <button class="chip on" data-f="tag" data-v="all">すべて <span class="c">11</span></button>
-      <button class="chip" data-f="tag" data-v="zero">🟢 減額ゼロ明記 <span class="c">2</span></button>
-      <button class="chip" data-f="tag" data-v="price">💰 最高値を出した店 <span class="c">7</span></button>
-      <button class="chip" data-f="tag" data-v="speed">⚡ 入金が速い <span class="c">3</span></button>
-      <button class="chip" data-f="tag" data-v="bulk">📦 まとめ送り・キット <span class="c">3</span></button>
-    </div>
-  </div>
-
-  <div class="wrap" id="maillist" style="padding-top:8px">
-    
-<article class="card mail" data-tag="zero speed bulk">
-  <div class="crow"><h3>買取ホムラ</h3><span class="tg go">減額ゼロ</span></div>
-  <div class="prs"><div class="pr"><i>古代の咆哮</i><b>9,500円</b><em>シュリンクあり・11/27</em></div><div class="pr"><i>ワイルドフォース</i><b>11,200円</b><em>シュリンクあり・11/27</em></div><div class="pr"><i>スペシャルBOX フクオカ</i><b>8,500円</b></div></div>
-  <div class="rate"><b>減額</b>◎ 減額ゼロ明記（11/27時点38タイトル／古代・ワイルド・ハドウ・ストームも対象）</div>
-  <div class="rate"><b>送料・入金</b>BOX5箱以上で着払い送料0円（スペシャルBOXは対象外）／10万円以上で振込手数料無料、未満200円／トレカだけなら検品後すぐ振込</div>
-  <div class="warn">フリマ・ネットオークション・個人間取引・その他二次流通で買った商品は買取不可（レシート・注文履歴の提示を求める場合あり）。箱の破損・へこみ、シュリンクのよれ・穴の拡大・破れは対象外→買取不可か着払い返送（送料はこちら負担）</div>
-  <div class="memo">💡 4箱だけだと5箱に届かず元払い。1口1,800円の目安</div>
-  <div class="acts"><a class="btn sm" href="https://kaitori-homura.com/column/2026/10/21/pokemon-box-buyback-price-list/" target="_blank" rel="noopener">🏠 買取表（毎日更新）</a><a class="btn sm" href="https://kaitori-homura.com/cautions" target="_blank" rel="noopener">⚠️ 注意事項</a></div>
-</article>
-<article class="card mail" data-tag="zero speed">
-  <div class="crow"><h3>シンソク</h3><span class="tg go">減額なし</span></div>
-  <div class="prs"><div class="pr"><i>スペシャルBOX フクオカ</i><b>9,800円</b></div><div class="pr"><i>古代の咆哮</i><b>未確認</b></div></div>
-  <div class="rate"><b>減額</b>◎ 減額なしバッジ（状態にかかわらず満額。ただし再シュリンク・開封の疑い、水濡れ等は除く）</div>
-  <div class="rate"><b>送料・入金</b>10万円以上で着払い送料無料／査定料・振込手数料0円／原則として到着日に振込／承認から24時間以内の発送で価格保証</div>
-  <div class="warn">公式の状態表で「上ぶたの浮き」は状態A（軽い傷み）＝減額なしの対象。ただし「正規販売店・正規流通経路で取得」の表明が条件で、開封・再シュリンクの疑いがあれば対象外→減額か着払い返送</div>
-  <div class="memo">💡 ミシン目浮きでも減額なしバッジの対象になり得る数少ない店（購入経路の説明は必要）</div>
-  <div class="acts"><a class="btn sm" href="https://shinsoku-tcg.com/kaitori" target="_blank" rel="noopener">🏠 買取表</a><a class="btn sm" href="https://shinsoku-tcg.com/yuso-kaitori/condition" target="_blank" rel="noopener">📋 減額・返送の基準</a></div>
-</article>
-<article class="card mail" data-tag="price">
-  <div class="crow"><h3>買取ルデヤ</h3><span class="tg gray">表記なし</span></div>
-  <div class="prs"><div class="pr"><i>ハドウシーカー</i><b>6,300円</b><em>11/28</em></div><div class="pr"><i>古代の咆哮</i><b>10,000円</b><em>11/28</em></div></div>
-  <div class="rate"><b>減額</b>減額ゼロの表記なし</div>
-  <div class="rate"><b>送料・入金</b>新品未開封・シュリンク付きのみ。箱潰れや痛みで減額又は着払い返送。シュリンクが切れているものは買取不可</div>
-  <div class="warn">「箱潰れや痛み具合によって減額又は着払いにて返送」。検品で未開封品を開封する場合があると規約に明記</div>
-  <div class="memo">💡 古代10,000は悪くないが、状態で返送になるリスクはこちら負担</div>
-  <div class="acts"><a class="btn sm" href="https://kaitori-rudeya.com/category/detail/114" target="_blank" rel="noopener">🏠 ポケカ買取表</a></div>
-</article>
-<article class="card mail" data-tag="price">
-  <div class="crow"><h3>買取一丁目</h3><span class="tg amber">表記なし</span></div>
-  <div class="prs"><div class="pr"><i>古代の咆哮</i><b>11,000円</b><em>郵送最高値と同額</em></div><div class="pr"><i>ワイルドフォース</i><b>未確認</b></div></div>
-  <div class="rate"><b>減額</b>減額ゼロの表記なし（箱の傷を理由にした減額の記録が多い）</div>
-  <div class="rate"><b>送料・入金</b>1万円未満は振込手数料300円が自己負担／着払いは会員・5点以上・合計10万円以上など条件あり／日曜定休・19時までの予約で当日出荷なら値段保証</div>
-  <div class="warn">箱の傷での減額が多いと第三者の記録にある。減額が出た場合は電話連絡→承諾か返送</div>
-  <div class="memo">💡 福岡店への郵送は元払いのみ（自宅から出せる）</div>
-  <div class="acts"><a class="btn sm" href="https://www.1-chome.com/mailPurchase" target="_blank" rel="noopener">🏠 郵送買取の流れ</a></div>
-</article>
-<article class="card mail" data-tag="price speed">
-  <div class="crow"><h3>買取ひよこ</h3><span class="tg gray">未確認</span></div>
-  <div class="prs"><div class="pr"><i>ハドウシーカー</i><b>7,100円</b><em>11/28 2番手</em></div><div class="pr"><i>スペシャルBOX フクオカ</i><b>10,000円</b><em>11/28 最高値</em></div></div>
-  <div class="rate"><b>減額</b>減額なしの明記は未確認</div>
-  <div class="rate"><b>送料・入金</b>入金の目安3営業日以内／送料無料の条件は公式に案内なし（元払いで計算）</div>
-  <div class="warn">状態基準・フリマ購入品の可否は未確認。申込前に規約の確認が必要</div>
-  <div class="memo">💡 フクオカはここが最高値。ハドウも2番手で、まとめると1口で済む</div>
-  <div class="acts"><a class="btn sm" href="https://www.google.com/search?q=%E8%B2%B7%E5%8F%96%E3%81%B2%E3%82%88%E3%81%93+%E3%83%9D%E3%82%B1%E3%82%AB+BOX+%E8%B2%B7%E5%8F%96" target="_blank" rel="noopener">🔍 公式サイトを検索</a></div>
-</article>
-<article class="card mail" data-tag="price">
-  <div class="crow"><h3>ナナイロ</h3><span class="tg gray">未確認</span></div>
-  <div class="prs"><div class="pr"><i>ハドウシーカー</i><b>8,200円</b><em>11/28 最高値</em></div><div class="pr"><i>ハドウ（シュリンクなし）</i><b>7,000円</b></div></div>
-  <div class="rate"><b>減額</b>減額なしの明記は未確認</div>
-  <div class="rate"><b>送料・入金</b>入金・送料の条件は公式に未確認。元払い1,800円で計算</div>
-  <div class="warn">箱の状態・購入経路の扱いが未確認。返送時の送料負担も未確認</div>
-  <div class="memo">💡 ハドウはここが最高値（前日比−1,060円）。2箱まとめて1口</div>
-  <div class="acts"><a class="btn sm" href="https://www.google.com/search?q=%E3%83%8A%E3%83%8A%E3%82%A4%E3%83%AD+%E3%83%88%E3%83%AC%E3%82%AB+%E8%B2%B7%E5%8F%96" target="_blank" rel="noopener">🔍 公式サイトを検索</a></div>
-</article>
-<article class="card mail" data-tag="price">
-  <div class="crow"><h3>携帯空間</h3><span class="tg gray">未確認</span></div>
-  <div class="prs"><div class="pr"><i>古代の咆哮</i><b>11,000円</b><em>11/28 最高値</em></div><div class="pr"><i>ワイルドフォース</i><b>未確認</b></div></div>
-  <div class="rate"><b>減額</b>減額なしの明記は未確認</div>
-  <div class="rate"><b>送料・入金</b>入金の目安3営業日以内</div>
-  <div class="warn">状態基準・フリマ購入品の可否は未確認</div>
-  <div class="memo">💡 古代の咆哮はここか一丁目が最高値</div>
-  <div class="acts"><a class="btn sm" href="https://www.google.com/search?q=%E6%90%BA%E5%B8%AF%E7%A9%BA%E9%96%93+%E3%83%9D%E3%82%B1%E3%82%AB+BOX+%E8%B2%B7%E5%8F%96" target="_blank" rel="noopener">🔍 公式サイトを検索</a></div>
-</article>
-<article class="card mail" data-tag="price">
-  <div class="crow"><h3>ラントゥ</h3><span class="tg gray">未確認</span></div>
-  <div class="prs"><div class="pr"><i>ワイルドフォース</i><b>12,000円</b><em>11/28 最高値</em></div></div>
-  <div class="rate"><b>減額</b>減額なしの明記は未確認</div>
-  <div class="rate"><b>送料・入金</b>入金の目安3〜5営業日</div>
-  <div class="warn">状態基準・フリマ購入品の可否は未確認</div>
-  <div class="memo">💡 ワイルドフォースだけならここが最高値。1箱だけ送ると送料負けしやすい</div>
-  <div class="acts"><a class="btn sm" href="https://www.google.com/search?q=%E3%83%A9%E3%83%B3%E3%83%88%E3%82%A5+%E3%83%9D%E3%82%B1%E3%82%AB+BOX+%E8%B2%B7%E5%8F%96" target="_blank" rel="noopener">🔍 公式サイトを検索</a></div>
-</article>
-<article class="card mail" data-tag="price">
-  <div class="crow"><h3>ファストバイ</h3><span class="tg gray">未確認</span></div>
-  <div class="prs"><div class="pr"><i>スペシャルBOX フクオカ</i><b>10,000円</b><em>11/28 ひよこと同額</em></div></div>
-  <div class="rate"><b>減額</b>減額なしの明記は未確認</div>
-  <div class="rate"><b>送料・入金</b>入金・送料の条件は未確認</div>
-  <div class="warn">状態基準・フリマ購入品の可否は未確認</div>
-  <div class="memo">💡 フクオカの引き合い先として2店目に持っておく</div>
-  <div class="acts"><a class="btn sm" href="https://www.google.com/search?q=%E3%83%95%E3%82%A1%E3%82%B9%E3%83%88%E3%83%90%E3%82%A4+%E3%83%9D%E3%82%B1%E3%82%AB+BOX+%E8%B2%B7%E5%8F%96" target="_blank" rel="noopener">🔍 公式サイトを検索</a></div>
-</article>
-<article class="card mail" data-tag="bulk">
-  <div class="crow"><h3>トレカクラブ</h3><span class="tg gray">未確認</span></div>
-  <div class="prs"><div class="pr"><i>BOX買取</i><b>価格 未確認</b></div></div>
-  <div class="rate"><b>減額</b>減額なしの明記は未確認</div>
-  <div class="rate"><b>送料・入金</b>入金の目安は未確認（第三者記録では入金まで5〜6日という利用記録）</div>
-  <div class="warn">状態基準・減額の扱いが未確認</div>
-  <div class="memo">💡 価格が読めないので、今回の7箱の出口としては後回し</div>
-  <div class="acts"><a class="btn sm" href="https://www.google.com/search?q=%E3%83%88%E3%83%AC%E3%82%AB%E3%82%AF%E3%83%A9%E3%83%96+%E3%83%9D%E3%82%B1%E3%82%AB+BOX+%E8%B2%B7%E5%8F%96" target="_blank" rel="noopener">🔍 公式サイトを検索</a></div>
-</article>
-<article class="card mail" data-tag="bulk">
-  <div class="crow"><h3>もえたく！</h3><span class="tg gray">未確認</span></div>
-  <div class="prs"><div class="pr"><i>BOX買取</i><b>価格 未確認</b></div></div>
-  <div class="rate"><b>減額</b>減額なしの明記は未確認</div>
-  <div class="rate"><b>送料・入金</b>公式の無料宅配キット（申込で箱が届く）</div>
-  <div class="warn">状態基準・減額の扱いが未確認</div>
-  <div class="memo">💡 キットがあるので送る手間は最小。価格は要確認</div>
-  <div class="acts"><a class="btn sm" href="https://www.google.com/search?q=%E3%82%82%E3%81%88%E3%81%9F%E3%81%8F+%E3%83%9D%E3%82%B1%E3%82%AB+BOX+%E8%B2%B7%E5%8F%96" target="_blank" rel="noopener">🔍 公式サイトを検索</a></div>
-</article>
-  </div>
-
-  <div class="ibox">
-    <h2>📮 送る前の3点</h2>
-    <ul>
-      <li>シュリンクは外さない。封シール（ペリペリ）も剥がさない。</li>
-      <li>段ボールは中身に合わせる。緩衝材で動かないように詰める（大きすぎる箱は送料無料の対象外になる店がある）。</li>
-      <li>申込の前に、各店の最新の買取表と注意事項を見る。予約した価格は、当日発送が条件の店が多い。</li>
-    </ul>
+    <h2>🚗 福岡まで行く条件</h2>
+    <p>博多（トレカハブ）も天神（マフィア・一丁目）も大名（Blue Rocket・ホムラ）も、杵築から片道約155km・往復310km。下道で3.5〜4時間、燃料は往復<b>3,100円</b>。4箱を持って行くと、いちばん高い組み合わせでも<b>35,500円</b>（トレカハブ）で、大分の目安36,380円より安い。1箱あたり+1,000〜2,000円の差では、移動で消えて赤字です。</p>
+    <p>福岡の店が効くのは<b>大分の店が扱わない箱（フクオカのようなスペシャルBOX）や、減額なしを明言している店で「無傷の箱」を売るとき</b>だけ。今日の4箱はミシン目浮きなので、行っても減額のリスクだけ増えます。</p>
+    <p style="font-size:10.5px;color:#727d8c">※ 大分市内は往復約36km・約45分・燃料720円（下道10円/km）。わさだ店は往復約60km・1,200円、東店は約42km・840円としています。</p>
   </div>
 </section>
 
@@ -599,87 +526,93 @@ footer b{color:var(--dim)}
 <section class="panel" id="panel-rule" data-panel="rule">
   <div class="hero" style="background:#1b2129;background-image:linear-gradient(150deg,#1b2129,#333b46)">
     <div class="k">減額なしの条件</div>
-    <div class="t">「シュリンクありなら減額なし」は、箱潰れ・ミシン目浮きには効きません。</div>
+    <div class="t">「シュリンクありなら減額なし」は、店のSNSの書き方ではなく規約と状態基準で決まります。</div>
     <ul>
-      <li>減額ゼロは「傷なしの箱を通常査定で減額しない」保証。状態が基準を満たさない／開封の疑いがあれば<b>対象外＝減額または着払い返送</b>。</li>
-      <li>フリマ・オークション購入品は、いちばん高く買うホムラが規約で<b>買取不可</b>。</li>
-      <li>「安く買って減額なし店に流す」は、入口と出口の両方で塞がっています。</li>
+      <li>減額なし＝<b>傷のない箱を通常査定で減額しない</b>という表示。過度な潰れ・破れ・開封の疑いは対象外＝<b>減額か返却</b>。</li>
+      <li>トレカマフィアはXの「赤文字減額なし」より<b>利用規約第7条が強い</b>（折れ・傷・汚れ等は減額またはお断り）。</li>
+      <li>ホムラは減額ゼロでも、<b>フリマ・オークション・二次流通で買った箱は買取不可</b>。マンガ倉庫で買った4箱はここに当たる。</li>
     </ul>
   </div>
 
   <div class="ibox">
-    <h2>📋 店別の規約（一次ページ確認）</h2>
+    <h2>📋 九州の店頭店の本当の条件（一次ページ・店のX確認）</h2>
     <div class="scrollx">
       <table class="rules">
-        <tr><th>店</th><th>減額ゼロ</th><th>箱潰れ・ミシン目</th><th>フリマ購入品</th><th>送料・手数料</th></tr>
-        <tr><td><b>買取ホムラ</b></td><td>あり（11/27で38タイトル）</td><td>箱の破損・汚損・へこみ・著しい傷みは買取不可か減額。シュリンクのよれ・穴の拡大・破れ・加工跡も買取不可。開封・再包装の疑いは減額ゼロ対象外</td><td><b>買取不可</b>（フリマ・オークション・個人間取引・その他二次流通）</td><td>5箱以上で着払い0円／10万円以上で振込無料。1〜4箱は元払い（目安1,800円/口）。返送は着払い＝こちら負担</td></tr>
-        <tr><td><b>シンソク</b></td><td><b>減額なしバッジ</b>（状態にかかわらず満額）</td><td>公式の状態表で「上ぶたの浮き」は状態A＝軽い傷み（＝バッジ対象）。水濡れ・折れ・日焼け・再シュリンクは対象外</td><td>規約で「正規販売店・正規流通経路で取得」の表明が条件</td><td>10万円以上で着払い無料／査定料・振込手数料0円／原則到着日振込</td></tr>
-        <tr><td><b>買取ルデヤ</b></td><td>表記なし</td><td>「箱潰れや痛み具合によって減額又は着払いにて返送」。シュリンク切れは買取不可</td><td>明記なし（不正品・盗品は除外）</td><td>検品で未開封品を開封する場合があると規約に明記</td></tr>
-        <tr><td><b>買取一丁目</b></td><td>表記なし</td><td>第三者記録で「箱の傷を理由にした減額が多い」</td><td>明記なし</td><td>1万円未満は振込手数料300円自己負担。着払いは会員5点以上かつ10万円以上など条件</td></tr>
-        <tr><td><b>マンガ倉庫 大分東店</b></td><td>なし</td><td>「BOXの状態などにより減額がある場合がございます」。過去告知は「シュリンクの破れ、穴、箱のイタミがないものに限ります」</td><td>店頭なら購入経路の質問なし（実績）</td><td>店頭現金</td></tr>
-        <tr><td><b>極 KIWAMI 大分店</b></td><td>なし</td><td>店頭査定。ハドウは「シュリンク付き」での提示</td><td>店頭</td><td>店頭現金。営業時間が日替わり</td></tr>
-        <tr><td><b>カード天国 大分店</b></td><td>BOXは「シュリンク・傷なしなら満額買取」とXで明言（11/27）</td><td>店頭査定。条件から外れると減額</td><td>店頭</td><td>店頭現金。12:00〜19:00</td></tr>
+        <tr><th>店</th><th>減額なしの書き方</th><th>箱潰れ・ミシン目</th><th>購入経路</th><th>払い方・出典</th></tr>
+        <tr><td><b>トレカハブ<br>福岡博多店</b></td><td><b>「未開封シュリンク付きBOX 無制限で減額なし」</b></td><td>「過度な潰れ、シュリンク破れやカットなどの当店の買取基準外は返却対象」＝<b>軽い浮き・軽い潰れは通る書き方</b></td><td>明記なし（表はシュリンク付き未開封のみ）</td><td>即日現金／振込。表は当日限り<br><a href="https://x.com/torekahub" target="_blank" rel="noopener">@torekahub</a></td></tr>
+        <tr><td><b>トレカマフィア<br>福岡店</b></td><td>Xの表は「<b>赤文字＝減額なし</b>」。古代・ワイルドは赤</td><td><b>規約第7条が上書き</b>：「折れ、傷、汚れ、日焼け、白かけ等の損傷がある場合…減額または買取をお断り」。ミシン目浮き・角凹みは「傷」と見られ得る</td><td>明記なし</td><td>店頭現金<br><a href="https://x.com/mugen_kaitori" target="_blank" rel="noopener">@mugen_kaitori</a></td></tr>
+        <tr><td><b>Blue Rocket<br>福岡</b></td><td>「重度のダメージ品（ケース割れ・インクド・日焼けなど）を除き、<b>減額なし</b>」</td><td>重度でなければ減額なし。ただし<b>買取表に掲載の未開封BOXのみ</b>で、状態により返却の場合あり</td><td>明記なし</td><td>現金（1日の上限あり）／5万円以上は振込<br><a href="https://x.com/BR_fukuoka" target="_blank" rel="noopener">@BR_fukuoka</a></td></tr>
+        <tr><td><b>買取ホムラ<br>福岡店</b></td><td><b>「減額ゼロ」</b>＝シュリンク有BOXの対象38タイトル（古代・ワイルド・ハドウ・ストームを含む）</td><td>外箱・内箱の<b>破損・汚れ・へこみ・傷みは減額か買取不可</b>。シュリンクのよれ・穴の拡大・破れ・加工跡も不可。スペシャルBOXは減額ゼロ対象外</td><td><b>フリマ・オークション・個人間取引・その他二次流通は買取不可</b>（レシート・注文履歴を求める場合あり）</td><td>店頭現金。日・月休<br><a href="https://kaitori-homura.com/cautions" target="_blank" rel="noopener">注意事項</a></td></tr>
+        <tr><td><b>マンガ倉庫<br>大分東店</b></td><td>なし</td><td>「BOXの状態などにより減額がある場合がございます」。過去告知は「シュリンクの破れ、穴、箱のイタミがないものに限ります」</td><td>店頭なら購入経路の質問なし（実績）</td><td>店頭現金（買取23:00まで）</td></tr>
+        <tr><td><b>マンガ倉庫<br>大分わさだ店</b></td><td>なし</td><td>状態で変動。ハドウは「シュリンク未開封、<b>美品のみ</b>」6,000円（11/27）</td><td>店頭</td><td>店頭現金</td></tr>
+        <tr><td><b>カード天国<br>大分店</b></td><td>BOXは「<b>シュリンク・傷なしなら満額買取</b>」とXで明言（11/27）</td><td>店頭査定。条件から外れると減額</td><td>店頭</td><td>店頭現金。12:00〜19:00</td></tr>
+        <tr><td><b>極 KIWAMI<br>大分店</b></td><td>表記なし（店頭査定）</td><td>ハドウは「シュリンク付き」条件で6,500円（11/27・数量限定）</td><td>店頭</td><td>店頭現金。営業時間が日替わり</td></tr>
+        <tr><td><b>買取一丁目<br>福岡店</b></td><td>表記なし（箱の傷での減額記録が多）</td><td>店頭査定。シュリンクなしは別価格</td><td>明記なし</td><td>店頭現金。日曜定休</td></tr>
       </table>
     </div>
-    <p style="margin-top:8px;font-size:10.5px;color:#727d8c">一次ページ：<a href="https://kaitori-homura.com/cautions" target="_blank" rel="noopener">ホムラ注意事項</a>／<a href="https://shinsoku-tcg.com/yuso-kaitori/condition" target="_blank" rel="noopener">シンソク 状態の目安</a>／<a href="https://kaitori-rudeya.com/category/detail/114" target="_blank" rel="noopener">ルデヤ 買取表</a></p>
-  </div>
+    <p style="margin-top:8px;font-size:10.5px;color:#727d8c">一次ページ：<a href="https://kaitori-homura.com/cautions" target="_blank" rel="noopener">ホムラ注意事項</a>／<a href="https://x.com/torekahub" target="_blank" rel="noopener">トレカハブ X</a>／<a href="https://x.com/mugen_kaitori" target="_blank" rel="noopener">トレカマフィア X（規約第7条）</a>／<a href="https://x.com/BR_fukuoka" target="_blank" rel="noopener">Blue Rocket X</a></div>
 
   <div class="ibox">
-    <h2>🪡 ミシン目浮き（ペリペリ）は、どの価格帯に落ちるか</h2>
-    <p>買取表の価格は3段階。ミシン目が浮いた箱は「シュリンクなし〜ペリペリなし」の帯に落ちます。</p>
+    <h2>🪡 ミシン目「浮き」と「切れ」は、別の箱として査定される</h2>
+    <p>ポケカBOXのジッパー加工（通称ペリペリ）は、上ぶたの<b>ミシン目</b>。外側の<b>シュリンク（フィルム）</b>とは別物です。同じ「ミシン目が離れている」でも、浮きか切れかで価格帯が変わります。</p>
     <div class="chk">
-      <div><b>シュリンクあり</b> ＞ <b>シュリンクなし（ミシン目付き未開封）</b> ＞ <b>ペリペリなし（ミシン目が切れている）</b></div>
+      <div class="hi"><b>浮き（＝軽い傷み扱い）</b>：上ぶたのミシン目が浮いているが、切れていない・穴が開いていない。シンソクの状態基準では「上ぶたの浮き」＝状態A。トレカハブの「過度な潰れ・破れ・カット以外」、Blue Rocketの「重度のダメージ以外」にも当たりやすい。</div>
+      <div class="ng"><b>切れ（＝開封の疑い）</b>：ミシン目が切れて開口部が開いている＝「ペリペリなし」。減額なしの対象外になり、価格は「シュリンクなし〜ペリペリなし」の帯へ落ちる。ルデヤは「シュリンクが切れているものは買取不可」と明記。</div>
+      <div><b>価格の3段</b>：シュリンクあり ＞ シュリンクなし（ミシン目付き未開封） ＞ ペリペリなし（ミシン目が切れている）</div>
       <div>例・ストームエメラルダ（11/28）：あり 最高7,700／なし 最高6,500／ペリペリなし 最高6,000</div>
       <div>例・ホムラ ワイルドフォース：あり 11,200／なし 9,000</div>
-      <div>昨日の25,000円（4箱＝1箱6,250円）は、この「シュリンクなし」水準に近い査定で、例外ではなく仕様です。</div>
     </div>
+    <p style="margin-top:6px">判定は現物で3つだけ：<b>①外フィルム（シュリンク）は無傷か ②上ぶたのミシン目は「浮き」か「切れて穴が開く」か ③角・面の潰れは軽微か</b>。封シール（ペリペリ）は剥がさない。剥がすと「ペリペリなし」の帯に落ちます。</p>
   </div>
 
   <div class="ibox">
     <h2>🔍 昨日の−8,000円の正体</h2>
-    <p>仕入33,000円（4箱・1箱8,250円）→ 買取提示25,000円（1箱6,250円）。同じ4箱の11/28時点の郵送最高は、無傷なら 古代11,000×3＋ワイルド12,000＝<b>45,000円</b>。</p>
-    <p>損失の主因は「減額」だけではなく、<span class="k">マンガ倉庫の買取水準そのものが郵送より2〜4割低い</span>こと＋<span class="k">ミシン目浮きでシュリンクなし価格に落ちた</span>ことの合わせ技。マンガ倉庫で買ってマンガ倉庫に売る往復は、構造的に2〜3割負けます。</p>
+    <p>仕入33,000円（4箱・1箱8,250円）→ マンガ倉庫 大分東店の買取提示25,000円（1箱6,250円）。同じ4箱は、福岡の減額なし表だと<b>37,500円</b>（マフィア）／<b>38,600円</b>（トレカハブ）。</p>
+    <p>損失の主因は「減額」だけではなく、<span class="k">マンガ倉庫の買取水準そのものが低い</span>こと＋<span class="k">ミシン目浮きでシュリンクなし価格に落ちた</span>ことの合わせ技。マンガ倉庫で買ってマンガ倉庫に売る往復は、構造的に2〜3割負けます。</p>
   </div>
 
   <div class="ibox">
-    <h2>✅ 送る前のチェック</h2>
+    <h2>✅ 店頭で損をしないための5点</h2>
     <div class="chk">
-      <div>1. その箱は<b>正規店で買ったか</b>（フリマ・リサイクル店購入はホムラで買取不可）</div>
-      <div>2. <b>箱にへこみ・破れ</b>はないか（あれば店頭へ）</div>
-      <div>3. <b>シュリンクのよれ・穴の拡大・破れ</b>はないか</div>
-      <div>4. <b>5箱以上</b>まとまるか（ホムラの送料0。スペシャルBOXは数えない）</div>
-      <div>5. 予約したら<b>当日中に発送</b>できるか（価格保証の条件）</div>
+      <div>1. 行く前に<b>Xか電話で「シュリンクあり・ミシン目浮き」のBOX価格</b>を聞く（空振り防止）</div>
+      <div>2. 査定は1店で決めない。<b>金額を見て持ち帰れる</b>のが店頭の強み</div>
+      <div>3. その場で<b>合計</b>を計算する（4箱なら30,000円が採算ライン）</div>
+      <div>4. 「減額なし」と言われたら<b>規約のどこに書いてあるか</b>を確認（マフィアは第7条が上書き）</div>
+      <div>5. <b>買取表の日付</b>を見る（当日限り。売れ筋は日次で動く）</div>
     </div>
   </div>
 
   <div class="ibox">
     <h2>⚠️ 未確認（この数字は動く）</h2>
     <ul>
-      <li>極KIWAMI 大分店の古代・ワイルドのBOX買取額（ハドウ6,500以外は未公表）。</li>
-      <li>カード天国 大分店のBOX買取額（「満額」は明言、価格表はPSA10・シングルのみ）。</li>
-      <li>ナナイロ・ひよこ・携帯空間・ラントゥがフリマ購入品を拒否しているか（明記はホムラだけ）。</li>
+      <li>極KIWAMI 大分店の本日のハドウ価格（11/27は数量限定6,500円）。古代・ワイルドのBOX価格も未公表。</li>
+      <li>カード天国 大分店・ポケカん！のBOX買取額（「満額」は明言、価格表はPSA10・シングルのみ）。</li>
+      <li>トレカハブの本日表（古代9,200／ワイルド11,000は11/26時点）。ハドウ・フクオカは表になし。</li>
+      <li>Blue RocketのBOX表に、当方の古代・ワイルドが載っているか。</li>
+      <li>買取一丁目 福岡店の店頭提示額（公表値11,000は要確認）。</li>
       <li>エーストレカ大分・カードラボ大分のポケカBOX買取の可否。</li>
+      <li><b>4箱のミシン目が「浮き」か「切れ」か</b>（現物確認。ここで売り方が変わる）。</li>
     </ul>
-    <p style="margin-top:6px;font-size:10.5px;color:#727d8c">出典：<a href="https://map.switch-tcg.com/souba/" target="_blank" rel="noopener">BOX買取相場（11/28 4:00）</a>／各店の公式買取表・注意事項／マンガ倉庫公式／店舗X。</p>
+    <p style="margin-top:6px;font-size:10.5px;color:#727d8c">出典：店舗Xの買取表（トレカハブ 11/26・トレカマフィア 11/27・Blue Rocket 11/28）／ホムラ注意事項／各店の公式ページ／<a href="https://map.switch-tcg.com/souba/" target="_blank" rel="noopener">BOX買取相場（11/28 4:00）</a>。</p>
   </div>
 </section>
 </main>
 
 <footer>
-  <b>減額なし 買取店マップ＆手取り比較</b>｜2026/11/28 04:17 時点の各店公開価格から作成。価格は日次で動きます。実行の前に各店の最新表を確認してください。<br>
-  送料は元払い1口1,800円＋梱包500円、移動は杵築市起点・下道・燃料10円/kmで計算。実際の査定額を保証するものではありません。
+  <b>九州店頭 買取マップ＆手取り比較</b>｜2026/11/28 04:45 時点の各店公開価格から作成。価格は日次で動きます。実行の前に各店の最新表を確認してください。<br>
+  郵送・宅配は使わない方針のため、比較は店頭の手取りだけ。移動は杵築市起点・下道・燃料10円/km（大分市内 往復720円／福岡 往復3,100円）で計算。実際の査定額を保証するものではありません。
 </footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 (function(){
 'use strict';
-var STORES = [{id:"tengoku",n:1,lat:33.242672,lng:131.659424,area:"oita",name:"カード天国 大分店"},{id:"kiwami",n:2,lat:33.217495,lng:131.636978,area:"oita",name:"極 KIWAMI 大分店"},{id:"ms-higashi",n:3,lat:33.23214,lng:131.68277,area:"oita",name:"マンガ倉庫 大分東店"},{id:"ms-wasada",n:4,lat:33.191414,lng:131.59375,area:"oita",name:"マンガ倉庫 大分わさだ店"},{id:"pokekan",n:5,lat:33.236225,lng:131.606003,area:"oita",name:"ポケカん！大分本店"},{id:"ace",n:6,lat:33.252224,lng:131.656128,area:"oita",name:"エーストレカ 大分店"},{id:"labo",n:7,lat:33.233948,lng:131.607559,area:"oita",name:"カードラボ 大分店"},{id:"hub",n:8,lat:33.589886,lng:130.416168,area:"fuku",name:"トレカハブ 福岡博多店"},{id:"itchome-fukuoka",n:9,lat:33.591888,lng:130.397415,area:"fuku",name:"買取一丁目 福岡店"}];
+var STORES = [{id:"tengoku",n:1,lat:33.242672,lng:131.659424,area:"oita",name:"カード天国 大分店"},{id:"kiwami",n:2,lat:33.217495,lng:131.636978,area:"oita",name:"極 KIWAMI 大分店"},{id:"ms-higashi",n:3,lat:33.23214,lng:131.68277,area:"oita",name:"マンガ倉庫 大分東店"},{id:"ms-wasada",n:4,lat:33.191414,lng:131.59375,area:"oita",name:"マンガ倉庫 大分わさだ店"},{id:"pokekan",n:5,lat:33.236225,lng:131.606003,area:"oita",name:"ポケカん！大分本店"},{id:"ace",n:6,lat:33.252224,lng:131.656128,area:"oita",name:"エーストレカ 大分店"},{id:"labo",n:7,lat:33.233948,lng:131.607559,area:"oita",name:"カードラボ 大分店"},{id:"hub",n:8,lat:33.589886,lng:130.416168,area:"fuku",name:"トレカハブ 福岡博多店"},{id:"mafia",n:9,lat:33.592049,lng:130.395554,area:"fuku",name:"トレカマフィア 福岡店"},{id:"bluerocket",n:10,lat:33.590137,lng:130.394623,area:"fuku",name:"Blue Rocket 福岡"},{id:"homura-fukuoka",n:11,lat:33.590137,lng:130.394623,area:"fuku",name:"買取ホムラ 福岡店"},{id:"itchome-fukuoka",n:12,lat:33.591888,lng:130.397415,area:"fuku",name:"買取一丁目 福岡店"}];
 var HOME = [33.4041136, 131.6358393];
 var OITA_BOUNDS = [[33.17, 131.54], [33.44, 131.74]];
 var FUKU_BOUNDS = [[33.15, 130.33], [33.65, 131.78]];
-var state = {panel:'money', area:'all', tag:'all'};
-var lastArea = 'all';
+var state = {panel:'money', area:'all'};
+var lastArea = null;
 
 function qs(s, r){ return (r||document).querySelector(s); }
 function qsa(s, r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); }
@@ -704,23 +637,17 @@ qsa('.chip').forEach(function(c){
   });
 });
 function applyFilter(f, v){
-  var n = 0;
   qsa('#storelist .store').forEach(function(el){
     var ok = state.area === 'all' || el.dataset.area === state.area ||
-             (state.area === 'route' && el.dataset.route === '1');
-    el.style.display = ok ? '' : 'none'; if(ok) n++;
-  });
-  var m = 0;
-  qsa('#maillist .mail').forEach(function(el){
-    var tags = (el.dataset.tag||'').split(' ');
-    var ok = state.tag === 'all' || tags.indexOf(state.tag) !== -1;
-    el.style.display = ok ? '' : 'none'; if(ok) m++;
+             (state.area === 'route' && el.dataset.route === '1') ||
+             (state.area === 'zero' && el.dataset.zero === '1');
+    el.style.display = ok ? '' : 'none';
   });
   drawMarkers();
   if(map && f === 'area' && lastArea !== v){
     lastArea = v;
-    if(v === 'fuku') map.fitBounds(FUKU_BOUNDS, {padding:[18,18]});
-    else map.fitBounds(OITA_BOUNDS, {padding:[18,18]});
+    if(v === 'oita' || v === 'route') map.fitBounds(OITA_BOUNDS, {padding:[18,18]});
+    else map.fitBounds(FUKU_BOUNDS, {padding:[18,18]});
   }
 }
 
