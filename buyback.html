@@ -607,7 +607,7 @@ footer b{color:var(--dim)}
 <script>
 (function(){
 'use strict';
-var STORES = [{id:"tengoku",n:1,lat:33.242672,lng:131.659424,area:"oita",name:"カード天国 大分店"},{id:"kiwami",n:2,lat:33.217495,lng:131.636978,area:"oita",name:"極 KIWAMI 大分店"},{id:"ms-higashi",n:3,lat:33.23214,lng:131.68277,area:"oita",name:"マンガ倉庫 大分東店"},{id:"ms-wasada",n:4,lat:33.191414,lng:131.59375,area:"oita",name:"マンガ倉庫 大分わさだ店"},{id:"pokekan",n:5,lat:33.236225,lng:131.606003,area:"oita",name:"ポケカん！大分本店"},{id:"ace",n:6,lat:33.252224,lng:131.656128,area:"oita",name:"エーストレカ 大分店"},{id:"labo",n:7,lat:33.233948,lng:131.607559,area:"oita",name:"カードラボ 大分店"},{id:"hub",n:8,lat:33.589886,lng:130.416168,area:"fuku",name:"トレカハブ 福岡博多店"},{id:"mafia",n:9,lat:33.592049,lng:130.395554,area:"fuku",name:"トレカマフィア 福岡店"},{id:"bluerocket",n:10,lat:33.590137,lng:130.394623,area:"fuku",name:"Blue Rocket 福岡"},{id:"homura-fukuoka",n:11,lat:33.590137,lng:130.394623,area:"fuku",name:"買取ホムラ 福岡店"},{id:"itchome-fukuoka",n:12,lat:33.591888,lng:130.397415,area:"fuku",name:"買取一丁目 福岡店"}];
+var STORES = [{id:"tengoku",n:1,lat:33.242672,lng:131.659424,area:"oita",name:"カード天国 大分店"},{id:"kiwami",n:2,lat:33.217495,lng:131.636978,area:"oita",name:"極 KIWAMI 大分店"},{id:"ms-higashi",n:3,lat:33.23214,lng:131.68277,area:"oita",name:"マンガ倉庫 大分東店"},{id:"ms-wasada",n:4,lat:33.191414,lng:131.59375,area:"oita",name:"マンガ倉庫 大分わさだ店"},{id:"pokekan",n:5,lat:33.236225,lng:131.606003,area:"oita",name:"ポケカん！大分本店"},{id:"ace",n:6,lat:33.252224,lng:131.656128,area:"oita",name:"エーストレカ 大分店"},{id:"labo",n:7,lat:33.233948,lng:131.607559,area:"oita",name:"カードラボ 大分店"},{id:"hub",n:8,lat:33.589886,lng:130.416168,area:"fuku",name:"トレカハブ 福岡博多店"},{id:"mafia",n:9,lat:33.592049,lng:130.395554,area:"fuku",name:"トレカマフィア 福岡店"},{id:"bluerocket",n:10,lat:33.590137,lng:130.394623,area:"fuku",name:"Blue Rocket 福岡"},{id:"homura-fukuoka",n:11,lat:33.590137,lng:130.394623,mlat:33.59025,mlng:130.39474,area:"fuku",name:"買取ホムラ 福岡店"},{id:"itchome-fukuoka",n:12,lat:33.591888,lng:130.397415,area:"fuku",name:"買取一丁目 福岡店"}];
 var HOME = [33.4041136, 131.6358393];
 var OITA_BOUNDS = [[33.17, 131.54], [33.44, 131.74]];
 var FUKU_BOUNDS = [[33.15, 130.33], [33.65, 131.78]];
@@ -644,11 +644,18 @@ function applyFilter(f, v){
     el.style.display = ok ? '' : 'none';
   });
   drawMarkers();
-  if(map && f === 'area' && lastArea !== v){
-    lastArea = v;
-    if(v === 'oita' || v === 'route') map.fitBounds(OITA_BOUNDS, {padding:[18,18]});
-    else map.fitBounds(FUKU_BOUNDS, {padding:[18,18]});
-  }
+  if(map && f === 'area' && lastArea !== v){ lastArea = v; fitView(v); }
+}
+function fitView(v){
+  if(v === 'oita' || v === 'route'){ map.fitBounds(OITA_BOUNDS, {padding:[18,18]}); return; }
+  if(v === 'all'){ map.fitBounds(FUKU_BOUNDS, {padding:[18,18]}); return; }
+  var pts = [];
+  STORES.forEach(function(s){
+    var el = document.getElementById('st-' + s.id);
+    if(el && el.style.display === 'none') return;
+    pts.push([s.lat, s.lng]);
+  });
+  if(pts.length) map.fitBounds(L.latLngBounds(pts), {padding:[40,40], maxZoom:16});
 }
 
 /* 地図 */
@@ -678,7 +685,7 @@ function drawMarkers(){
   STORES.forEach(function(s){
     var el = document.getElementById('st-' + s.id);
     if(el && el.style.display === 'none') return;
-    var m = L.marker([s.lat, s.lng], {
+    var m = L.marker([s.mlat || s.lat, s.mlng || s.lng], {
       icon:L.divIcon({className:pinCls(s), iconSize:[25,25], iconAnchor:[12,12], html:'<div>' + s.n + '</div>'}),
       title:s.name
     });
