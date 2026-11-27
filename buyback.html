@@ -677,6 +677,7 @@ var HOME = [33.4041136, 131.6358393];
 var OITA_BOUNDS = [[33.17, 131.54], [33.44, 131.74]];
 var FUKU_BOUNDS = [[33.15, 130.33], [33.65, 131.78]];
 var state = {panel:'money', area:'all', tag:'all'};
+var lastArea = 'all';
 
 function qs(s, r){ return (r||document).querySelector(s); }
 function qsa(s, r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); }
@@ -697,10 +698,10 @@ qsa('.chip').forEach(function(c){
     var f = c.dataset.f, v = c.dataset.v;
     qsa('.chip[data-f="' + f + '"]').forEach(function(x){ x.classList.toggle('on', x === c); });
     state[f] = v;
-    applyFilter();
+    applyFilter(f, v);
   });
 });
-function applyFilter(){
+function applyFilter(f, v){
   var n = 0;
   qsa('#storelist .store').forEach(function(el){
     var ok = state.area === 'all' || el.dataset.area === state.area ||
@@ -714,6 +715,11 @@ function applyFilter(){
     el.style.display = ok ? '' : 'none'; if(ok) m++;
   });
   drawMarkers();
+  if(map && f === 'area' && lastArea !== v){
+    lastArea = v;
+    if(v === 'fuku') map.fitBounds(FUKU_BOUNDS, {padding:[18,18]});
+    else map.fitBounds(OITA_BOUNDS, {padding:[18,18]});
+  }
 }
 
 /* 地図 */
