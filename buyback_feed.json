@@ -1,6 +1,6 @@
 {
   "schema": "buyback-feed/v1",
-  "generated_at": "2026-11-28T22:40:00+09:00",
+  "generated_at": "2026-11-28T23:05:00+09:00",
   "policy": {
     "judgment": "大分店頭・福岡店頭の実店舗のみ",
     "mail": "参考表示のみ（判定に使わない）",
@@ -10,14 +10,54 @@
     "rule": "確認できた店名・確認日つきの価格だけを入れる。未確認は空欄（未確認表示）。"
   },
   "stores": [
-    {"id": "kiwami_oita", "name": "極 KIWAMI 大分店", "area": "oita", "city": "大分市"},
-    {"id": "pokekan_oita", "name": "ポケカん！大分本店", "area": "oita", "city": "大分市"},
-    {"id": "ms_wasada", "name": "マンガ倉庫 大分わさだ店", "area": "oita", "city": "大分市"},
-    {"id": "hub_hakata", "name": "トレカハブ 福岡博多店", "area": "fukuoka", "city": "福岡市"},
-    {"id": "mafia_fukuoka", "name": "トレカマフィア 福岡店", "area": "fukuoka", "city": "福岡市"},
-    {"id": "homura_fukuoka", "name": "買取ホムラ 福岡店", "area": "fukuoka", "city": "福岡市"},
-    {"id": "itchome_fukuoka", "name": "買取一丁目 福岡店", "area": "fukuoka", "city": "福岡市"},
-    {"id": "doraku_fukuoka", "name": "トレカ道楽（福岡）", "area": "fukuoka", "city": "福岡市"}
+    {
+      "id": "kiwami_oita",
+      "name": "極 KIWAMI 大分店",
+      "area": "oita",
+      "city": "大分市"
+    },
+    {
+      "id": "pokekan_oita",
+      "name": "ポケカん！大分本店",
+      "area": "oita",
+      "city": "大分市"
+    },
+    {
+      "id": "ms_wasada",
+      "name": "マンガ倉庫 大分わさだ店",
+      "area": "oita",
+      "city": "大分市"
+    },
+    {
+      "id": "hub_hakata",
+      "name": "トレカハブ 福岡博多店",
+      "area": "fukuoka",
+      "city": "福岡市"
+    },
+    {
+      "id": "mafia_fukuoka",
+      "name": "トレカマフィア 福岡店",
+      "area": "fukuoka",
+      "city": "福岡市"
+    },
+    {
+      "id": "homura_fukuoka",
+      "name": "買取ホムラ 福岡店",
+      "area": "fukuoka",
+      "city": "福岡市"
+    },
+    {
+      "id": "itchome_fukuoka",
+      "name": "買取一丁目 福岡店",
+      "area": "fukuoka",
+      "city": "福岡市"
+    },
+    {
+      "id": "doraku_fukuoka",
+      "name": "トレカ道楽（福岡）",
+      "area": "fukuoka",
+      "city": "福岡市"
+    }
   ],
   "items": [
     {
@@ -29,14 +69,50 @@
       "list": 6000,
       "updated_at": "2026-11-28",
       "offers": [
-        {"area": "oita", "store": "極 KIWAMI 大分店", "price": 6500, "shrink": true, "checked_at": "2026-11-27", "source": "https://x.com/kiwami_oita 11/27・数量限定", "note": "数量限定。当日の提示を確認"},
-        {"area": "oita", "store": "ポケカん！大分本店", "price": 6200, "shrink": true, "checked_at": "2026-11-28", "source": "https://x.com/pokekan777 11/28 20:57", "note": "29日も同額の告知"},
-        {"area": "oita", "store": "マンガ倉庫 大分わさだ店", "price": 6000, "shrink": true, "checked_at": "2026-11-27", "source": "店頭表 11/27", "note": "シュリンク未開封・美品のみ"},
-        {"area": "fukuoka", "store": "買取ホムラ 福岡店", "price": 6800, "shrink": true, "checked_at": "2026-11-28", "source": "11/28 19時調査・ホムラ6,800"}
+        {
+          "area": "oita",
+          "store": "極 KIWAMI 大分店",
+          "price": 6500,
+          "shrink": true,
+          "checked_at": "2026-11-27",
+          "source": "https://x.com/kiwami_oita 11/27・数量限定",
+          "note": "数量限定。当日の提示を確認"
+        },
+        {
+          "area": "oita",
+          "store": "ポケカん！大分本店",
+          "price": 6200,
+          "shrink": true,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/pokekan777 11/28 20:57",
+          "note": "29日も同額の告知"
+        },
+        {
+          "area": "oita",
+          "store": "マンガ倉庫 大分わさだ店",
+          "price": 6000,
+          "shrink": true,
+          "checked_at": "2026-11-27",
+          "source": "店頭表 11/27",
+          "note": "シュリンク未開封・美品のみ"
+        },
+        {
+          "area": "fukuoka",
+          "store": "買取ホムラ 福岡店",
+          "price": 6800,
+          "shrink": true,
+          "checked_at": "2026-11-28",
+          "source": "11/28 19時調査・ホムラ6,800"
+        }
       ],
       "note": "トレカハブ・マフィア・BR・一丁目にハドウの掲載なし。福岡はホムラの6,800のみ",
       "reference": [
-        {"label": "全国郵送（参考）", "price": 7100, "checked_at": "2026-11-28", "source": "11/28 19時調査・シュリンクあり最高7,100"}
+        {
+          "label": "全国郵送（参考）",
+          "price": 7100,
+          "checked_at": "2026-11-28",
+          "source": "11/28 19時調査・シュリンクあり最高7,100"
+        }
       ]
     },
     {
@@ -48,13 +124,39 @@
       "list": 5400,
       "updated_at": "2026-11-27",
       "offers": [
-        {"area": "fukuoka", "store": "買取ホムラ 福岡店", "price": 9500, "shrink": true, "checked_at": "2026-11-27", "source": "ホムラ 11/27表・減額ゼロ対象"},
-        {"area": "fukuoka", "store": "トレカハブ 福岡博多店", "price": 9200, "shrink": true, "checked_at": "2026-11-26", "source": "https://x.com/torekahub 11/26表"},
-        {"area": "fukuoka", "store": "トレカマフィア 福岡店", "price": 9000, "shrink": true, "checked_at": "2026-11-27", "source": "https://x.com/mugen_kaitori 11/27表（赤文字=減額なし）"}
+        {
+          "area": "fukuoka",
+          "store": "買取ホムラ 福岡店",
+          "price": 9500,
+          "shrink": true,
+          "checked_at": "2026-11-27",
+          "source": "ホムラ 11/27表・減額ゼロ対象"
+        },
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 9200,
+          "shrink": true,
+          "checked_at": "2026-11-26",
+          "source": "https://x.com/torekahub 11/26表"
+        },
+        {
+          "area": "fukuoka",
+          "store": "トレカマフィア 福岡店",
+          "price": 9000,
+          "shrink": true,
+          "checked_at": "2026-11-27",
+          "source": "https://x.com/mugen_kaitori 11/27表（赤文字=減額なし）"
+        }
       ],
       "note": "大分店頭は店頭査定のみでXに表なし＝未確認",
       "reference": [
-        {"label": "全国郵送（参考）", "price": 10600, "checked_at": "2026-11-28", "source": "11/28 19時調査・宅配10,600"}
+        {
+          "label": "全国郵送（参考）",
+          "price": 10600,
+          "checked_at": "2026-11-28",
+          "source": "11/28 19時調査・宅配10,600"
+        }
       ]
     },
     {
@@ -66,13 +168,39 @@
       "list": 5400,
       "updated_at": "2026-11-27",
       "offers": [
-        {"area": "fukuoka", "store": "買取ホムラ 福岡店", "price": 11200, "shrink": true, "checked_at": "2026-11-27", "source": "ホムラ 11/27表・減額ゼロ対象"},
-        {"area": "fukuoka", "store": "トレカハブ 福岡博多店", "price": 11000, "shrink": true, "checked_at": "2026-11-26", "source": "https://x.com/torekahub 11/26表"},
-        {"area": "fukuoka", "store": "トレカマフィア 福岡店", "price": 10500, "shrink": true, "checked_at": "2026-11-27", "source": "https://x.com/mugen_kaitori 11/27表"}
+        {
+          "area": "fukuoka",
+          "store": "買取ホムラ 福岡店",
+          "price": 11200,
+          "shrink": true,
+          "checked_at": "2026-11-27",
+          "source": "ホムラ 11/27表・減額ゼロ対象"
+        },
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 11000,
+          "shrink": true,
+          "checked_at": "2026-11-26",
+          "source": "https://x.com/torekahub 11/26表"
+        },
+        {
+          "area": "fukuoka",
+          "store": "トレカマフィア 福岡店",
+          "price": 10500,
+          "shrink": true,
+          "checked_at": "2026-11-27",
+          "source": "https://x.com/mugen_kaitori 11/27表"
+        }
       ],
       "note": "大分店頭は未確認",
       "reference": [
-        {"label": "全国郵送（参考）", "price": 11200, "checked_at": "2026-11-28", "source": "11/28 19時調査・宅配11,200"}
+        {
+          "label": "全国郵送（参考）",
+          "price": 11200,
+          "checked_at": "2026-11-28",
+          "source": "11/28 19時調査・宅配11,200"
+        }
       ]
     },
     {
@@ -84,11 +212,24 @@
       "list": 2090,
       "updated_at": "2026-11-27",
       "offers": [
-        {"area": "fukuoka", "store": "買取ホムラ 福岡店", "price": 8500, "shrink": true, "checked_at": "2026-11-27", "source": "ホムラ 11/27表", "note": "減額ゼロ対象外"}
+        {
+          "area": "fukuoka",
+          "store": "買取ホムラ 福岡店",
+          "price": 8500,
+          "shrink": true,
+          "checked_at": "2026-11-27",
+          "source": "ホムラ 11/27表",
+          "note": "減額ゼロ対象外"
+        }
       ],
       "note": "大分店頭は未確認",
       "reference": [
-        {"label": "全国郵送（参考）", "price": 8500, "checked_at": "2026-11-28", "source": "11/28 19時調査"}
+        {
+          "label": "全国郵送（参考）",
+          "price": 8500,
+          "checked_at": "2026-11-28",
+          "source": "11/28 19時調査"
+        }
       ]
     },
     {
@@ -100,11 +241,24 @@
       "list": 7200,
       "updated_at": "2026-11-28",
       "offers": [
-        {"area": "fukuoka", "store": "買取一丁目 福岡店", "price": 16000, "shrink": true, "checked_at": "2026-11-28", "source": "値動き情報（@du_sedo 11/28 21:01・買取一丁目）", "note": "二次情報。店頭表で要確認"}
+        {
+          "area": "fukuoka",
+          "store": "買取一丁目 福岡店",
+          "price": 16000,
+          "shrink": true,
+          "checked_at": "2026-11-28",
+          "source": "値動き情報（@du_sedo 11/28 21:01・買取一丁目）",
+          "note": "二次情報。店頭表で要確認"
+        }
       ],
       "note": "大分店頭は未確認。福岡の16,000は値動き情報のため店頭表で要確認",
       "reference": [
-        {"label": "全国郵送（参考）", "price": 15500, "checked_at": "2026-11-28", "source": "X買取表 @tcgseller_Osu 11/28 21:51 ほか（シュリンク付きのみ）"}
+        {
+          "label": "全国郵送（参考）",
+          "price": 15500,
+          "checked_at": "2026-11-28",
+          "source": "X買取表 @tcgseller_Osu 11/28 21:51 ほか（シュリンク付きのみ）"
+        }
       ]
     },
     {
@@ -116,9 +270,16 @@
       "number": "051/187",
       "rarity": "マスターボールミラー",
       "set": "ポケモンカード151 SV2a",
-      "updated_at": "2026-11-26",
+      "updated_at": "2026-11-28",
       "offers": [
-        {"area": "fukuoka", "store": "トレカハブ 福岡博多店", "price": 11500, "checked_at": "2026-11-26", "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認", "note": "PSA10店頭表・ケース傷は減額対象"}
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 11500,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/torekahub/status/2126511582016680429（11/28 PSA10店頭買取表・当日限り）",
+          "note": "PSA10店頭表・ケース傷は減額対象"
+        }
       ],
       "note": "大分のPSA10店頭表は未確認"
     },
@@ -133,7 +294,13 @@
       "set": "ポケモンカード151 SV2a",
       "updated_at": "2026-11-26",
       "offers": [
-        {"area": "fukuoka", "store": "トレカハブ 福岡博多店", "price": 15000, "checked_at": "2026-11-26", "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認"}
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 15000,
+          "checked_at": "2026-11-26",
+          "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認"
+        }
       ],
       "note": "大分のPSA10店頭表は未確認"
     },
@@ -148,7 +315,13 @@
       "set": "ポケモンカード151 SV2a",
       "updated_at": "2026-11-26",
       "offers": [
-        {"area": "fukuoka", "store": "トレカハブ 福岡博多店", "price": 7600, "checked_at": "2026-11-26", "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認"}
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 7600,
+          "checked_at": "2026-11-26",
+          "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認"
+        }
       ],
       "note": "大分のPSA10店頭表は未確認"
     },
@@ -163,7 +336,13 @@
       "set": "ポケモンカード151 SV2a",
       "updated_at": "2026-11-26",
       "offers": [
-        {"area": "fukuoka", "store": "トレカハブ 福岡博多店", "price": 9500, "checked_at": "2026-11-26", "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認"}
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 9500,
+          "checked_at": "2026-11-26",
+          "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認"
+        }
       ],
       "note": "大分のPSA10店頭表は未確認"
     },
@@ -178,7 +357,14 @@
       "set": "ウルトラサン SM5S",
       "updated_at": "2026-11-26",
       "offers": [
-        {"area": "fukuoka", "store": "トレカハブ 福岡博多店", "price": 70000, "checked_at": "2026-11-26", "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認", "note": "「ナタネの活気 SAR 243/172」とは別カード"}
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 70000,
+          "checked_at": "2026-11-26",
+          "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認",
+          "note": "「ナタネの活気 SAR 243/172」とは別カード"
+        }
       ],
       "note": "大分のPSA10店頭表は未確認"
     },
@@ -193,7 +379,13 @@
       "set": "シャイニートレジャーex SV4a",
       "updated_at": "2026-11-26",
       "offers": [
-        {"area": "fukuoka", "store": "トレカハブ 福岡博多店", "price": 19000, "checked_at": "2026-11-26", "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認"}
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 19000,
+          "checked_at": "2026-11-26",
+          "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認"
+        }
       ],
       "note": "大分のPSA10店頭表は未確認"
     },
@@ -208,7 +400,13 @@
       "set": "30th CELEBRATION M6a",
       "updated_at": "2026-11-26",
       "offers": [
-        {"area": "fukuoka", "store": "トレカ道楽（福岡）", "price": 73000, "checked_at": "2026-11-26", "source": "11/26 道楽PSA10表"}
+        {
+          "area": "fukuoka",
+          "store": "トレカ道楽（福岡）",
+          "price": 73000,
+          "checked_at": "2026-11-26",
+          "source": "11/26 道楽PSA10表"
+        }
       ],
       "note": "大分のPSA10店頭表は未確認"
     },
@@ -223,13 +421,28 @@
       "set": "イーブイヒーローズ S6a",
       "updated_at": "2026-11-26",
       "offers": [
-        {"area": "fukuoka", "store": "トレカ道楽（福岡）", "price": 650000, "checked_at": "2026-11-26", "source": "11/26 道楽PSA10表"}
+        {
+          "area": "fukuoka",
+          "store": "トレカ道楽（福岡）",
+          "price": 650000,
+          "checked_at": "2026-11-26",
+          "source": "11/26 道楽PSA10表"
+        }
       ],
       "note": "大分のPSA10店頭表は未確認",
       "reference": [
-        {"label": "カードラッシュ買取・素体（参考）", "price": 450000, "checked_at": "2026-11-28", "source": "ポケカチ/カードラッシュ"}
+        {
+          "label": "カードラッシュ買取・素体（参考）",
+          "price": 450000,
+          "checked_at": "2026-11-28",
+          "source": "ポケカチ/カードラッシュ"
+        }
       ],
-      "refPsa10": {"price": 722000, "checked_at": "2026-11-26", "source": "ポケカチ"}
+      "refPsa10": {
+        "price": 722000,
+        "checked_at": "2026-11-26",
+        "source": "ポケカチ"
+      }
     },
     {
       "id": "s_rayquaza_ar",
@@ -244,9 +457,18 @@
       "offers": [],
       "note": "大分・福岡の店頭買取は未確認",
       "reference": [
-        {"label": "全国通販・未鑑定相場（参考）", "price": 6000, "checked_at": "2026-11-24", "source": "ポケカナウ"}
+        {
+          "label": "全国通販・未鑑定相場（参考）",
+          "price": 6000,
+          "checked_at": "2026-11-24",
+          "source": "ポケカナウ"
+        }
       ],
-      "refPsa10": {"price": 25000, "checked_at": "2026-11-24", "source": "ポケカナウ"}
+      "refPsa10": {
+        "price": 25000,
+        "checked_at": "2026-11-24",
+        "source": "ポケカナウ"
+      }
     },
     {
       "id": "s_xerneas_ar",
@@ -261,9 +483,18 @@
       "offers": [],
       "note": "大分・福岡の店頭買取は未確認",
       "reference": [
-        {"label": "カードラッシュ買取（参考）", "price": 100, "checked_at": "2026-11-28", "source": "カードラッシュ/トレシア"}
+        {
+          "label": "カードラッシュ買取（参考）",
+          "price": 100,
+          "checked_at": "2026-11-28",
+          "source": "カードラッシュ/トレシア"
+        }
       ],
-      "refPsa10": {"price": 4499, "checked_at": "2026-11-24", "source": "ポケカトラッカー"}
+      "refPsa10": {
+        "price": 4499,
+        "checked_at": "2026-11-24",
+        "source": "ポケカトラッカー"
+      }
     },
     {
       "id": "s_natane_sar",
@@ -278,9 +509,18 @@
       "offers": [],
       "note": "大分・福岡の店頭買取は未確認（070/066の「ナタネ SR」とは別カード）",
       "reference": [
-        {"label": "カードラッシュ買取（参考）", "price": 1400, "checked_at": "2026-11-28", "source": "altema/カードラッシュ"}
+        {
+          "label": "カードラッシュ買取（参考）",
+          "price": 1400,
+          "checked_at": "2026-11-28",
+          "source": "altema/カードラッシュ"
+        }
       ],
-      "refPsa10": {"price": 17800, "checked_at": "2026-11-26", "source": "ポケカチ"}
+      "refPsa10": {
+        "price": 17800,
+        "checked_at": "2026-11-26",
+        "source": "ポケカチ"
+      }
     },
     {
       "id": "s_baokki_sar",
@@ -295,9 +535,18 @@
       "offers": [],
       "note": "大分・福岡の店頭買取は未確認",
       "reference": [
-        {"label": "カードラッシュ買取（参考）", "price": 3000, "checked_at": "2026-11-28", "source": "altema/カードラッシュ"}
+        {
+          "label": "カードラッシュ買取（参考）",
+          "price": 3000,
+          "checked_at": "2026-11-28",
+          "source": "altema/カードラッシュ"
+        }
       ],
-      "refPsa10": {"price": 15800, "checked_at": "2026-11-26", "source": "ポケカチ"}
+      "refPsa10": {
+        "price": 15800,
+        "checked_at": "2026-11-26",
+        "source": "ポケカチ"
+      }
     },
     {
       "id": "s_gengar_mb",
@@ -312,9 +561,18 @@
       "offers": [],
       "note": "大分・福岡の店頭買取は未確認",
       "reference": [
-        {"label": "カードラッシュ買取（参考）", "price": 85000, "checked_at": "2026-11-28", "source": "altema/カードラッシュ"}
+        {
+          "label": "カードラッシュ買取（参考）",
+          "price": 85000,
+          "checked_at": "2026-11-28",
+          "source": "altema/カードラッシュ"
+        }
       ],
-      "refPsa10": {"price": 170000, "checked_at": "2026-11-26", "source": "ポケカチ"}
+      "refPsa10": {
+        "price": 170000,
+        "checked_at": "2026-11-26",
+        "source": "ポケカチ"
+      }
     },
     {
       "id": "s_chili_sar",
@@ -329,7 +587,12 @@
       "offers": [],
       "note": "大分・福岡の店頭買取は未確認",
       "reference": [
-        {"label": "カードラッシュ買取（参考）", "price": 2000, "checked_at": "2026-11-28", "source": "ゲームペディア/カードラッシュ"}
+        {
+          "label": "カードラッシュ買取（参考）",
+          "price": 2000,
+          "checked_at": "2026-11-28",
+          "source": "ゲームペディア/カードラッシュ"
+        }
       ]
     },
     {
@@ -345,9 +608,18 @@
       "offers": [],
       "note": "型番未確認。大分・福岡の店頭買取は未確認",
       "reference": [
-        {"label": "全国通販・素体買取（参考）", "price": 1300000, "checked_at": "2026-11-28", "source": "ポケカチ/カードラッシュ"}
+        {
+          "label": "全国通販・素体買取（参考）",
+          "price": 1300000,
+          "checked_at": "2026-11-28",
+          "source": "ポケカチ/カードラッシュ"
+        }
       ],
-      "refPsa10": {"price": 2600000, "checked_at": "2026-11-26", "source": "ポケカチ"}
+      "refPsa10": {
+        "price": 2600000,
+        "checked_at": "2026-11-26",
+        "source": "ポケカチ"
+      }
     },
     {
       "id": "p_poncho_charx",
@@ -362,9 +634,18 @@
       "offers": [],
       "note": "型番未確認。大分・福岡の店頭買取は未確認",
       "reference": [
-        {"label": "全国通販・素体買取（参考）", "price": 2100000, "checked_at": "2026-11-28", "source": "ポケカチ/カードラッシュ"}
+        {
+          "label": "全国通販・素体買取（参考）",
+          "price": 2100000,
+          "checked_at": "2026-11-28",
+          "source": "ポケカチ/カードラッシュ"
+        }
       ],
-      "refPsa10": {"price": 3450000, "checked_at": "2026-11-26", "source": "ポケカチ"}
+      "refPsa10": {
+        "price": 3450000,
+        "checked_at": "2026-11-26",
+        "source": "ポケカチ"
+      }
     },
     {
       "id": "p_munch",
@@ -379,9 +660,18 @@
       "offers": [],
       "note": "大分・福岡の店頭買取は未確認",
       "reference": [
-        {"label": "全国通販・素体買取（参考）", "price": 1300000, "checked_at": "2026-11-28", "source": "ポケカチ/カードラッシュ"}
+        {
+          "label": "全国通販・素体買取（参考）",
+          "price": 1300000,
+          "checked_at": "2026-11-28",
+          "source": "ポケカチ/カードラッシュ"
+        }
       ],
-      "refPsa10": {"price": 2470000, "checked_at": "2026-11-26", "source": "ポケカチ"}
+      "refPsa10": {
+        "price": 2470000,
+        "checked_at": "2026-11-26",
+        "source": "ポケカチ"
+      }
     },
     {
       "id": "p_gogh",
@@ -396,9 +686,18 @@
       "offers": [],
       "note": "型番未確認。大分・福岡の店頭買取は未確認",
       "reference": [
-        {"label": "全国通販・素体買取（参考）", "price": 100000, "checked_at": "2026-11-28", "source": "ポケカチ/カードラッシュ"}
+        {
+          "label": "全国通販・素体買取（参考）",
+          "price": 100000,
+          "checked_at": "2026-11-28",
+          "source": "ポケカチ/カードラッシュ"
+        }
       ],
-      "refPsa10": {"price": 400000, "checked_at": "2026-11-26", "source": "ポケカチ"}
+      "refPsa10": {
+        "price": 400000,
+        "checked_at": "2026-11-26",
+        "source": "ポケカチ"
+      }
     },
     {
       "id": "p_giratina",
@@ -411,13 +710,28 @@
       "set": "ロストアビス S11",
       "updated_at": "2026-11-26",
       "offers": [
-        {"area": "fukuoka", "store": "トレカハブ 福岡博多店", "price": 245000, "checked_at": "2026-11-26", "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認"}
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 245000,
+          "checked_at": "2026-11-26",
+          "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認"
+        }
       ],
       "note": "大分のPSA10店頭表は未確認",
       "reference": [
-        {"label": "福福トレカ PSA10買取（参考）", "price": 250000, "checked_at": "2026-11-28", "source": "福福トレカ PSA10表"}
+        {
+          "label": "福福トレカ PSA10買取（参考）",
+          "price": 250000,
+          "checked_at": "2026-11-28",
+          "source": "福福トレカ PSA10表"
+        }
       ],
-      "refPsa10": {"price": 268000, "checked_at": "2026-11-28", "source": "トレカジャパン"}
+      "refPsa10": {
+        "price": 268000,
+        "checked_at": "2026-11-28",
+        "source": "トレカジャパン"
+      }
     },
     {
       "id": "p_gengarvmax",
@@ -432,9 +746,18 @@
       "offers": [],
       "note": "大分・福岡の店頭買取は未確認",
       "reference": [
-        {"label": "福福トレカ PSA10買取（参考）", "price": 360000, "checked_at": "2026-11-28", "source": "福福トレカ PSA10表"}
+        {
+          "label": "福福トレカ PSA10買取（参考）",
+          "price": 360000,
+          "checked_at": "2026-11-28",
+          "source": "福福トレカ PSA10表"
+        }
       ],
-      "refPsa10": {"price": 425000, "checked_at": "2026-11-26", "source": "ポケカチ"}
+      "refPsa10": {
+        "price": 425000,
+        "checked_at": "2026-11-26",
+        "source": "ポケカチ"
+      }
     },
     {
       "id": "p_lillie_sr_sm1",
@@ -447,11 +770,22 @@
       "set": "コレクション ムーン SM1M",
       "updated_at": "2026-11-26",
       "offers": [
-        {"area": "fukuoka", "store": "トレカハブ 福岡博多店", "price": 1100000, "checked_at": "2026-11-26", "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認（帽子リーリエ）"}
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 1100000,
+          "checked_at": "2026-11-26",
+          "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認（帽子リーリエ）"
+        }
       ],
       "note": "大分のPSA10店頭表は未確認",
       "reference": [
-        {"label": "国内販売相場（参考）", "price": 149930, "checked_at": "2026-11-28", "source": "TCG PORTAL"}
+        {
+          "label": "国内販売相場（参考）",
+          "price": 149930,
+          "checked_at": "2026-11-28",
+          "source": "TCG PORTAL"
+        }
       ]
     },
     {
@@ -465,7 +799,13 @@
       "set": "GXバトルブースト SM4+",
       "updated_at": "2026-11-26",
       "offers": [
-        {"area": "fukuoka", "store": "トレカハブ 福岡博多店", "price": 2020000, "checked_at": "2026-11-26", "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認（がんばリーリエ）"}
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 2020000,
+          "checked_at": "2026-11-26",
+          "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認（がんばリーリエ）"
+        }
       ],
       "note": "大分のPSA10店頭表は未確認"
     },
@@ -480,7 +820,13 @@
       "set": "ポケモンカード151 SV2a",
       "updated_at": "2026-11-26",
       "offers": [
-        {"area": "fukuoka", "store": "トレカハブ 福岡博多店", "price": 8500, "checked_at": "2026-11-26", "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認"}
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 8500,
+          "checked_at": "2026-11-26",
+          "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認"
+        }
       ],
       "note": "大分のPSA10店頭表は未確認"
     },
@@ -497,9 +843,18 @@
       "offers": [],
       "note": "大分・福岡の店頭買取は未確認",
       "reference": [
-        {"label": "遊々亭買取・素体（参考）", "price": 36000, "checked_at": "2026-11-28", "source": "ポケカあるぞう/遊々亭"}
+        {
+          "label": "遊々亭買取・素体（参考）",
+          "price": 36000,
+          "checked_at": "2026-11-28",
+          "source": "ポケカあるぞう/遊々亭"
+        }
       ],
-      "refPsa10": {"price": 85099, "checked_at": "2026-11-28", "source": "スニダン出品相場"}
+      "refPsa10": {
+        "price": 85099,
+        "checked_at": "2026-11-28",
+        "source": "スニダン出品相場"
+      }
     },
     {
       "id": "p_pika_monster",
@@ -527,9 +882,18 @@
       "offers": [],
       "note": "大分・福岡の店頭買取は未確認",
       "reference": [
-        {"label": "福福トレカ PSA10買取（参考）", "price": 130000, "checked_at": "2026-11-28", "source": "福福トレカ PSA10表"}
+        {
+          "label": "福福トレカ PSA10買取（参考）",
+          "price": 130000,
+          "checked_at": "2026-11-28",
+          "source": "福福トレカ PSA10表"
+        }
       ],
-      "refPsa10": {"price": 170000, "checked_at": "2026-11-26", "source": "ポケカチ"}
+      "refPsa10": {
+        "price": 170000,
+        "checked_at": "2026-11-26",
+        "source": "ポケカチ"
+      }
     },
     {
       "id": "p_gengar_monster",
@@ -543,6 +907,435 @@
       "updated_at": "2026-11-28",
       "offers": [],
       "note": "大分・福岡の店頭買取は未確認"
+    },
+    {
+      "id": "p_umbreon_ex_sar",
+      "name": "ブラッキーex SAR",
+      "cat": "single",
+      "finish": "normal",
+      "grade": "psa10",
+      "number": "217/187",
+      "rarity": "SAR",
+      "set": "テラスタルフェスex SV8a",
+      "updated_at": "2026-11-28",
+      "offers": [
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 60500,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/torekahub/status/2126511582016680429（11/28 PSA10店頭買取表・当日限り）"
+        },
+        {
+          "area": "fukuoka",
+          "store": "トレカ道楽 福岡天神店",
+          "price": 58000,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/Dourakuhukuoka/status/2126602104592851257 ほか（11/28 PSA10買取表）"
+        },
+        {
+          "area": "oita",
+          "store": "カード天国 大分店",
+          "price": 40000,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/card_tengoku/status/2126521626133172544（11/28 PSA10買取表・型番記載なし）",
+          "note": "型番の記載なし（画像判読）。同カードとして比較"
+        }
+      ],
+      "note": "大分はカード天国のみPSA10表を公開"
+    },
+    {
+      "id": "p_char_ex_134",
+      "name": "リザードンex SAR 134/108",
+      "cat": "single",
+      "finish": "normal",
+      "grade": "psa10",
+      "number": "134/108",
+      "rarity": "SAR",
+      "set": "",
+      "updated_at": "2026-11-28",
+      "offers": [
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 57000,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/torekahub/status/2126511582016680429（11/28 PSA10店頭買取表・当日限り）"
+        },
+        {
+          "area": "fukuoka",
+          "store": "トレカ道楽 福岡天神店",
+          "price": 54000,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/Dourakuhukuoka/status/2126602104592851257 ほか（11/28 PSA10買取表）"
+        }
+      ],
+      "note": "収録弾は未確認"
+    },
+    {
+      "id": "p_char_ex_349",
+      "name": "リザードンex SAR 349/190",
+      "cat": "single",
+      "finish": "normal",
+      "grade": "psa10",
+      "number": "349/190",
+      "rarity": "SAR",
+      "set": "",
+      "updated_at": "2026-11-28",
+      "offers": [
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 55500,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/torekahub/status/2126511582016680429（11/28 PSA10店頭買取表・当日限り）"
+        },
+        {
+          "area": "fukuoka",
+          "store": "トレカ道楽 福岡天神店",
+          "price": 52000,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/Dourakuhukuoka/status/2126602104592851257 ほか（11/28 PSA10買取表）"
+        }
+      ],
+      "note": "収録弾は未確認"
+    },
+    {
+      "id": "p_mew_ex_205",
+      "name": "ミュウex SAR 205/165",
+      "cat": "single",
+      "finish": "normal",
+      "grade": "psa10",
+      "number": "205/165",
+      "rarity": "SAR",
+      "set": "",
+      "updated_at": "2026-11-28",
+      "offers": [
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 54500,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/torekahub/status/2126511582016680429（11/28 PSA10店頭買取表・当日限り）"
+        },
+        {
+          "area": "fukuoka",
+          "store": "トレカ道楽 福岡天神店",
+          "price": 52000,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/Dourakuhukuoka/status/2126602104592851257 ほか（11/28 PSA10買取表）"
+        }
+      ],
+      "note": "収録弾は未確認"
+    },
+    {
+      "id": "p_mega_gengar_240",
+      "name": "メガゲンガーex SAR 240/193",
+      "cat": "single",
+      "finish": "normal",
+      "grade": "psa10",
+      "number": "240/193",
+      "rarity": "SAR",
+      "set": "",
+      "updated_at": "2026-11-28",
+      "offers": [
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 48000,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/torekahub/status/2126511582016680429（11/28 PSA10店頭買取表・当日限り）"
+        },
+        {
+          "area": "fukuoka",
+          "store": "トレカ道楽 福岡天神店",
+          "price": 45000,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/Dourakuhukuoka/status/2126602104592851257 ほか（11/28 PSA10買取表）"
+        }
+      ],
+      "note": "収録弾は未確認"
+    },
+    {
+      "id": "p_nymphia_sr",
+      "name": "ニンフィアV SR 083/069",
+      "cat": "single",
+      "finish": "normal",
+      "grade": "psa10",
+      "number": "083/069",
+      "rarity": "SR",
+      "set": "イーブイヒーローズ S6a",
+      "updated_at": "2026-11-28",
+      "offers": [
+        {
+          "area": "fukuoka",
+          "store": "トレカ道楽 福岡天神店",
+          "price": 42000,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/Dourakuhukuoka/status/2126602104592851257 ほか（11/28 PSA10買取表）"
+        }
+      ],
+      "note": "",
+      "reference": [
+        {
+          "label": "トレカブルー博多 販売（参考）",
+          "price": 47800,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/torekablue/status/2126607950592557057 ほか（11/28 入荷販売）"
+        }
+      ]
+    },
+    {
+      "id": "p_cynthia_garchomp",
+      "name": "シロナのガブリアスex SAR",
+      "cat": "single",
+      "finish": "normal",
+      "grade": "psa10",
+      "number": "087/063",
+      "rarity": "SAR",
+      "set": "",
+      "updated_at": "2026-11-28",
+      "offers": [
+        {
+          "area": "fukuoka",
+          "store": "トレカ道楽 福岡天神店",
+          "price": 50000,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/Dourakuhukuoka/status/2126602104592851257 ほか（11/28 PSA10買取表）"
+        }
+      ],
+      "note": "収録弾は未確認"
+    },
+    {
+      "id": "p_mega_kairyu_mur",
+      "name": "メガカイリューex MUR",
+      "cat": "single",
+      "finish": "normal",
+      "grade": "psa10",
+      "number": "250/193",
+      "rarity": "MUR",
+      "set": "",
+      "updated_at": "2026-11-28",
+      "offers": [
+        {
+          "area": "fukuoka",
+          "store": "トレカ道楽 福岡天神店",
+          "price": 48000,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/Dourakuhukuoka/status/2126602104592851257 ほか（11/28 PSA10買取表）"
+        }
+      ],
+      "note": "収録弾は未確認"
+    },
+    {
+      "id": "p_greninja_sar",
+      "name": "ゲッコウガex SAR",
+      "cat": "single",
+      "finish": "normal",
+      "grade": "psa10",
+      "number": "090/066",
+      "rarity": "SAR",
+      "set": "",
+      "updated_at": "2026-11-28",
+      "offers": [
+        {
+          "area": "fukuoka",
+          "store": "トレカ道楽 福岡天神店",
+          "price": 45000,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/Dourakuhukuoka/status/2126602104592851257 ほか（11/28 PSA10買取表）"
+        }
+      ],
+      "note": "収録弾は未確認"
+    },
+    {
+      "id": "p_houou_ex",
+      "name": "ヒビキのホウオウex SAR",
+      "cat": "single",
+      "finish": "normal",
+      "grade": "psa10",
+      "number": "086/063",
+      "rarity": "SAR",
+      "set": "",
+      "updated_at": "2026-11-28",
+      "offers": [
+        {
+          "area": "fukuoka",
+          "store": "トレカ道楽 福岡天神店",
+          "price": 36000,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/Dourakuhukuoka/status/2126602104592851257 ほか（11/28 PSA10買取表）"
+        }
+      ],
+      "note": "収録弾は未確認"
+    },
+    {
+      "id": "p_lillie_pippi",
+      "name": "リーリエのピッピex SAR",
+      "cat": "single",
+      "finish": "normal",
+      "grade": "psa10",
+      "number": "126/100",
+      "rarity": "SAR",
+      "set": "",
+      "updated_at": "2026-11-28",
+      "offers": [
+        {
+          "area": "fukuoka",
+          "store": "トレカ道楽 福岡天神店",
+          "price": 30000,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/Dourakuhukuoka/status/2126602104592851257 ほか（11/28 PSA10買取表）"
+        }
+      ],
+      "note": "収録弾は未確認"
+    },
+    {
+      "id": "p_pika_v_csr",
+      "name": "ピカチュウV CSR 222/184",
+      "cat": "single",
+      "finish": "normal",
+      "grade": "psa10",
+      "number": "222/184",
+      "rarity": "CSR",
+      "set": "",
+      "updated_at": "2026-11-28",
+      "offers": [
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 43500,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/torekahub/status/2126511582016680429（11/28 PSA10店頭買取表・当日限り）"
+        }
+      ],
+      "note": "収録弾は未確認"
+    },
+    {
+      "id": "p_pika_v_sr",
+      "name": "ピカチュウV SR 104/100",
+      "cat": "single",
+      "finish": "normal",
+      "grade": "psa10",
+      "number": "104/100",
+      "rarity": "SR",
+      "set": "",
+      "updated_at": "2026-11-28",
+      "offers": [
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 43500,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/torekahub/status/2126511582016680429（11/28 PSA10店頭買取表・当日限り）"
+        }
+      ],
+      "note": "収録弾は未確認"
+    },
+    {
+      "id": "p_detective_pika",
+      "name": "名探偵ピカチュウ",
+      "cat": "single",
+      "finish": "normal",
+      "grade": "psa10",
+      "number": "098/SM-P",
+      "rarity": "プロモ",
+      "set": "プロモ SM-P",
+      "updated_at": "2026-11-28",
+      "offers": [
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 41500,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/torekahub/status/2126511582016680429（11/28 PSA10店頭買取表・当日限り）"
+        }
+      ],
+      "note": ""
+    },
+    {
+      "id": "p_pika_ex_ur",
+      "name": "ピカチュウex UR 136/106",
+      "cat": "single",
+      "finish": "normal",
+      "grade": "psa10",
+      "number": "136/106",
+      "rarity": "UR",
+      "set": "",
+      "updated_at": "2026-11-28",
+      "offers": [
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 40000,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/torekahub/status/2126511582016680429（11/28 PSA10店頭買取表・当日限り）"
+        }
+      ],
+      "note": "収録弾は未確認"
+    },
+    {
+      "id": "p_sanders_v_sa",
+      "name": "サンダースV SA 079/069",
+      "cat": "single",
+      "finish": "normal",
+      "grade": "psa10",
+      "number": "079/069",
+      "rarity": "SR（SA）",
+      "set": "イーブイヒーローズ S6a",
+      "updated_at": "2026-11-28",
+      "offers": [
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 34500,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/torekahub/status/2126511582016680429（11/28 PSA10店頭買取表・当日限り）"
+        }
+      ],
+      "note": ""
+    },
+    {
+      "id": "p_cynthia_caitlin",
+      "name": "シロナ&カトレア SR",
+      "cat": "single",
+      "finish": "normal",
+      "grade": "psa10",
+      "number": "106/096",
+      "rarity": "SR",
+      "set": "",
+      "updated_at": "2026-11-28",
+      "offers": [
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 33500,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/torekahub/status/2126511582016680429（11/28 PSA10店頭買取表・当日限り）"
+        }
+      ],
+      "note": "収録弾は未確認"
+    },
+    {
+      "id": "p_umbreon_25th",
+      "name": "ブラッキー 25th 012/025",
+      "cat": "single",
+      "finish": "normal",
+      "grade": "psa10",
+      "number": "012/025",
+      "rarity": "",
+      "set": "25th ANNIVERSARY COLLECTION",
+      "updated_at": "2026-11-28",
+      "offers": [
+        {
+          "area": "fukuoka",
+          "store": "トレカハブ 福岡博多店",
+          "price": 39000,
+          "checked_at": "2026-11-28",
+          "source": "https://x.com/torekahub/status/2126511582016680429（11/28 PSA10店頭買取表・当日限り）"
+        }
+      ],
+      "note": ""
     }
   ]
 }
