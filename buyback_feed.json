@@ -1,6 +1,6 @@
 {
   "schema": "buyback-feed/v1",
-  "generated_at": "2026-11-28T23:05:00+09:00",
+  "generated_at": "2026-11-28T22:50:00+09:00",
   "policy": {
     "judgment": "大分店頭・福岡店頭の実店舗のみ",
     "mail": "参考表示のみ（判定に使わない）",
