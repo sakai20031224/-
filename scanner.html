@@ -1568,10 +1568,12 @@ function renderResult(r){
   var meta=[];
   meta.push(gradeLabel(r.item.grade));
   if(r.item.version&&r.item.version!=='通常版')meta.push(r.item.version);
-  if(r.item.cat==='single')meta.push('加工：'+finishLabel(itemFinish(r.item)));
-  meta.push(r.item.number?('番号 '+r.item.number):'番号 未確認');
-  meta.push(r.item.rarity?r.item.rarity:'レア 未確認');
-  meta.push(r.item.set?('弾 '+r.item.set):'収録弾 未確認');
+  if(r.item.cat==='single'){
+    meta.push('加工：'+finishLabel(itemFinish(r.item)));
+    meta.push(r.item.number?('番号 '+r.item.number):'番号 未確認');
+    meta.push(r.item.rarity?r.item.rarity:'レア 未確認');
+    meta.push(r.item.set?('弾 '+r.item.set):'収録弾 未確認');
+  }
   if(r.item.list)meta.push('定価'+yen(r.item.list));
   if(r.ch.useLoose)meta.push('シュリンクなし価格で計算');
   var hardLine='';
@@ -2049,6 +2051,11 @@ document.addEventListener('visibilitychange',function(){
 
 /* ---------------- 買取フィード（buyback_feed.json） ---------------- */
 var FEED={url:'./buyback_feed.json',state:'未取得',at:'',count:0,err:''};
+function fmtFeedTime(s){
+  if(!s)return '';
+  var m=String(s).match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/);
+  return m?(m[1]+' '+m[2]):String(s).slice(0,16);
+}
 function feedBadge(){
   var el=$('#feedState');if(!el)return;
   if(FEED.state==='ok'){el.textContent='フィード取得済み '+(FEED.at||'');el.style.color='#067647'}
@@ -2105,14 +2112,14 @@ function mergeFeed(feed){
     applyFeedItem(it,f);stats.updated++;
   });
   DB.feedUpdated=feed.generated_at||nowLabel();
-  DB.updated=feed.generated_at||DB.updated;
-  FEED.at=feed.generated_at||nowLabel();
+  DB.updated=fmtFeedTime(feed.generated_at)||DB.updated;
+  FEED.at=fmtFeedTime(feed.generated_at)||nowLabel();
   FEED.count=stats.updated;
   saveDB();renderDB();
   if(lastResult&&lastResult.item){var rr=judge(lastResult.item,lastResult.tag,{});rr.ms=lastResult.ms;renderResult(rr);}
   return stats;
 }
-async function loadFeed(){
+async function loadFeed(manual){
   if(!window.fetch){FEED.state='error';FEED.err='fetch非対応';feedBadge();return}
   FEED.state='loading';feedBadge();
   try{
@@ -2121,14 +2128,16 @@ async function loadFeed(){
     var j=await res.json();
     if(!j||!j.items||!j.items.length)throw new Error('itemsなし');
     mergeFeed(j);
-    FEED.state='ok';feedBadge();toast('買取フィードを更新（'+FEED.count+'件）');
+    FEED.state='ok';feedBadge();
+    if(manual)toast('買取フィードを更新（'+FEED.count+'件）');
   }catch(e){
     FEED.state='error';FEED.err=e.message;feedBadge();
+    if(manual)toast('フィード取得失敗（内蔵DBで動作）');
     console.warn('feed',e);
   }
 }
 var feedBtn=document.getElementById('btnFeedReload');
-if(feedBtn)feedBtn.addEventListener('click',function(){loadFeed()});
+if(feedBtn)feedBtn.addEventListener('click',function(){loadFeed(true)});
 
 /* ---------------- 起動 ---------------- */
 function init(){
@@ -2144,7 +2153,7 @@ function init(){
   if('speechSynthesis' in window&&speechSynthesis.getVoices){
     speechSynthesis.getVoices();
   }
-  loadFeed();
+  loadFeed(false);
 }
 init();
 window.__scanner={judge:judge,channelsFor:channelsFor,pickItem:pickItem,findCandidates:findCandidates,parsePrice:parsePrice,extractMarks:extractMarks,preprocess:preprocess,analyzeCondition:analyzeCondition,analyzeFinish:analyzeFinish,spreadOf:spreadOf,itemFinish:itemFinish,mergeFeed:mergeFeed,loadFeed:loadFeed,DB:DB,SET:SET,scanOnce:scanOnce,demoScan:demoScan};
