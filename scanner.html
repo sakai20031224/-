@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="ja" class="nojs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>トレカスキャン判定 完全版｜買取手取りで「買い」を判定</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+:root{
+  --bg:#f6f7f9;--card:#fff;--line:#e6e9ee;--line2:#eef1f5;
+  --ink:#151a21;--ink2:#3d4653;--dim:#727d8c;--dim2:#98a2b0;
+  --tc:#0f7b6c;--tcbg:#e8f4f1;--tc2:#0b5d52;
+  --red:#d92d20;--redbg:#fef3f2;--amber:#b54708;--amberbg:#fffaeb;
+  --green:#067647;--greenbg:#ecfdf3;--blue:#1d4ed8;--violet:#6941c6;
+}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;
+  font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  padding-bottom:calc(74px + env(safe-area-inset-bottom));
+  overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,h4,p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+input,select,textarea{background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+input:focus,select:focus{outline:2px solid var(--tcbg);border-color:var(--tc)}
+html.nojs .only-js,html.js .only-nojs{display:none!important}
+
+/* エラー帯 */
+#errbar{position:sticky;top:0;z-index:2000;background:#7a271a;color:#fff;padding:8px 12px;font-size:12px;font-weight:700}
+
+/* ヘッダー */
+.hd{background:#fff;border-bottom:1px solid var(--line);padding:12px 14px 10px}
+.hd .top{display:flex;align-items:flex-start;gap:8px}
+.hd h1{font-size:17px;font-weight:800;letter-spacing:-.01em;line-height:1.3;flex:1}
+.hd h1 small{font-size:10.5px;font-weight:700;color:var(--tc);background:var(--tcbg);border-radius:999px;padding:2px 7px;margin-left:5px;vertical-align:2px}
+.hd .sub{font-size:11px;color:var(--dim);margin-top:3px;line-height:1.5}
+.hd .sub b{color:var(--ink2);font-variant-numeric:tabular-nums}
+.modes{display:flex;gap:6px;margin-top:10px}
+.modes button{flex:1;border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 4px;font-size:11.5px;font-weight:700;color:var(--dim);line-height:1.25}
+.modes button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.modes button .m1{display:block;font-size:15px}
+
+/* タブ */
+.tabbar{position:sticky;top:0;z-index:900;background:#fff;border-bottom:1px solid var(--line);display:flex;overflow-x:auto;scrollbar-width:none}
+.tabbar::-webkit-scrollbar{display:none}
+.tabbar button{flex:0 0 auto;border:0;background:none;padding:11px 12px 9px;font-size:12px;font-weight:700;color:var(--dim);border-bottom:2px solid transparent;white-space:nowrap}
+.tabbar button[aria-selected="true"]{color:var(--tc);border-bottom-color:var(--tc)}
+main{padding:12px 12px 20px;max-width:760px;margin:0 auto}
+section[data-tab]{display:none}
+section[data-tab].on{display:block}
+
+/* カード */
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px}
+.card h2{font-size:13.5px;font-weight:800;display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.card h2 .tag{font-size:10px;font-weight:700;color:var(--dim);background:var(--line2);border-radius:999px;padding:2px 7px;margin-left:auto}
+.hint{font-size:11px;color:var(--dim);line-height:1.55}
+.mt6{margin-top:6px}.mt10{margin-top:10px}.mt14{margin-top:14px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row.tight{gap:6px}
+.sp{flex:1}
+
+/* ボタン */
+.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font-size:12.5px;font-weight:700;color:var(--ink2);line-height:1.2}
+.btn:active{background:#f3f5f8}
+.btn.pri{background:var(--tc);border-color:var(--tc);color:#fff}
+.btn.pri:active{background:var(--tc2)}
+.btn.dark{background:var(--ink);border-color:var(--ink);color:#fff}
+.btn.warn{background:var(--amberbg);border-color:#f5d9a8;color:var(--amber)}
+.btn.danger{background:var(--redbg);border-color:#fbc9c4;color:var(--red)}
+.btn.sm{padding:6px 9px;font-size:11.5px;border-radius:8px}
+.btn:disabled{opacity:.45}
+
+/* プリセット */
+.presets{display:flex;gap:6px}
+.presets button{flex:1;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 4px;font-size:11px;font-weight:700;color:var(--dim);line-height:1.3}
+.presets button[aria-pressed="true"]{background:var(--tcbg);border-color:#a9d7cd;color:var(--tc2)}
+
+/* カメラ */
+.camwrap{position:relative;background:#0b0d11;border-radius:14px;overflow:hidden;aspect-ratio:3/2;border:1px solid #111}
+.camwrap video,.camwrap canvas.sim{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.camwrap video{background:#0b0d11}
+.camwrap canvas.sim{display:none}
+.camwrap.sim-on canvas.sim{display:block}
+.camwrap.sim-on video{display:none}
+#roi{position:absolute;left:9%;top:20%;width:82%;height:52%;border:2px solid #3ee0bf;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.34);pointer-events:none}
+#roi span{position:absolute;left:0;top:-21px;background:#3ee0bf;color:#052e29;font-size:10px;font-weight:800;padding:2px 7px;border-radius:6px;white-space:nowrap}
+#roi .cn{position:absolute;width:10px;height:10px;border:2px solid #3ee0bf;border-radius:2px}
+.camhud{position:absolute;left:8px;right:8px;bottom:8px;display:flex;gap:6px;align-items:flex-end;pointer-events:none}
+.camhud .state{background:rgba(0,0,0,.62);color:#fff;font-size:10.5px;font-weight:700;border-radius:8px;padding:4px 8px;line-height:1.35;backdrop-filter:blur(4px)}
+.camhud .state b{color:#5ff0cf}
+.camhud .right{margin-left:auto;text-align:right}
+.badge{display:inline-block;font-size:10.5px;font-weight:800;border-radius:999px;padding:2px 8px;line-height:1.5}
+.badge.sim{background:#fef0c7;color:#93370d}
+.badge.live{background:#d1fadf;color:#05603a}
+.badge.gray{background:#eef1f5;color:var(--dim)}
+
+/* 判定結果 */
+.res{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}
+.res.empty{color:var(--dim2);font-size:12px;text-align:center;padding:22px 12px}
+.res .head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.verdict{font-size:22px;font-weight:900;letter-spacing:-.02em;line-height:1.1}
+.verdict.buy{color:var(--green)}
+.verdict.check{color:var(--amber)}
+.verdict.pass{color:var(--dim)}
+.verdict.none{color:var(--red);font-size:16px}
+.res.buy{border-color:#a6e9c5;background:linear-gradient(180deg,#f3fdf7,#fff)}
+.res.check{border-color:#f7d9a4;background:linear-gradient(180deg,#fffaf0,#fff)}
+.res.pass{background:#fbfcfd}
+.res .money{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line2);border:1px solid var(--line2);border-radius:10px;overflow:hidden;margin-top:10px}
+.res .money div{background:#fff;padding:7px 6px;text-align:center}
+.res .money b{display:block;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2}
+.res .money span{font-size:9.5px;color:var(--dim)}
+.res .money .big b{color:var(--tc)}
+.res .itemname{font-size:12px;font-weight:800;margin-top:2px}
+.res .itemmeta{font-size:10.5px;color:var(--dim);margin-top:2px;line-height:1.5}
+.res .why{font-size:11.5px;color:var(--ink2);margin-top:8px;line-height:1.55}
+.res .why b{color:var(--ink)}
+.chtable{width:100%;border-collapse:collapse;margin-top:8px;font-size:11px}
+.chtable th,.chtable td{padding:4px 3px;border-bottom:1px solid var(--line2);text-align:right;white-space:nowrap}
+.chtable th:first-child,.chtable td:first-child{text-align:left}
+.chtable th{color:var(--dim2);font-weight:700;font-size:10px}
+.chtable tr.best td{background:#f0fbf7;font-weight:800}
+.chtable td.mute{color:var(--dim2)}
+.mini{font-size:10px;color:var(--dim2)}
+
+/* 前処理デバッグ */
+.pre{display:flex;gap:6px;margin-top:8px}
+.pre figure{flex:1;margin:0;background:#0b0d11;border-radius:8px;overflow:hidden;position:relative}
+.pre canvas{display:block;width:100%;height:56px;object-fit:cover}
+.pre figcaption{position:absolute;left:0;bottom:0;right:0;background:rgba(0,0,0,.6);color:#dbe7e4;font-size:9px;padding:1px 4px;text-align:center}
+.debuglog{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;line-height:1.6;background:#0f1720;color:#c6e6df;border-radius:8px;padding:8px;margin-top:8px;max-height:150px;overflow:auto;white-space:pre-wrap}
+.debuglog .ng{color:#ffb4a8}
+.debuglog .ok{color:#8ff0c8}
+
+/* 設定 */
+.field{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line2)}
+.field:last-child{border-bottom:0}
+.field label{flex:1;font-size:12px;font-weight:600;color:var(--ink2)}
+.field label small{display:block;font-size:10px;color:var(--dim2);font-weight:400;line-height:1.4}
+.field input[type=number],.field select{width:110px;text-align:right}
+.field input.wide{width:150px;text-align:left}
+.switch{position:relative;width:44px;height:26px;flex:0 0 auto}
+.switch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;z-index:2}
+.switch i{display:block;position:absolute;inset:0;background:#d5dae2;border-radius:999px;transition:.15s}
+.switch i:after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.switch input:checked+i{background:var(--tc)}
+.switch input:checked+i:after{transform:translateX(18px)}
+
+/* DB */
+.dbtools{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.dbwrap{overflow:auto;border:1px solid var(--line);border-radius:10px;-webkit-overflow-scrolling:touch}
+table.db{border-collapse:collapse;width:100%;min-width:1080px;font-size:11px}
+table.db th{background:#f8fafb;color:var(--dim);font-size:10px;font-weight:700;padding:6px 4px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0}
+table.db td{padding:4px 3px;border-bottom:1px solid var(--line2);vertical-align:middle}
+table.db input,table.db select{width:100%;padding:4px 5px;font-size:11px;border-radius:6px;min-width:62px}
+table.db input.num{text-align:right;min-width:58px}
+table.db tr.est td:first-child{border-left:3px solid #f5d9a8}
+table.db .del{color:var(--red);background:none;border:0;font-size:14px;padding:2px 4px}
+.dbnote{font-size:10px;color:var(--dim2);margin-top:6px;line-height:1.5}
+.src{font-size:9.5px;color:var(--dim2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.est{font-size:9px;color:var(--amber);font-weight:700}
+
+/* 検査 */
+.sheet{position:fixed;inset:0;z-index:1500;background:rgba(10,13,18,.72);display:flex;align-items:flex-end;justify-content:center;padding:0}
+.sheet[hidden]{display:none}
+.sheet .inner{background:#fff;width:100%;max-width:760px;max-height:92vh;overflow:auto;border-radius:16px 16px 0 0;padding:14px 14px calc(18px + env(safe-area-inset-bottom))}
+.sheet h2{font-size:15px;font-weight:800;display:flex;align-items:center;gap:6px}
+.sheet .x{margin-left:auto;border:0;background:#f1f4f7;border-radius:8px;width:30px;height:30px;font-size:15px;font-weight:700;color:var(--dim)}
+.inspimg{position:relative;margin-top:10px;background:#0b0d11;border-radius:10px;overflow:hidden}
+.inspimg canvas{display:block;width:100%}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.metric{border:1px solid var(--line);border-radius:10px;padding:9px}
+.metric span{font-size:10px;color:var(--dim)}
+.metric b{display:block;font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:1px}
+.metric b.ok{color:var(--green)}.metric b.ng{color:var(--amber)}.metric b.bad{color:var(--red)}
+.metric small{font-size:9.5px;color:var(--dim2);display:block;line-height:1.4}
+.disc{font-size:10px;color:var(--amber);background:var(--amberbg);border:1px solid #f5d9a8;border-radius:8px;padding:7px 9px;margin-top:10px;line-height:1.5}
+
+/* 実測 */
+.statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line2);border:1px solid var(--line2);border-radius:10px;overflow:hidden}
+.statgrid div{background:#fff;padding:9px 4px;text-align:center}
+.statgrid b{display:block;font-size:17px;font-weight:900;font-variant-numeric:tabular-nums}
+.statgrid span{font-size:9.5px;color:var(--dim)}
+table.tests{width:100%;border-collapse:collapse;font-size:10.5px;margin-top:8px}
+table.tests th,table.tests td{padding:4px 3px;border-bottom:1px solid var(--line2);text-align:left;vertical-align:top}
+table.tests th{color:var(--dim2);font-size:9.5px}
+table.tests .ok{color:var(--green);font-weight:800}
+table.tests .ng{color:var(--red);font-weight:800}
+
+/* 弱点 */
+.fix{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:#fff}
+.fix .no{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:7px;background:var(--redbg);color:var(--red);font-size:11px;font-weight:900;margin-right:6px}
+.fix h3{font-size:13px;font-weight:800;display:inline}
+.fix .did{margin-top:8px;font-size:11.5px;line-height:1.6;color:var(--ink2)}
+.fix .did b{color:var(--tc2)}
+.fix .how{margin-top:7px;font-size:10.5px;color:var(--dim);background:#f8fafb;border-radius:8px;padding:7px 9px;line-height:1.5}
+.limit{background:#fffaf0;border:1px solid #f7d9a4;border-radius:12px;padding:11px;font-size:11px;line-height:1.6;color:#7a3b06}
+.limit b{color:#93370d}
+
+/* 音声だけ */
+body[data-mode="voice"]{background:#000;color:#e9edf2}
+body[data-mode="voice"] .hd,body[data-mode="voice"] .tabbar,body[data-mode="voice"] .card:not(#voiceCard){display:none!important}
+body[data-mode="voice"] #scanTop{display:block!important}
+body[data-mode="voice"] main{padding-top:0}
+body[data-mode="voice"] #voiceCard{display:block;background:#000;border:0;margin:0;border-radius:0;min-height:calc(100vh - 74px);position:relative}
+body[data-mode="voice"] #voiceCard .vlamp{width:74px;height:74px;border-radius:50%;background:#11231f;margin:14vh auto 0;display:flex;align-items:center;justify-content:center;font-size:30px;border:1px solid #1d3a33}
+body[data-mode="voice"] #voiceCard.tap .vlamp{box-shadow:0 0 0 8px rgba(62,224,191,.08)}
+body[data-mode="voice"] #voiceCard .vtext{text-align:center;font-size:26px;font-weight:900;margin-top:18px;letter-spacing:-.02em;line-height:1.25;color:#f4f8fb}
+body[data-mode="voice"] #voiceCard .vsub{text-align:center;font-size:12px;color:#8fa0ae;margin-top:8px;line-height:1.6}
+body[data-mode="voice"] #voiceCard .vfoot{position:absolute;left:0;right:0;bottom:18px;text-align:center;font-size:10px;color:#5d6b78;line-height:1.7}
+#voiceCard{display:none}
+
+/* AR */
+body[data-mode="ar"]{background:#05070a;color:#f2f6f8}
+body[data-mode="ar"] .hd{background:#05070a;border-bottom-color:#1a2129}
+body[data-mode="ar"] .hd h1,body[data-mode="ar"] .hd .sub{color:#e8f0f4}
+body[data-mode="ar"] .hd .sub{color:#93a4b1}
+body[data-mode="ar"] .hd h1 small{background:#12332c;color:#5ff0cf}
+body[data-mode="ar"] .tabbar{background:#05070a;border-bottom-color:#1a2129}
+body[data-mode="ar"] .tabbar button{color:#8194a3}
+body[data-mode="ar"] .tabbar button[aria-selected="true"]{color:#5ff0cf;border-bottom-color:#5ff0cf}
+body[data-mode="ar"] .card{background:#0d1218;border-color:#1b2530}
+body[data-mode="ar"] .card h2{color:#e8f0f4}
+body[data-mode="ar"] .hint,body[data-mode="ar"] .mini{color:#8fa0ae}
+body[data-mode="ar"] .camwrap{aspect-ratio:auto;height:calc(100vh - 205px);min-height:320px;border-radius:12px}
+body[data-mode="ar"] #roi{left:6%;top:24%;width:88%;height:46%}
+body[data-mode="ar"] #camCard .hint{display:none}
+body[data-mode="ar"] .res{background:#0d1218;border-color:#1b2530;color:#e8f0f4}
+body[data-mode="ar"] .res .money div{background:#0d1218}
+body[data-mode="ar"] .res .money b{color:#eaf1f5}
+body[data-mode="ar"] .res .money .big b{color:#5ff0cf}
+body[data-mode="ar"] .res .why{color:#c2d0da}
+body[data-mode="ar"] .res .itemmeta{color:#8fa0ae}
+body[data-mode="ar"] .chtable th,body[data-mode="ar"] .chtable td{border-color:#1b2530}
+body[data-mode="ar"] .chtable tr.best td{background:#10241f}
+body[data-mode="ar"] .verdict.buy{color:#4fe3a5}
+body[data-mode="ar"] .verdict.check{color:#ffc46b}
+body[data-mode="ar"] .verdict.pass{color:#8fa0ae}
+body[data-mode="ar"] .btn{background:#131b23;border-color:#243241;color:#d7e3ea}
+body[data-mode="ar"] .btn.pri{background:#0f7b6c;border-color:#0f7b6c;color:#fff}
+body[data-mode="ar"] .pre{opacity:.85}
+
+/* トースト */
+#toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translate(-50%,12px);background:#11161d;color:#fff;font-size:12px;font-weight:700;padding:9px 14px;border-radius:999px;opacity:0;pointer-events:none;transition:.2s;z-index:1800;max-width:90vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (prefers-color-scheme:dark){
+  body:not([data-mode="phone"]){}
+}
+</style>
+</head>
+<body class="js" data-mode="phone">
+<div id="errbar" hidden></div>
+
+<header class="hd">
+  <div class="top">
+    <h1>🎴 トレカスキャン判定<small>完全版</small></h1>
+    <button class="btn sm" id="btnVoiceTest" title="iPhoneの音声テスト">🔊 音声テスト</button>
+  </div>
+  <div class="sub">カメラで読む → 出口手取りで判定 → 買いだけ耳打ち<br>買取DB更新 <b id="dbTime">2026-11-28 19:00</b>・判定は <b>0.1秒</b>（OCRのみ数秒）</div>
+  <div class="modes" id="modes">
+    <button data-mode="phone" aria-pressed="true"><span class="m1">📱</span>スマホ版</button>
+    <button data-mode="ar" aria-pressed="false"><span class="m1">👓</span>ARグラス版</button>
+    <button data-mode="voice" aria-pressed="false"><span class="m1">🎧</span>音声だけ</button>
+  </div>
+</header>
+
+<nav class="tabbar" id="tabs">
+  <button data-go="scan" aria-selected="true">スキャン</button>
+  <button data-go="db" aria-selected="false">買取DB</button>
+  <button data-go="settings" aria-selected="false">設定・出口</button>
+  <button data-go="test" aria-selected="false">実機テスト</button>
+  <button data-go="fix" aria-selected="false">弱かったところ</button>
+</nav>
+
+<main>
+<!-- ================= スキャン ================= -->
+<section data-tab="scan" class="on" id="scanTop">
+  <div class="card">
+    <h2>用途プリセット <span class="tag" id="presetNote">状態難ライン80%</span></h2>
+    <div class="presets" id="presets">
+      <button data-preset="showcase" aria-pressed="true">🗄 ショーケース<br>個別カード</button>
+      <button data-preset="oripa" aria-pressed="false">🎁 オリパの<br>先頭カード</button>
+      <button data-preset="storage" aria-pressed="false">📦 ストレージ</button>
+    </div>
+    <div class="hint mt6" id="presetHint">値札のカードを近づけて撮影。美品だけでなく<b>状態難でも買えるか</b>で判定します。</div>
+  </div>
+
+  <div class="card" id="camCard">
+    <h2>カメラ <span class="tag" id="camState">未起動</span></h2>
+    <div class="camwrap" id="camwrap">
+      <video id="video" playsinline muted autoplay></video>
+      <canvas id="sim" class="sim" width="720" height="480"></canvas>
+      <div id="roi"><span>値札・商品名を枠内に</span></div>
+      <div class="camhud">
+        <div class="state" id="hudState">停止中</div>
+        <div class="state right" id="hudRight">─</div>
+      </div>
+    </div>
+    <div class="row mt10">
+      <button class="btn pri" id="btnScan">▶ 連続スキャン開始</button>
+      <button class="btn" id="btnCam">📷 カメラ起動</button>
+      <button class="btn" id="btnSim">🧪 シミュレーション</button>
+    </div>
+    <div class="row mt6">
+      <label class="mini">間隔</label>
+      <select id="selInterval" class="btn sm" style="padding:6px 8px">
+        <option value="3000">3秒</option>
+        <option value="4500" selected>4.5秒</option>
+        <option value="7000">7秒</option>
+        <option value="10000">10秒</option>
+      </select>
+      <label class="mini">シュリンク</label>
+      <select id="selShrink" class="btn sm" style="padding:6px 8px">
+        <option value="1" selected>あり</option>
+        <option value="0">なし</option>
+      </select>
+      <label class="mini">グレード</label>
+      <select id="selGrade" class="btn sm" style="padding:6px 8px">
+        <option value="raw" selected>生カード</option>
+        <option value="psa10">PSA10</option>
+      </select>
+    </div>
+    <div class="pre">
+      <figure><canvas id="pvGray" width="240" height="120"></canvas><figcaption>グレー</figcaption></figure>
+      <figure><canvas id="pvCon" width="240" height="120"></canvas><figcaption>コントラスト</figcaption></figure>
+      <figure><canvas id="pvBin" width="240" height="120"></canvas><figcaption>二値化</figcaption></figure>
+    </div>
+    <div class="debuglog" id="dbg">待機中。読み取りのどこで止まったかをここに表示します。</div>
+    <div class="hint mt6">💡 iPhoneはカメラ許可が必要です。カメラが開かないときは自動で<b>シミュレーション棚</b>に切り替わります（判定ロジックは同じ）。</div>
+  </div>
+
+  <div class="card" id="voiceCard">
+    <div class="vlamp" id="vLamp">🎧</div>
+    <div class="vtext" id="vText">待機中</div>
+    <div class="vsub" id="vSub">買いのときだけ読み上げます</div>
+    <div class="vfoot">画面をタップで再開／停止・黒画面＝OLED節電<br><button id="btnExitVoice" style="margin-top:8px;background:#0d1218;color:#8fa0ae;border:1px solid #243241;border-radius:999px;padding:6px 14px;font-size:11px">📱 スマホ画面に戻る</button></div>
+  </div>
+
+  <div class="card">
+    <h2>判定結果 <span class="tag" id="lastMs">─</span></h2>
+    <div class="res empty" id="result">まだスキャンしていません。下のクイックデモか、カメラで読み取ってください。</div>
+    <div class="row mt10">
+      <button class="btn" id="btnDemo1">デモ: 古代の咆哮 8,000円</button>
+      <button class="btn" id="btnDemo2">デモ: ハドウ 6,500円</button>
+      <button class="btn" id="btnDemo3">デモ: ブラッキーex SAR 50,000円</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>読取履歴 <span class="tag" id="histCount">0件</span></h2>
+    <div id="hist" class="hint">まだありません。</div>
+    <div class="row mt10">
+      <button class="btn sm" id="btnClearHist">履歴を消す</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DB ================= -->
+<section data-tab="db">
+  <div class="card">
+    <h2>買取DB <span class="tag" id="dbCount">0件</span></h2>
+    <div class="dbtools">
+      <input id="dbSearch" placeholder="🔍 商品名でしぼる" style="flex:1;min-width:140px">
+      <button class="btn sm" id="btnAddRow">＋ 行を追加</button>
+      <button class="btn sm" id="btnExport">⬇ JSON書き出し</button>
+      <label class="btn sm" style="display:inline-flex;align-items:center">⬆ 読み込み<input type="file" id="fileImport" accept="application/json,.json" hidden></label>
+      <button class="btn sm danger" id="btnReset">↺ 最新初期値に戻す</button>
+    </div>
+    <div class="dbwrap">
+      <table class="db">
+        <thead><tr>
+          <th>商品名</th><th>種別</th><th>版</th><th>グレード</th><th>型番</th><th>定価</th>
+          <th>大分</th><th>福岡</th><th>宅配</th><th>シュリンクなし</th><th>出典</th><th>メモ</th><th></th>
+        </tr></thead>
+        <tbody id="dbBody"></tbody>
+      </table>
+    </div>
+    <div class="dbnote">※ 初期値は <b>2026-11-28 19:00</b> 時点の買取。編集すると端末（localStorage）に自動保存され、リロードしても消えません。価格は日次で動くので、店頭で見た表に合わせて直してください。行左のオレンジ線は「目安値」です。</div>
+    <div class="row mt10">
+      <button class="btn sm" id="btnExportCsv">⬇ CSV（一覧）</button>
+      <span class="mini" id="dbEdited"></span>
+    </div>
+  </div>
+  <div class="card">
+    <h2>価格の出どころ</h2>
+    <div class="hint" id="dbSources"></div>
+  </div>
+</section>
+
+<!-- ================= 設定 ================= -->
+<section data-tab="settings">
+  <div class="card">
+    <h2>出口と移動費</h2>
+    <div class="field"><label>大分の行き先<small>杵築市から下道・往復距離で燃料を計算</small></label>
+      <select id="selOitaKm">
+        <option value="24">別府（24km）</option>
+        <option value="36" selected>大分市（36km）</option>
+        <option value="56">中津（56km）</option>
+        <option value="custom">直接入力</option>
+      </select>
+    </div>
+    <div class="field" id="rowCustomKm" hidden><label>往復距離（km）<small>直接入力</small></label><input type="number" id="inCustomKm" min="0" step="1" value="36"></div>
+    <div class="field"><label>燃料単価<small>円/km（下道）</small></label><input type="number" id="inFuel" min="0" step="1" value="10"></div>
+    <div class="field"><label>福岡往復の燃料<small>杵築→福岡 下道 約310km</small></label><input type="number" id="inFuku" min="0" step="100" value="3100"></div>
+    <div class="field"><label>宅配の送料<small>1口あたり</small></label><input type="number" id="inShip" min="0" step="100" value="800"></div>
+    <div class="field"><label>梱包費<small>1口あたり</small></label><input type="number" id="inPack" min="0" step="100" value="500"></div>
+  </div>
+  <div class="card">
+    <h2>按分（まとめ売り前提）</h2>
+    <div class="field"><label>ショーケース<small>1回の移動で売る枚数</small></label><input type="number" id="inSplitShowcase" min="1" step="1" value="5"></div>
+    <div class="field"><label>オリパ先頭<small>1回の移動で売る枚数</small></label><input type="number" id="inSplitOripa" min="1" step="1" value="1"></div>
+    <div class="field"><label>ストレージ<small>1回の移動で売る枚数</small></label><input type="number" id="inSplitStorage" min="1" step="1" value="10"></div>
+    <div class="hint mt6">移動費を「何枚で割るか」。1枚だけ売るなら1、まとめ売り前提なら枚数分の1になります。</div>
+  </div>
+  <div class="card">
+    <h2>買いライン</h2>
+    <div class="field"><label>ショーケース<small>利益がこの額以上で「買い」</small></label><input type="number" id="inThShowcase" min="0" step="100" value="500"></div>
+    <div class="field"><label>オリパ<small>利益がこの額以上で「買い」</small></label><input type="number" id="inThOripa" min="0" step="100" value="500"></div>
+    <div class="field"><label>ストレージ<small>初期500円（変更可）</small></label><input type="number" id="inThStorage" min="0" step="100" value="500"></div>
+    <div class="field"><label>状態難率（ショーケース）<small>状態難でも美品の何％で買い取られるか</small></label><input type="number" id="inHardShowcase" min="0" max="100" step="5" value="80"></div>
+    <div class="field"><label>状態難率（オリパ）<small>先頭カードは傷みやすい前提</small></label><input type="number" id="inHardOripa" min="0" max="100" step="5" value="60"></div>
+  </div>
+  <div class="card">
+    <h2>音声・画面</h2>
+    <div class="field"><label>音声で読み上げ<small>買い／状態確認のとき</small></label><div class="switch"><input type="checkbox" id="swAudio" checked><i></i></div></div>
+    <div class="field"><label>全部読み上げ<small>見送りも含めて読み上げ</small></label><div class="switch"><input type="checkbox" id="swAllAudio"><i></i></div></div>
+    <div class="field"><label>画面を消さない<small>Wake Lock（対応端末のみ）</small></label><div class="switch"><input type="checkbox" id="swWake" checked><i></i></div></div>
+    <div class="field"><label>商品名OCRを使う<small>OFFにすると価格だけで照合（速い）</small></label><div class="switch"><input type="checkbox" id="swNameOcr" checked><i></i></div></div>
+    <div class="field"><label>シミュレーションでもOCRを通す<small>前処理の確認用</small></label><div class="switch"><input type="checkbox" id="swSimOcr"><i></i></div></div>
+    <div class="row mt10">
+      <button class="btn" id="btnVoiceTest2">🔊 テスト音声</button>
+      <button class="btn" id="btnUnlock">🔓 音声アンロック</button>
+    </div>
+    <div class="hint mt6">iPhoneは「マナースイッチ（消音）」がONだとWeb音声が出ません。サイレント解除＋音量を確認してください。</div>
+  </div>
+  <div class="card">
+    <h2>データ</h2>
+    <div class="row">
+      <button class="btn sm" id="btnExport2">⬇ 設定もまとめて書き出し</button>
+      <button class="btn sm danger" id="btnClearAll">端末の保存を全部消す</button>
+    </div>
+    <div class="hint mt6">DB・設定・実測の記録はこの端末にだけ保存されます（サーバー送信なし）。</div>
+  </div>
+</section>
+
+<!-- ================= 実機テスト ================= -->
+<section data-tab="test">
+  <div class="card">
+    <h2>📊 実機テスト計測モード</h2>
+    <div class="hint">保有BOX・保有カード（答えが分かっているもの）で、①処理時間 ②OCRが読めたか ③正解と一致したか を記録します。スキャンのたびに自動で1行増えます。</div>
+    <div class="row mt10">
+      <input id="expName" placeholder="正解の商品名（例: ハドウシーカー）" style="flex:1;min-width:160px">
+      <input id="expPrice" type="number" inputmode="numeric" placeholder="正解の価格" style="width:120px">
+    </div>
+    <div class="statgrid mt10">
+      <div><b id="stCount">0</b><span>記録</span></div>
+      <div><b id="stName">─</b><span>商品名一致</span></div>
+      <div><b id="stPrice">─</b><span>価格一致</span></div>
+      <div><b id="stMs">─</b><span>平均ms</span></div>
+    </div>
+    <div class="row mt10">
+      <button class="btn sm" id="btnCsv">⬇ CSV書き出し</button>
+      <button class="btn sm danger" id="btnClearTests">記録を消す</button>
+    </div>
+    <div style="overflow:auto"><table class="tests" id="testTable"><thead><tr><th>時刻</th><th>ms</th><th>読んだ商品名</th><th>読んだ価格</th><th>判定</th><th>正解</th></tr></thead><tbody></tbody></table></div>
+    <div class="hint mt6" id="testEmpty">まだ記録はありません。</div>
+  </div>
+</section>
+
+<!-- ================= 弱かったところ ================= -->
+<section data-tab="fix">
+  <div class="card">
+    <h2>プロトタイプの「弱かったところ」と修正</h2>
+    <div class="hint">先ほどのスマホ版から、実際に店頭で使うときに止まる順に直しました。数字はこのページでそのまま確認できます。</div>
+  </div>
+
+  <div class="fix">
+    <div><span class="no">1</span><h3>OCRがショーケースに弱い（反射・斜め・小さい数字）</h3></div>
+    <div class="did">カメラ映像にROIガイド枠を重ね、<b>枠内だけを切り出し → グレースケール → コントラスト強調 → 二値化</b>してからTesseract.jsへ渡すようにしました。価格は数字だけに絞った専用OCR（whitelist）で読み、商品名は日本語OCRで読みます。<b>どこで止まったか（価格未検出／商品名未検出／照合不可）を毎回デバッグ表示</b>するので、現場で「読めていない」の原因が分かります。</div>
+    <div class="how">確認方法：下の「前処理」3枚の絵と、デバッグ欄のログ。読めないときは枠を値札に寄せる／明るさを変える。</div>
+  </div>
+
+  <div class="fix">
+    <div><span class="no">2</span><h3>買取DBがサンプル・空欄で、リロードすると消える</h3></div>
+    <div class="did"><b>2026-11-28 19:00時点の買取価格</b>を初期内蔵（ハドウシーカー シュリンクあり7,100円[最高]／6,800円[ホムラ]・なし6,600円、古代の咆哮 大分6,000円／宅配10,600円、ワイルドフォース 大分7,000円／宅配11,200円、スペシャルBOXフクオカ 8,500円、30th CELEBRATION 16,000円、ストームエメラルダ 7,200円、ロケット団の栄光 22,500円、インフェルノX 17,000円、MEGAドリームex 10,800円、OP-18 神の支配 6,600円 等）。編集内容は<b>localStorageへ自動保存</b>し、JSONの書き出し／読み込み、最新初期値へのリセットも付けました。空欄の商品はもうありません。</div>
+    <div class="how">確認方法：「買取DB」タブで1つ価格を変える → 再読み込み → 残っている。右上の更新日時も表示。</div>
+  </div>
+
+  <div class="fix">
+    <div><span class="no">3</span><h3>状態の良し悪しを見る手段がなかった</h3></div>
+    <div class="did">買い候補だけ「🔬 状態検査（近接モード）」へ進めるようにしました。撮ったカード画像から枠のエッジを解析して<b>センタリング比率（左右・上下の％）を数値化</b>し、四隅・縁の白ピクセル輝度差から<b>白かけ疑い（あり／なし＋信頼度％）</b>を出します。判定結果に「目視の代替ではない一次スクリーニング」と明記しています。</div>
+    <div class="how">確認方法：判定結果の「🔬 状態検査」→ 撮影／画像選択 → 左右％・上下％・白かけ疑い・信頼度。</div>
+  </div>
+
+  <div class="fix">
+    <div><span class="no">4</span><h3>iPhoneで音声が出ない（Safariの自動再生制限）</h3></div>
+    <div class="did"><b>スキャン開始時に自動で音声をアンロック</b>し、テスト音声ボタンも付けました。読み上げは「買い」「状態確認」のときだけ（全部読み上げも選べます）。音声だけモードでは画面を黒くして最小表示にし、OLEDの電池を節約します。</div>
+    <div class="how">確認方法：右上「🔊 音声テスト」。出ないときはマナースイッチ解除＋音量。iOSは本体の消音スイッチでWeb音声が止まります。</div>
+  </div>
+
+  <div class="fix">
+    <div><span class="no">5</span><h3>実測がゼロで、精度も電池も分からない</h3></div>
+    <div class="did"><b>実機テスト計測モード</b>を作りました。スキャンごとに処理時間(ms)・OCRの読取結果・正解との一致を記録し、<b>商品名一致率／価格一致率／平均処理時間</b>をその場で集計します。CSVで書き出せるので、保有BOX・保有カードでの実測にそのまま使えます。</div>
+    <div class="how">確認方法：正解の商品名と価格を入れてからスキャン → 「実機テスト」タブに1行増える。</div>
+  </div>
+
+  <div class="fix">
+    <div><span class="no">6</span><h3>版の取り違え（通常版／25th／プロモ／再販）とグレード違い</h3></div>
+    <div class="did">カード番号（###/###）・レアリティ（SAR/AR等）・25thロゴ・プロモ・再販／復刻・レギュレーションを抽出し、<b>版ごとに別価格で照合</b>します。DBの想定グレード（生／PSA10）と違うときは「グレード違い」と警告し、<b>買い判定を出しません</b>（誤って高値のPSA10価格で買うのを防ぐ）。</div>
+    <div class="how">確認方法：デモ「ブラッキーex SAR 50,000円」でグレードを「生」にすると、PSA10価格のDBとは別扱いになることを確認。</div>
+  </div>
+
+  <div class="fix">
+    <div><span class="no">7</span><h3>店頭で画面を見続けるのが不自然／電池が持たない</h3></div>
+    <div class="did">「📱スマホ版／👓ARグラス版／🎧音声だけ」の3モードを実装。AR版はカメラを大きく取ってHUDを太字にし、音声だけ版は<b>純黒背景＋判定だけ巨大表示</b>（OLED節電）にしました。買いのときだけ読み上げるので、棚を見たまま耳だけで判断できます。</div>
+    <div class="how">確認方法：上部のモード切替。音声だけにすると画面が黒くなり、直近の判定だけ残る。</div>
+  </div>
+
+  <div class="card">
+    <h2>まだ弱いところ（正直な限界）</h2>
+    <div class="limit">
+      <b>・絵柄認識は未実装。</b>商品名の文字が読めないカードは照合できません（画像の類似検索は今回の範囲外）。<br>
+      <b>・OCRは近距離勝負。</b>ガラス越し・斜め・手書きの小さい数字は落ちます。まずBOX名と大きい値札から。<br>
+      <b>・白かけ検出は一次スクリーニング。</b>見込み40〜70%。断定しないので、高額カードは目視も併用してください。<br>
+      <b>・実測はまだゼロ。</b>このページの実機テストモードで、保有BOX・保有カードから数字を貯める必要があります。<br>
+      <b>・シングルの初期DBはPSA10／全国郵送の買取が中心。</b>生カードの大分・福岡店頭価格は、店頭で見た値をDBに足すのが確実です（スキャン結果から1タップで追加できます）。<br>
+      <b>・ARグラス実機では未検証。</b>Ray-Ban Meta等はカメラ映像をWebページへ直接渡せないため、現時点のARグラス版は「スマホをグラス代わりにしたHUD」です。実機連携は別途。
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- 状態検査シート -->
+<div class="sheet" id="inspectSheet" hidden>
+  <div class="inner">
+    <h2>🔬 状態検査（近接モード）<button class="x" id="btnCloseInsp">✕</button></h2>
+    <div class="hint">カードを枠いっぱいに入れて、真上から撮影。背景は暗い方が枠を拾いやすいです。</div>
+    <div class="inspimg"><canvas id="inspCanvas" width="720" height="480"></canvas></div>
+    <div class="metrics">
+      <div class="metric"><span>左右センター</span><b id="mLR">─</b><small id="mLRs">左 ─ ／ 右 ─</small></div>
+      <div class="metric"><span>上下センター</span><b id="mTB">─</b><small id="mTBs">上 ─ ／ 下 ─</small></div>
+      <div class="metric" style="grid-column:1/-1"><span>白かけ疑い</span><b id="mWhite">─</b><small id="mWhites">四隅・縁の白ピクセル</small></div>
+    </div>
+    <div class="disc">⚠ これは目視の代替ではなく一次スクリーニングです。センタリングは画像内の枠線から算出した概算、白かけは「疑い＋信頼度」まで。高額カードは必ず目視で最終確認してください。</div>
+    <div class="row mt10">
+      <button class="btn pri" id="btnInspectShot">📷 このフレームで検査</button>
+      <label class="btn">🖼 画像を選ぶ<input type="file" id="fileInspect" accept="image/*" hidden></label>
+      <button class="btn" id="btnInspectAgain">↻ 取り直す</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s)};
+var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function yen(n){n=Math.round(Number(n)||0);return n.toLocaleString('ja-JP')+'円'}
+function num(v,d){var n=Number(v);return isFinite(n)?n:(d||0)}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function nowLabel(){var d=new Date();function p(x){return (x<10?'0':'')+x}return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes())}
+
+var ERR=$('#errbar');
+function showErr(m){if(!ERR)return;ERR.hidden=false;ERR.textContent='⚠ '+m}
+window.addEventListener('error',function(e){showErr(e.message||'JSエラー')});
+window.addEventListener('unhandledrejection',function(e){showErr('Promise: '+((e.reason&&e.reason.message)||e.reason))});
+
+/* ---------------- 初期DB（2026-11-28 19:00時点） ---------------- */
+var DEFAULT_DB={updated:'2026-11-28 19:00',edited:'',items:[
+/* ===== BOX ===== */
+{id:'b_hado',cat:'box',name:'ハドウシーカー',aliases:['ハドウシーカー','ハドウ','M7'],version:'通常版',grade:'raw',number:'',list:6000,price:{oita:6500,fukuoka:6800,mail:7100,loose:6600},oitaStore:'極KIWAMI 大分',src:'11/28 19時・シュリンクあり最高7,100／ホムラ6,800／なし6,600',est:false},
+{id:'b_kodai',cat:'box',name:'古代の咆哮',aliases:['古代の咆哮','古代','SV4K'],version:'通常版',grade:'raw',number:'',list:5400,price:{oita:6000,fukuoka:9800,mail:10600,loose:9200},oitaStore:'大分店頭',src:'11/28 19時・大分6,000／宅配10,600',est:false},
+{id:'b_wild',cat:'box',name:'ワイルドフォース',aliases:['ワイルドフォース','ワイルド','SV5K'],version:'通常版',grade:'raw',number:'',list:5400,price:{oita:7000,fukuoka:11200,mail:11200,loose:9500},oitaStore:'大分店頭',src:'11/28 19時・大分7,000／宅配11,200',est:false},
+{id:'b_fukuoka',cat:'box',name:'スペシャルBOX ポケモンセンターフクオカ',aliases:['スペシャルBOX','フクオカ','ポケモンセンターフクオカ'],version:'通常版',grade:'raw',number:'',list:2090,price:{oita:8500,fukuoka:8500,mail:8500,loose:0},oitaStore:'大分店頭',src:'11/28 19時・大分8,500／宅配8,500',est:false},
+{id:'b_30th',cat:'box',name:'30th CELEBRATION BOX',aliases:['30th CELEBRATION','30th','サーティース','30周年'],version:'通常版',grade:'raw',number:'',list:7200,price:{oita:16000,fukuoka:16000,mail:16000,loose:0},oitaStore:'',src:'11/28 19時・16,000',est:false},
+{id:'b_storm',cat:'box',name:'ストームエメラルダ',aliases:['ストームエメラルダ','ストーム','M6'],version:'通常版',grade:'raw',number:'',list:6000,price:{oita:7200,fukuoka:7000,mail:7200,loose:6500},oitaStore:'大分店頭',src:'11/28 19時・7,200／なし6,500',est:false},
+{id:'b_rocket',cat:'box',name:'ロケット団の栄光',aliases:['ロケット団の栄光','ロケット団','栄光'],version:'通常版',grade:'raw',number:'',list:5400,price:{oita:21500,fukuoka:22000,mail:22500,loose:0},oitaStore:'',src:'11/27 16:55・モバイル一番22,500',est:false},
+{id:'b_inferno',cat:'box',name:'インフェルノX',aliases:['インフェルノX','インフェルノ'],version:'通常版',grade:'raw',number:'',list:5400,price:{oita:16000,fukuoka:17000,mail:17000,loose:0},oitaStore:'',src:'11/28 19時・17,000',est:false},
+{id:'b_megadream',cat:'box',name:'MEGAドリームex',aliases:['MEGAドリームex','メガドリーム','ドリームex'],version:'通常版',grade:'raw',number:'',list:5400,price:{oita:10000,fukuoka:10800,mail:10800,loose:0},oitaStore:'',src:'11/28 19時・10,800',est:false},
+{id:'b_op18',cat:'box',name:'OP-18 神の支配',aliases:['神の支配','OP-18','OP18'],version:'通常版',grade:'raw',number:'',list:6600,price:{oita:6200,fukuoka:6600,mail:6600,loose:0},oitaStore:'',src:'11/28 19時・6,600',est:false},
+{id:'b_future',cat:'box',name:'未来の一閃',aliases:['未来の一閃','未来','SV4M'],version:'通常版',grade:'raw',number:'',list:5400,price:{oita:0,fukuoka:9200,mail:10000,loose:8500},oitaStore:'',src:'11/28 04:00調査・宅配最高10,000',est:true},
+{id:'b_black',cat:'box',name:'黒炎の支配者',aliases:['黒炎の支配者','黒炎','SV3'],version:'通常版',grade:'raw',number:'',list:5400,price:{oita:16500,fukuoka:17000,mail:17000,loose:0},oitaStore:'',src:'11/26 道楽・BOX表',est:true},
+{id:'b_triplet',cat:'box',name:'トリプレットビート',aliases:['トリプレットビート','トリプレット','SV1a'],version:'通常版',grade:'raw',number:'',list:5400,price:{oita:14000,fukuoka:15000,mail:15000,loose:0},oitaStore:'',src:'11/26 道楽・BOX表',est:true},
+{id:'b_vstar',cat:'box',name:'VSTARユニバース',aliases:['VSTARユニバース','VSTAR','S12a'],version:'通常版',grade:'raw',number:'',list:5400,price:{oita:23000,fukuoka:24000,mail:24000,loose:0},oitaStore:'',src:'11/26 道楽・BOX表',est:true},
+{id:'b_shiny',cat:'box',name:'シャイニートレジャーex',aliases:['シャイニートレジャー','SV4a'],version:'通常版',grade:'raw',number:'',list:5400,price:{oita:14000,fukuoka:14600,mail:14600,loose:0},oitaStore:'',src:'11/26 道楽・BOX表',est:true},
+{id:'b_cyber',cat:'box',name:'サイバージャッジ',aliases:['サイバージャッジ','SV5a'],version:'通常版',grade:'raw',number:'',list:5400,price:{oita:10000,fukuoka:10500,mail:10500,loose:0},oitaStore:'',src:'11/26 道楽・BOX表',est:true},
+{id:'b_scarlet',cat:'box',name:'スカーレットex',aliases:['スカーレットex','スカーレット','SV1S'],version:'通常版',grade:'raw',number:'',list:5400,price:{oita:13000,fukuoka:13800,mail:13800,loose:0},oitaStore:'',src:'11/28 04:00調査',est:true},
+{id:'b_151',cat:'box',name:'ポケモンカード151',aliases:['ポケモンカード151','151','SV2a'],version:'通常版',grade:'raw',number:'',list:5400,price:{oita:41000,fukuoka:43000,mail:43000,loose:0},oitaStore:'',src:'11/26 道楽・BOX表',est:true},
+{id:'b_arena',cat:'box',name:'熱風のアリーナ',aliases:['熱風のアリーナ','熱風','S5a'],version:'通常版',grade:'raw',number:'',list:5400,price:{oita:16000,fukuoka:17000,mail:17000,loose:0},oitaStore:'',src:'11/26 道楽・BOX表',est:true},
+{id:'b_partners',cat:'box',name:'バトルパートナーズ',aliases:['バトルパートナーズ','バトル','SV9'],version:'通常版',grade:'raw',number:'',list:5400,price:{oita:9500,fukuoka:10000,mail:10000,loose:0},oitaStore:'',src:'11/26 参考値',est:true},
+{id:'b_terastal',cat:'box',name:'テラスタルフェスex',aliases:['テラスタルフェス','テラスタル','SV8a'],version:'通常版',grade:'raw',number:'',list:5400,price:{oita:8000,fukuoka:8500,mail:8500,loose:0},oitaStore:'',src:'11/26 参考値',est:true},
+{id:'b_abyss',cat:'box',name:'アビスアイ',aliases:['アビスアイ','SV6a'],version:'通常版',grade:'raw',number:'',list:5400,price:{oita:6800,fukuoka:7100,mail:7100,loose:0},oitaStore:'',src:'11/26 参考値',est:true},
+{id:'b_choden',cat:'box',name:'超電ブレイカー',aliases:['超電ブレイカー','超電','SV8'],version:'通常版',grade:'raw',number:'',list:5400,price:{oita:8500,fukuoka:9000,mail:9000,loose:0},oitaStore:'',src:'11/26 参考値',est:true},
+{id:'b_rakuen',cat:'box',name:'楽園ドラゴーナ',aliases:['楽園ドラゴーナ','楽園','SV7a'],version:'通常版',grade:'raw',number:'',list:5400,price:{oita:6000,fukuoka:6300,mail:6300,loose:0},oitaStore:'',src:'11/26 参考値',est:true},
+/* ===== シングル（生カード・全国郵送買取） ===== */
+{id:'s_umbreon',cat:'single',name:'ブラッキーex SAR',aliases:['ブラッキーex SAR','ブラッキーex','ブラッキー'],version:'通常版',grade:'raw',number:'217/187',rarity:'SAR',list:0,price:{oita:0,fukuoka:0,mail:65000,loose:0},oitaStore:'',src:'11/26 全国郵送・爆速/トレカルーム65,000',est:true},
+{id:'s_megagengar',cat:'single',name:'メガゲンガーex SAR',aliases:['メガゲンガーex SAR','メガゲンガーex','ゲンガーex'],version:'通常版',grade:'raw',number:'240/193',rarity:'SAR',list:0,price:{oita:0,fukuoka:0,mail:53000,loose:0},oitaStore:'',src:'11/26 全国郵送・爆速53,000',est:true},
+{id:'s_umbreonv',cat:'single',name:'ブラッキーV SR',aliases:['ブラッキーV SR','ブラッキーV'],version:'通常版',grade:'raw',number:'085/069',rarity:'SR',list:0,price:{oita:0,fukuoka:0,mail:105000,loose:0},oitaStore:'',src:'11/26 全国郵送・トレカルーム105,000',est:true},
+{id:'s_megachar',cat:'single',name:'メガリザードンXex SAR',aliases:['メガリザードンXex SAR','メガリザードンX','リザードンX'],version:'通常版',grade:'raw',number:'110/080',rarity:'SAR',list:0,price:{oita:0,fukuoka:0,mail:110000,loose:0},oitaStore:'',src:'11/26 全国郵送・トレカルーム110,000',est:true},
+{id:'s_pikaex',cat:'single',name:'ピカチュウex',aliases:['ピカチュウex','ピカチュウ'],version:'通常版',grade:'raw',number:'234/193',rarity:'ex',list:0,price:{oita:0,fukuoka:0,mail:37000,loose:0},oitaStore:'',src:'11/26 全国郵送・37,000',est:true},
+{id:'s_mewur',cat:'single',name:'ミュウex UR',aliases:['ミュウex UR','ミュウex'],version:'通常版',grade:'raw',number:'208/165',rarity:'UR',list:0,price:{oita:0,fukuoka:0,mail:19000,loose:0},oitaStore:'',src:'11/26 トレカクラブ19,000',est:true},
+/* ===== PSA10（福岡・道楽 11/26） ===== */
+{id:'p_gengar',cat:'single',name:'ゲンガーex SAR 131/103',aliases:['ゲンガーex SAR','ゲンガーex','30th ゲンガー'],version:'通常版',grade:'psa10',number:'131/103',rarity:'SAR',list:0,price:{oita:0,fukuoka:80000,mail:0,loose:0},oitaStore:'',src:'11/26 道楽PSA10・80,000',est:true},
+{id:'p_char',cat:'single',name:'リザードンex SAR 137/103',aliases:['リザードンex SAR 137','リザードンex SAR','リザードン137'],version:'通常版',grade:'psa10',number:'137/103',rarity:'SAR',list:0,price:{oita:0,fukuoka:73000,mail:0,loose:0},oitaStore:'',src:'11/26 道楽PSA10・73,000',est:true},
+{id:'p_mew',cat:'single',name:'ミュウex SAR 30th',aliases:['ミュウex SAR','ミュウex'],version:'通常版',grade:'psa10',number:'',rarity:'SAR',list:0,price:{oita:0,fukuoka:67000,mail:0,loose:0},oitaStore:'',src:'11/26 道楽PSA10・67,000',est:true},
+{id:'p_umb',cat:'single',name:'ブラッキーex SAR 30th',aliases:['ブラッキーex SAR','ブラッキーex'],version:'通常版',grade:'psa10',number:'',rarity:'SAR',list:0,price:{oita:0,fukuoka:64000,mail:0,loose:0},oitaStore:'',src:'11/26 道楽PSA10・64,000',est:true},
+{id:'p_espeon',cat:'single',name:'エーフィex SAR 30th',aliases:['エーフィex SAR','エーフィex'],version:'通常版',grade:'psa10',number:'',rarity:'SAR',list:0,price:{oita:0,fukuoka:50000,mail:0,loose:0},oitaStore:'',src:'11/26 道楽PSA10・50,000',est:true},
+{id:'p_megagengar',cat:'single',name:'メガゲンガーex SAR 30th',aliases:['メガゲンガーex SAR 30th','メガゲンガーex'],version:'通常版',grade:'psa10',number:'',rarity:'SAR',list:0,price:{oita:0,fukuoka:45000,mail:0,loose:0},oitaStore:'',src:'11/26 道楽PSA10・45,000',est:true},
+{id:'p_megakairyu',cat:'single',name:'メガカイリューex SAR 30th',aliases:['メガカイリューex SAR','メガカイリューex'],version:'通常版',grade:'psa10',number:'',rarity:'SAR',list:0,price:{oita:0,fukuoka:25000,mail:0,loose:0},oitaStore:'',src:'11/26 道楽PSA10・25,000',est:true},
+{id:'p_zekrom',cat:'single',name:'ゼクロムex SAR 30th',aliases:['ゼクロムex SAR','ゼクロムex'],version:'通常版',grade:'psa10',number:'',rarity:'SAR',list:0,price:{oita:0,fukuoka:35000,mail:0,loose:0},oitaStore:'',src:'11/26 道楽PSA10・35,000',est:true},
+{id:'p_reshiram',cat:'single',name:'レシラムex SAR 30th',aliases:['レシラムex SAR','レシラムex'],version:'通常版',grade:'psa10',number:'',rarity:'SAR',list:0,price:{oita:0,fukuoka:34000,mail:0,loose:0},oitaStore:'',src:'11/26 道楽PSA10・34,000',est:true},
+{id:'p_char25',cat:'single',name:'リザードン25th Lv.76',aliases:['リザードン25th','リザードン Lv.76','25thリザードン'],version:'25th',grade:'psa10',number:'',rarity:'',list:0,price:{oita:0,fukuoka:75000,mail:0,loose:0},oitaStore:'',src:'11/26 道楽PSA10・75,000',est:true},
+{id:'p_umbreonvmax',cat:'single',name:'ブラッキーVMAX HR',aliases:['ブラッキーVMAX HR','ブラッキーVMAX'],version:'通常版',grade:'psa10',number:'',rarity:'HR',list:0,price:{oita:0,fukuoka:650000,mail:0,loose:0},oitaStore:'',src:'11/26 道楽PSA10・650,000',est:true},
+{id:'p_jolteon',cat:'single',name:'サンダースVMAX PROMO',aliases:['サンダースVMAX','サンダースVMAX PROMO'],version:'プロモ',grade:'psa10',number:'',rarity:'',list:0,price:{oita:0,fukuoka:900000,mail:0,loose:0},oitaStore:'',src:'11/26 道楽PSA10・900,000',est:true},
+{id:'p_vaporeon',cat:'single',name:'シャワーズVMAX PROMO',aliases:['シャワーズVMAX','シャワーズVMAX PROMO'],version:'プロモ',grade:'psa10',number:'',rarity:'',list:0,price:{oita:0,fukuoka:930000,mail:0,loose:0},oitaStore:'',src:'11/26 道楽PSA10・930,000',est:true}
+]};
+
+var DEFAULT_SET={
+  mode:'phone',preset:'showcase',interval:4500,
+  threshold:{showcase:500,oripa:500,storage:500},
+  hardRate:{showcase:0.8,oripa:0.6},
+  split:{showcase:5,oripa:1,storage:10},
+  oitaKm:36,oitaKmLabel:'大分市',fuel:10,fukuokaFuel:3100,mailShip:800,pack:500,
+  shrink:true,grade:'raw',audioOn:true,allAudio:false,keepAwake:true,nameOcr:true,simOcr:false
+};
+
+var LS={db:'tscanner.db.v1',set:'tscanner.set.v1',test:'tscanner.tests.v1'};
+function load(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+var DB=load(LS.db,null)||JSON.parse(JSON.stringify(DEFAULT_DB));
+if(!DB.items||!DB.items.length)DB=JSON.parse(JSON.stringify(DEFAULT_DB));
+var SET=load(LS.set,{});
+Object.keys(DEFAULT_SET).forEach(function(k){if(SET[k]===undefined)SET[k]=JSON.parse(JSON.stringify(DEFAULT_SET[k]))});
+if(typeof SET.threshold!=='object')SET.threshold=JSON.parse(JSON.stringify(DEFAULT_SET.threshold));
+if(typeof SET.hardRate!=='object')SET.hardRate=JSON.parse(JSON.stringify(DEFAULT_SET.hardRate));
+if(typeof SET.split!=='object')SET.split=JSON.parse(JSON.stringify(DEFAULT_SET.split));
+var TESTS=load(LS.test,[]);
+
+function saveDB(){DB.edited=nowLabel();try{localStorage.setItem(LS.db,JSON.stringify(DB))}catch(e){};$('#dbEdited').textContent='保存 '+DB.edited}
+function saveSet(){try{localStorage.setItem(LS.set,JSON.stringify(SET))}catch(e){}}
+function saveTests(){try{TESTS=TESTS.slice(0,300);localStorage.setItem(LS.test,JSON.stringify(TESTS))}catch(e){}}
+function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('on')},1900)}
+
+/* ---------------- 文字の正規化・照合 ---------------- */
+function norm(s){
+  return String(s==null?'':s).toLowerCase()
+    .replace(/[Ａ-Ｚａ-ｚ０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0)})
+    .replace(/[ぁ-ん]/g,function(c){return String.fromCharCode(c.charCodeAt(0)+0x60)})
+    .replace(/[\s\u3000・･\-—–_\/／:：、。,.，．「」『』【】\[\]()（）'"’”]/g,'');
+}
+function grams(s,n){if(!s)return[];if(s.length<=n)return[s];var a=[];for(var i=0;i<=s.length-n;i++)a.push(s.slice(i,i+n));return a}
+function dice(a,b){var A=grams(a,2),B=grams(b,2);if(!A.length||!B.length)return 0;var m={},hit=0;A.forEach(function(x){m[x]=(m[x]||0)+1});B.forEach(function(x){if(m[x]){m[x]--;hit++}});return 2*hit/(A.length+B.length)}
+function extractMarks(text){
+  var t=String(text||'');
+  var cn=t.match(/(\d{2,3})\s*[\/／]\s*(\d{2,3})/);
+  var rar=t.match(/\b(SAR|AR|SR|UR|HR|CHR|CSR|RR|MA)\b/i);
+  return {
+    cardNo:cn?cn[1]+'/'+cn[2]:'',
+    rarity:rar?rar[1].toUpperCase():'',
+    promo:/プロモ|PROMO|\bPR\b/i.test(t),
+    y25:/25th|25周年|25ｔｈ/i.test(t),
+    reprint:/再販|復刻|リプリント|reprint/i.test(t),
+    reg:(t.match(/\b([FGHI])\b/g)||[]).join(''),
+    mark:/エキスパンション|拡張マーク/.test(t)
+  };
+}
+function versionHint(marks){
+  if(marks.y25)return '25th';
+  if(marks.promo)return 'プロモ';
+  if(marks.reprint)return '再販・復刻';
+  return '';
+}
+function versionLabel(v){return v||'通常版'}
+function gradeLabel(g){return g==='psa10'?'PSA10':'生カード'}
+
+function findCandidates(text,marks){
+  var t=norm(text);
+  var out=[];
+  DB.items.forEach(function(it){
+    var best=0;
+    var names=[it.name].concat(it.aliases||[]);
+    names.forEach(function(x){
+      var nx=norm(x);if(!nx)return;
+      var s=0;
+      if(nx.length>=3&&t.indexOf(nx)>=0)s=0.9+Math.min(0.1,nx.length/60);
+      else if(nx.length<=2)s=t.indexOf(nx)>=0?0.8:dice(t,nx)*0.5;
+      else s=dice(t,nx);
+      if(s>best)best=s;
+    });
+    if(it.number&&marks.cardNo&&norm(it.number)===norm(marks.cardNo))best=Math.max(best,1.05);
+    if(it.rarity&&marks.rarity&&it.rarity.toUpperCase()===marks.rarity)best+=0.02;
+    if(marks.y25&&it.version==='25th')best+=0.04;
+    if(best>0.42)out.push({it:it,score:Math.min(1.12,best)});
+  });
+  out.sort(function(a,b){return b.score-a.score});
+  return out;
+}
+function pickItem(text,marks,grade){
+  var cands=findCandidates(text,marks);
+  if(!cands.length)return {item:null,reason:'照合不可（DBに近い商品名がない）',cands:[]};
+  var top=cands[0];
+  var pool=cands.filter(function(c){return c.score>=top.score-0.25});
+  var sameGrade=pool.filter(function(c){
+    if((c.it.grade||'raw')!==grade)return false;
+    if(c.it.number&&marks.cardNo&&norm(c.it.number)!==norm(marks.cardNo))return false;
+    return true;
+  });
+  var base=(sameGrade.length&&(top.it.grade||'raw')!==grade)?sameGrade:pool;
+  var vh=versionHint(marks), vwarn='';
+  var sameVer=vh?base.filter(function(c){return c.it.version===vh}):[];
+  var pick=(sameVer.length?sameVer:base)[0];
+  var it=pick.it, score=pick.score;
+  if(vh&&it.version!==vh)vwarn='版の可能性：'+vh+'（DBは'+versionLabel(it.version)+'）';
+  var gwarn=(it.grade||'raw')!==grade?'グレード違い（DBは'+gradeLabel(it.grade)+'）':'';
+  return {item:it,score:score,versionWarn:vwarn,gradeWarn:gwarn,cands:cands.slice(0,4)};
+}
+
+/* ---------------- 判定エンジン ---------------- */
+function channelsFor(it){
+  var split=it.cat==='box'?1:Math.max(1,num(SET.split[SET.preset],1));
+  var km=num(SET.oitaKm,36);
+  var fuel=num(SET.fuel,10);
+  var oitaCost=km*2*fuel/split;
+  var fukuCost=num(SET.fukuokaFuel,3100)/split;
+  var mailCost=num(SET.mailShip,800)+num(SET.pack,500);
+  var useLoose=it.cat==='box'&&SET.shrink===false&&num(it.price.loose,0)>0;
+  var p=it.price;
+  function g(v){return Math.max(0,num(v,0))}
+  var list=[
+    {key:'oita',name:'大分店頭'+(it.oitaStore?'／'+it.oitaStore:''),gross:useLoose?g(p.loose):g(p.oita),cost:oitaCost,note:SET.oitaKmLabel+' 往復'+(km*2)+'km÷'+split},
+    {key:'fukuoka',name:'福岡店頭',gross:useLoose?g(p.loose):g(p.fukuoka),cost:fukuCost,note:'下道往復燃料÷'+split},
+    {key:'mail',name:'宅配（郵送）',gross:useLoose?g(p.loose):g(p.mail),cost:mailCost,note:'送料'+num(SET.mailShip,800)+'＋梱包'+num(SET.pack,500)}
+  ];
+  list.forEach(function(c){c.available=c.gross>0;c.net=c.available?Math.round(c.gross-c.cost):0});
+  var best=list.filter(function(c){return c.available}).sort(function(a,b){return b.net-a.net})[0]||null;
+  return {all:list,best:best,split:split,useLoose:useLoose};
+}
+function judge(it,tag,opt){
+  opt=opt||{};
+  var ch=channelsFor(it);
+  var threshold=num(SET.threshold[SET.preset],500);
+  var isSingle=it.cat!=='box';
+  var res={item:it,tag:Number(tag)||0,ch:ch,threshold:threshold,isSingle:isSingle,listRatio:0};
+  if(!ch.best){
+    res.level='none';res.title='価格なし';res.why='この商品の買取価格がDBにありません。DBに追加してください。';
+    return res;
+  }
+  var profit=ch.best.net-res.tag;
+  res.profit=profit;
+  res.ratio=res.tag>0?ch.best.net/res.tag:0;
+  res.listRatio=it.list>0?ch.best.gross/it.list:0;
+  var hardRate=num(SET.hardRate[SET.preset]!==undefined?SET.hardRate[SET.preset]:0.8,0.8);
+  if(isSingle){
+    hardRate=num(SET.hardRate[SET.preset]!==undefined?SET.hardRate[SET.preset]:0.8,0.8);
+    res.hardRate=hardRate;
+    res.hardNet=Math.round(Math.max(0,ch.best.gross*hardRate-ch.best.cost));
+    var hp=res.hardNet-res.tag;
+    res.hardProfit=hp;
+    if(hp>=threshold){res.level='buy';res.title='買い';res.why='状態難（'+Math.round(hardRate*100)+'%）でも手取り<b>'+yen(res.hardNet)+'</b>。値札'+yen(res.tag)+'なら<b>+'+yen(hp)+'</b>。状態を気にせず買えます。';}
+    else if(profit>=threshold){res.level='check';res.title='状態確認が必要';res.why='美品なら<b>+'+yen(profit)+'</b>。でも状態難だと<b>'+yen(hp)+'</b>。傷・白かけ・反りを確認してから。';}
+    else{res.level='pass';res.title='見送り';res.why='美品でも<b>'+yen(profit)+'</b>。値札が買取を上回っています。';}
+    if(res.level==='buy'&&profit<threshold){res.why+=' 美品なら<b>+'+yen(profit)+'</b>まで伸びます。';}
+  }else{
+    if(profit>=threshold){res.level='buy';res.title='買い';res.why='手取り<b>'+yen(ch.best.net)+'</b>（'+ch.best.name+'）− 値札'+yen(res.tag)+'＝<b>+'+yen(profit)+'</b>。';}
+    else if(profit>=0){res.level='check';res.title='薄利';res.why='手取り<b>'+yen(ch.best.net)+'</b>で<b>+'+yen(profit)+'</b>。移動・手間を考えると見送り寄り。';}
+    else{res.level='pass';res.title='見送り';res.why='手取り<b>'+yen(ch.best.net)+'</b>が値札'+yen(res.tag)+'を下回ります（<b>'+yen(profit)+'</b>）。';}
+    if(res.listRatio>0){
+      if(res.listRatio>=1.5)res.why+=' 定価比<b>'+res.listRatio.toFixed(2)+'倍</b>＝売りゾーン。';
+      else if(res.listRatio>=1.25)res.why+=' 定価比'+res.listRatio.toFixed(2)+'倍＝保有ゾーン。';
+      else res.why+=' 定価比'+res.listRatio.toFixed(2)+'倍。';
+    }
+  }
+  if(opt.gradeWarn){res.level='check';res.title='グレード確認';res.why='<b>'+opt.gradeWarn+'</b>。価格をそのまま当てにしないでください。'+res.why;}
+  return res;
+}
+
+/* ---------------- 音声 ---------------- */
+var audioUnlocked=false;
+function unlockAudio(){
+  try{
+    if(!('speechSynthesis' in window))return false;
+    var u=new SpeechSynthesisUtterance(' ');
+    u.volume=0;u.lang='ja-JP';u.rate=1;
+    speechSynthesis.speak(u);
+    audioUnlocked=true;return true;
+  }catch(e){return false}
+}
+function speak(text,force){
+  if(!SET.audioOn&&!force)return;
+  if(!('speechSynthesis' in window)){toast('このブラウザは音声非対応');return}
+  try{
+    window.speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance(String(text));
+    u.lang='ja-JP';u.rate=1.03;u.pitch=1;u.volume=1;
+    window.speechSynthesis.resume();
+    window.speechSynthesis.speak(u);
+  }catch(e){showErr('音声: '+e.message)}
+}
+function speakResult(r){
+  if(!r)return;
+  if(r.level==='buy')speak(r.item.name+'、買い。値札'+Math.round(r.tag)+'円、手取り'+r.ch.best.net+'円、プラス'+Math.round(r.profit)+'円。'+r.ch.best.name.replace('／',' '));
+  else if(r.level==='check')speak(r.item.name+'、状態確認が必要。美品ならプラス'+Math.round(r.profit)+'円。');
+  else if(SET.allAudio)speak(r.item.name+'、見送り。');
+}
+
+/* ---------------- 画面：モード・タブ ---------------- */
+function applyMode(){
+  document.body.setAttribute('data-mode',SET.mode);
+  $$('#modes button').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-mode')===SET.mode?'true':'false')});
+  if(SET.mode==='voice'){setVoiceText(lastResult?'':'待機中');}
+}
+function setVoiceText(t,sub){
+  var vt=$('#vText'),vs=$('#vSub');
+  if(vt)vt.innerHTML=t||'待機中';
+  if(vs&&sub!=null)vs.textContent=sub;
+}
+$$('#modes button').forEach(function(b){b.addEventListener('click',function(){
+  SET.mode=b.getAttribute('data-mode');saveSet();goTab('scan');applyMode();
+  if(SET.mode==='voice'){unlockAudio();toast('音声だけモード（黒画面で節電）')}
+})});
+var exitVoice=document.getElementById('btnExitVoice');
+if(exitVoice)exitVoice.addEventListener('click',function(e){
+  e.stopPropagation();SET.mode='phone';saveSet();applyMode();
+});
+function goTab(name){
+  $$('#tabs button').forEach(function(b){b.setAttribute('aria-selected',b.getAttribute('data-go')===name?'true':'false')});
+  $$('section[data-tab]').forEach(function(s){s.classList.toggle('on',s.getAttribute('data-tab')===name)});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+$$('#tabs button').forEach(function(b){b.addEventListener('click',function(){goTab(b.getAttribute('data-go'))})});
+
+/* ---------------- 設定UI ---------------- */
+function fillSettings(){
+  $('#selOitaKm').value=['24','36','56'].indexOf(String(SET.oitaKm))>=0?String(SET.oitaKm):'custom';
+  $('#rowCustomKm').hidden=$('#selOitaKm').value!=='custom';
+  $('#inCustomKm').value=SET.oitaKm;
+  $('#inFuel').value=SET.fuel;
+  $('#inFuku').value=SET.fukuokaFuel;
+  $('#inShip').value=SET.mailShip;
+  $('#inPack').value=SET.pack;
+  $('#inSplitShowcase').value=SET.split.showcase;
+  $('#inSplitOripa').value=SET.split.oripa;
+  $('#inSplitStorage').value=SET.split.storage;
+  $('#inThShowcase').value=SET.threshold.showcase;
+  $('#inThOripa').value=SET.threshold.oripa;
+  $('#inThStorage').value=SET.threshold.storage;
+  $('#inHardShowcase').value=Math.round(num(SET.hardRate.showcase,0.8)*100);
+  $('#inHardOripa').value=Math.round(num(SET.hardRate.oripa,0.6)*100);
+  $('#swAudio').checked=!!SET.audioOn;
+  $('#swAllAudio').checked=!!SET.allAudio;
+  $('#swWake').checked=!!SET.keepAwake;
+  $('#swNameOcr').checked=!!SET.nameOcr;
+  $('#swSimOcr').checked=!!SET.simOcr;
+  $('#selInterval').value=String(SET.interval);
+  $('#selShrink').value=SET.shrink?'1':'0';
+  $('#selGrade').value=SET.grade;
+  $$('#presets button').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-preset')===SET.preset?'true':'false')});
+  updatePresetNote();
+}
+function updatePresetNote(){
+  var names={showcase:'ショーケース',oripa:'オリパ先頭',storage:'ストレージ'};
+  var hr=SET.hardRate[SET.preset];
+  $('#presetNote').textContent=names[SET.preset]+'・買いライン'+yen(SET.threshold[SET.preset])+(hr!=null?'・状態難'+Math.round(hr*100)+'%':'');
+  var h=$('#presetHint');
+  if(SET.preset==='showcase')h.innerHTML='値札のカードを近づけて撮影。<b>状態難でも買えるか</b>で判定します（美品だけなら「状態確認」）。';
+  else if(SET.preset==='oripa')h.innerHTML='オリパの先頭カードは傷み前提。<b>状態難'+Math.round(num(SET.hardRate.oripa,0.6)*100)+'%</b>でも値札を上回るものだけ「買い」。';
+  else h.innerHTML='ストレージのまとめ買い用。1枚あたりの利益が<b>'+yen(SET.threshold.storage)+'</b>以上で「買い」。移動費は'+SET.split.storage+'枚で按分。';
+}
+function bindNum(sel,path,scale){
+  var el=$(sel);if(!el)return;
+  el.addEventListener('change',function(){
+    var v=num(el.value,0);if(scale)v=v/scale;
+    if(path.indexOf('.')>0){var ks=path.split('.');SET[ks[0]][ks[1]]=v}else SET[path]=v;
+    saveSet();updatePresetNote();if(lastResult)renderResult(lastResult)
+  });
+}
+bindNum('#inCustomKm','oitaKm');bindNum('#inFuel','fuel');bindNum('#inFuku','fukuokaFuel');
+bindNum('#inShip','mailShip');bindNum('#inPack','pack');
+bindNum('#inSplitShowcase','split.showcase');bindNum('#inSplitOripa','split.oripa');bindNum('#inSplitStorage','split.storage');
+bindNum('#inThShowcase','threshold.showcase');bindNum('#inThOripa','threshold.oripa');bindNum('#inThStorage','threshold.storage');
+bindNum('#inHardShowcase','hardRate.showcase',100);bindNum('#inHardOripa','hardRate.oripa',100);
+$('#selOitaKm').addEventListener('change',function(){
+  var v=this.value;
+  $('#rowCustomKm').hidden=v!=='custom';
+  if(v==='custom'){SET.oitaKm=num($('#inCustomKm').value,36);SET.oitaKmLabel='直接入力'}
+  else{SET.oitaKm=num(v,36);SET.oitaKmLabel=v==='24'?'別府':v==='56'?'中津':'大分市'}
+  saveSet();if(lastResult)renderResult(lastResult);
+});
+$('#inCustomKm').addEventListener('change',function(){SET.oitaKm=num(this.value,36);SET.oitaKmLabel='直接入力';saveSet();if(lastResult)renderResult(lastResult)});
+$('#selInterval').addEventListener('change',function(){SET.interval=num(this.value,4500);saveSet()});
+$('#selShrink').addEventListener('change',function(){SET.shrink=this.value==='1';saveSet();if(lastResult)renderResult(lastResult)});
+$('#selGrade').addEventListener('change',function(){SET.grade=this.value;saveSet()});
+function bindSw(sel,key){var el=$(sel);el.addEventListener('change',function(){SET[key]=el.checked;saveSet();if(key==='keepAwake'&&el.checked)requestWake()})}
+bindSw('#swAudio','audioOn');bindSw('#swAllAudio','allAudio');bindSw('#swWake','keepAwake');bindSw('#swNameOcr','nameOcr');bindSw('#swSimOcr','simOcr');
+$$('#presets button').forEach(function(b){b.addEventListener('click',function(){
+  SET.preset=b.getAttribute('data-preset');saveSet();fillSettings();toast('プリセット：'+({showcase:'ショーケース',oripa:'オリパ先頭',storage:'ストレージ'})[SET.preset]);
+})});
+$('#btnVoiceTest').addEventListener('click',function(){unlockAudio();speak('音声テストです。買いのときは、このように読み上げます。ハドウシーカー、買い。',true)});
+$('#btnVoiceTest2').addEventListener('click',function(){unlockAudio();speak('音声テストです。買いのときは、このように読み上げます。',true)});
+$('#btnUnlock').addEventListener('click',function(){toast(unlockAudio()?'音声をアンロックしました':'音声非対応');});
+
+/* ---------------- カメラ／シミュレーション ---------------- */
+var video=$('#video'),sim=$('#sim'),simCtx=sim.getContext('2d');
+var stream=null,camLive=false,simLive=false,simRAF=null,running=false,loopTimer=null,lastKey='',lastAt=0;
+var frameCv=document.createElement('canvas');frameCv.width=720;frameCv.height=480;
+var roiCv=document.createElement('canvas');roiCv.width=720;roiCv.height=480;
+var lastFrameSrc=null;
+var simState={items:[],tags:[],born:0,idx:0};
+
+function camStatus(txt){$('#camState').textContent=txt;$('#camState').className='tag'}
+function setHud(a,b){$('#hudState').innerHTML=a;if(b!=null)$('#hudRight').innerHTML=b}
+
+function initSim(){
+  var pool=DB.items.filter(function(i){return i.cat==='box'});
+  if(!pool.length)pool=DB.items.slice();
+  simState.items=[];
+  for(var i=0;i<3;i++)simState.items.push(pool[Math.floor(Math.random()*pool.length)]);
+  simState.tags=[];
+  simState.items.forEach(function(it){
+    var ch=channelsFor(it);var base=ch.best?ch.best.net:6000;
+    var tag=Math.max(300,Math.round(base*(0.62+Math.random()*0.55)/100)*100);
+    simState.tags.push(tag);
+  });
+  simState.born=Date.now();
+}
+function pickSimItem(){
+  if(!simState.items.length)initSim();
+  simState.idx=(simState.idx+1)%simState.items.length;
+  return {item:simState.items[simState.idx],price:simState.tags[simState.idx]};
+}
+function drawSim(){
+  var W=sim.width,H=sim.height;
+  simCtx.fillStyle='#191d24';simCtx.fillRect(0,0,W,H);
+  // shelf
+  simCtx.fillStyle='#222933';simCtx.fillRect(0,H*0.62,W,8);
+  simCtx.fillStyle='#2b333f';simCtx.fillRect(0,H*0.2,W,6);
+  for(var i=0;i<3;i++){
+    var it=simState.items[i]||simState.items[0];var x=30+i*225,y=40;
+    var w=175,h=210;
+    // box
+    var gr=simCtx.createLinearGradient(x,y,x+w,y+h);
+    gr.addColorStop(0,'#3b4a63');gr.addColorStop(1,'#243247');
+    simCtx.fillStyle=gr;simCtx.fillRect(x,y,w,h);
+    simCtx.strokeStyle='#5b7093';simCtx.lineWidth=2;simCtx.strokeRect(x,y,w,h);
+    simCtx.fillStyle='#e9f0f7';simCtx.font='bold 15px -apple-system,sans-serif';simCtx.textAlign='center';
+    wrapText(simCtx,it?it.name:'—',x+w/2,y+52,w-20,18);
+    simCtx.fillStyle='#9fb4cd';simCtx.font='11px -apple-system,sans-serif';
+    simCtx.fillText(it&&it.cat==='box'?'未開封BOX':gradeLabel(it?it.grade:'raw'),x+w/2,y+150);
+    // price tag
+    var px=x+8,py=y+h+14;
+    simCtx.fillStyle='#fff8d8';simCtx.fillRect(px,py,w-16,40);
+    simCtx.strokeStyle='#d9c98a';simCtx.strokeRect(px,py,w-16,40);
+    simCtx.fillStyle='#8a1a1a';simCtx.font='bold 22px -apple-system,sans-serif';
+    simCtx.fillText('¥'+yen(simState.tags[i]||0).replace('円',''),x+w/2,py+29);
+    // ROI emphasis
+    if(i===simState.idx){simCtx.strokeStyle='#3ee0bf';simCtx.lineWidth=3;simCtx.strokeRect(x-4,y-4,w+8,h+56)}
+  }
+  simCtx.textAlign='left';simCtx.font='bold 11px -apple-system,sans-serif';simCtx.fillStyle='#6c7c8f';
+  simCtx.fillText('SIMULATION SHELF / 実カメラ不可時のフォールバック',12,18);
+  simCtx.fillStyle='#8fa0ae';simCtx.font='10px -apple-system,sans-serif';
+  simCtx.fillText('※ 実際の商品名・値札を描画しています。判定ロジックは同じ',12,H-10);
+  simRAF=requestAnimationFrame(drawSim);
+}
+function wrapText(ctx,text,x,y,maxW,lh){
+  var line='',lines=[];
+  for(var i=0;i<text.length;i++){
+    var test=line+text[i];
+    if(ctx.measureText(test).width>maxW&&line){lines.push(line);line=text[i]}else line=test;
+  }
+  if(line)lines.push(line);
+  lines.slice(0,3).forEach(function(l,i){ctx.fillText(l,x,y+i*lh)});
+}
+function startSim(){
+  stopCam();
+  simLive=true;camLive=false;
+  $('#camwrap').classList.add('sim-on');
+  camStatus('シミュレーション');initSim();if(!simRAF)drawSim();
+  setHud('<b>SIM</b> 棚を自動スキャン','判定は同じ');
+  lastFrameSrc='sim';
+}
+function stopSim(){
+  simLive=false;if(simRAF){cancelAnimationFrame(simRAF);simRAF=null}
+  $('#camwrap').classList.remove('sim-on');
+}
+function stopCam(){
+  if(stream){stream.getTracks().forEach(function(t){try{t.stop()}catch(e){}});stream=null}
+  camLive=false;video.srcObject=null;
+}
+async function startCam(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    toast('カメラ非対応 → シミュレーション');startSim();return false;
+  }
+  try{
+    stopSim();
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}},audio:false});
+    video.srcObject=stream;
+    await video.play();
+    camLive=true;
+    $('#camwrap').classList.remove('sim-on');
+    camStatus('実カメラ');setHud('<b>LIVE</b> 背面カメラ','値札を枠内へ');
+    lastFrameSrc='cam';
+    return true;
+  }catch(e){
+    camStatus('カメラ不可');
+    toast('カメラを開けません（'+e.name+'）→ シミュレーション');
+    startSim();
+    return false;
+  }
+}
+$('#btnCam').addEventListener('click',function(){unlockAudio();startCam()});
+$('#btnSim').addEventListener('click',function(){if(simLive&&!camLive){toast('すでにシミュレーション中')}else startSim()});
+
+$('#btnScan').addEventListener('click',async function(){
+  unlockAudio();
+  if(running){stopScan();return}
+  running=true;
+  $('#btnScan').innerHTML='⏸ 連続スキャンを停止';
+  $('#btnScan').classList.add('dark');
+  if(!camLive&&!simLive){ await startCam(); }
+  requestWake();
+  setHud('スキャン中…','待機');
+  scanOnce(true).then(scheduleNext);
+});
+function stopScan(){
+  running=false;clearTimeout(loopTimer);
+  $('#btnScan').innerHTML='▶ 連続スキャン開始';
+  $('#btnScan').classList.remove('dark');
+  setHud('停止中','─');
+}
+function scheduleNext(){
+  clearTimeout(loopTimer);
+  if(!running)return;
+  loopTimer=setTimeout(function(){if(!running)return;scanOnce().then(scheduleNext)},Math.max(1500,num(SET.interval,4500)));
+}
+
+/* フレーム取得とROI */
+function grabFrame(){
+  var c=frameCv.getContext('2d');
+  c.fillStyle='#000';c.fillRect(0,0,720,480);
+  if(camLive&&video.videoWidth){
+    var vw=video.videoWidth,vh=video.videoHeight,s=Math.max(720/vw,480/vh);
+    c.drawImage(video,(720-vw*s)/2,(480-vh*s)/2,vw*s,vh*s);
+  }else if(simLive){
+    c.drawImage(sim,0,0,720,480);
+  }
+  lastFrameSrc=frameCv;
+  return frameCv;
+}
+function cropROI(src){
+  var c=roiCv.getContext('2d');
+  c.drawImage(src,0,0);
+  var x=Math.round(src.width*0.09),y=Math.round(src.height*0.20),w=Math.round(src.width*0.82),h=Math.round(src.height*0.52);
+  var out=document.createElement('canvas');out.width=720;out.height=Math.round(720*h/w);
+  out.getContext('2d').drawImage(src,x,y,w,h,0,0,out.width,out.height);
+  return out;
+}
+/* 前処理：グレー→コントラスト→二値化 */
+function preprocess(src){
+  var W=720,H=Math.round(src.height*W/src.width);
+  var g=document.createElement('canvas');g.width=W;g.height=H;
+  var gx=g.getContext('2d',{willReadFrequently:true});gx.drawImage(src,0,0,W,H);
+  var img=gx.getImageData(0,0,W,H),d=img.data;
+  var lum=new Uint8Array(W*H),hist=new Array(256).fill(0);
+  for(var i=0,p=0;i<d.length;i+=4,p++){
+    var l=(d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114)|0;lum[p]=l;hist[l]++;
+  }
+  // 2-98% contrast stretch
+  var total=W*H,lo=0,hi=255,acc=0;
+  for(var v=0;v<256;v++){acc+=hist[v];if(acc>total*0.02){lo=v;break}}
+  acc=0;for(v=255;v>=0;v--){acc+=hist[v];if(acc>total*0.02){hi=v;break}}
+  if(hi<=lo)hi=lo+1;
+  // Otsu on stretched
+  var hs=new Array(256).fill(0);
+  for(p=0;p<total;p++){var sv=clamp(Math.round((lum[p]-lo)*255/(hi-lo)),0,255);hs[sv]++}
+  var sum=0;for(v=0;v<256;v++)sum+=v*hs[v];
+  var sumB=0,wB=0,maxVar=-1,thr=128;
+  for(v=0;v<256;v++){
+    wB+=hs[v];if(!wB)continue;var wF=total-wB;if(!wF)break;
+    sumB+=v*hs[v];var mB=sumB/wB,mF=(sum-sumB)/wF,bt=wB*wF*(mB-mF)*(mB-mF);
+    if(bt>maxVar){maxVar=bt;thr=v}
+  }
+  var con=document.createElement('canvas');con.width=W;con.height=H;
+  var cx=con.getContext('2d',{willReadFrequently:true});
+  var cimg=cx.createImageData(W,H),cd=cimg.data;
+  var bin=document.createElement('canvas');bin.width=W;bin.height=H;
+  var bx=bin.getContext('2d',{willReadFrequently:true});
+  var bimg=bx.createImageData(W,H),bd=bimg.data;
+  for(p=0;p<total;p++){
+    var sv2=clamp(Math.round((lum[p]-lo)*255/(hi-lo)),0,255);
+    var o=p*4;
+    cd[o]=cd[o+1]=cd[o+2]=sv2;cd[o+3]=255;
+    var b=sv2>thr?255:0;
+    bd[o]=bd[o+1]=bd[o+2]=b;bd[o+3]=255;
+  }
+  cx.putImageData(cimg,0,0);bx.putImageData(bimg,0,0);
+  return {gray:g,con:con,bin:bin,thr:thr,lo:lo,hi:hi};
+}
+function paintPreview(pre){
+  function paint(cv,srcCv){
+    var c=cv.getContext('2d');c.drawImage(srcCv,0,0,cv.width,cv.height);
+  }
+  paint($('#pvGray'),pre.gray);paint($('#pvCon'),pre.con);paint($('#pvBin'),pre.bin);
+}
+
+/* ---------------- OCR ---------------- */
+var TESS_READY=!!window.Tesseract;
+var priceW=null,nameW=null,tessLoading=null;
+function loadTess(){
+  if(window.Tesseract)return Promise.resolve();
+  if(tessLoading)return tessLoading;
+  tessLoading=new Promise(function(res,rej){
+    var s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+    s.onload=function(){TESS_READY=true;res()};
+    s.onerror=function(){rej(new Error('OCRエンジンを読み込めません（通信）'))};
+    document.head.appendChild(s);
+  });
+  return tessLoading;
+}
+function ocrLog(m,which){
+  if(m.status==='recognizing text'&&m.progress>0.05){
+    setHud('OCR '+(which==='name'?'商品名':'価格')+' '+Math.round(m.progress*100)+'%','少々お待ち');
+  }
+}
+async function getWorker(kind){
+  await loadTess();
+  if(kind==='price'){
+    if(!priceW){
+      priceW=await Tesseract.createWorker('eng',1,{logger:function(m){ocrLog(m,'price')}});
+      await priceW.setParameters({tessedit_char_whitelist:'0123456789,¥￥円.',tessedit_pageseg_mode:'6'});
+    }
+    return priceW;
+  }
+  if(!nameW){
+    nameW=await Tesseract.createWorker('jpn',1,{logger:function(m){ocrLog(m,'name')}});
+    await nameW.setParameters({tessedit_pageseg_mode:'6'});
+  }
+  return nameW;
+}
+function withTimeout(p,ms,label){
+  var to;
+  return Promise.race([p,new Promise(function(_,rej){to=setTimeout(function(){rej(new Error(label+'タイムアウト'))},ms||20000)})]).then(function(v){clearTimeout(to);return v},function(e){clearTimeout(to);throw e});
+}
+async function recognize(cv,kind,ms){
+  var w=await getWorker(kind);
+  var p=w.recognize(cv);
+  return withTimeout(p,ms||20000,kind==='price'?'価格OCR':'商品名OCR');
+}
+function parsePrice(text){
+  var t=String(text||'').replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0)});
+  t=t.replace(/[OoＯｏ]/g,'0').replace(/[lI|]/g,'1');
+  t=t.replace(/\d{1,3}\s*[\/／]\s*\d{1,3}/g,' ');
+  var ms=t.match(/\d[\d,]{2,7}/g)||[];
+  var best=0;
+  ms.forEach(function(x){
+    var n=parseInt(x.replace(/,/g,''),10);
+    if(n>=100&&n<=2000000&&n>best)best=n;
+  });
+  return best;
+}
+
+/* ---------------- スキャン本体 ---------------- */
+var scanBusy=false,lastResult=null,history=[],dupCount=0;
+async function scanOnce(manual){
+  if(scanBusy)return;
+  scanBusy=true;
+  var t0=performance.now();
+  var useSim=simLive&&!camLive&&!SET.simOcr;
+  setHud('スキャン中…','─');
+  try{
+    var frame=grabFrame();
+    var roi=cropROI(frame);
+    var pre=preprocess(roi);
+    paintPreview(pre);
+    var dbg=[];dbg.push('ROI '+roi.width+'x'+roi.height+' / 二値しきい値 '+pre.thr);
+    var nameText='',priceText='',price=0,msPrice=0,msName=0,itemPick=null;
+    if(useSim){
+      var s=pickSimItem();
+      price=s.price;priceText='¥'+yen(s.price).replace('円','');
+      nameText=s.item.name+(s.item.number?' '+s.item.number:'');
+      itemPick={item:s.item,score:1};
+      dbg.push('<span class="ok">SIM: '+esc(s.item.name)+' / '+yen(s.price)+'</span>');
+    }else{
+      // 価格OCR
+      try{
+        var tp=performance.now();
+        var rp=await recognize(pre.bin,'price',15000);
+        msPrice=Math.round(performance.now()-tp);
+        priceText=(rp&&rp.data&&rp.data.text||'').replace(/\s+/g,' ').trim();
+        price=parsePrice(priceText);
+        dbg.push('価格OCR '+msPrice+'ms →「'+esc(priceText.slice(0,40))+'」'+(price?'<span class="ok"> '+yen(price)+'</span>':'<span class="ng"> 数字なし</span>'));
+      }catch(e){dbg.push('<span class="ng">価格OCR失敗: '+esc(e.message)+'</span>')}
+      if(!price){
+        dbg.push('<span class="ng">→ 価格未検出でスキップ（枠を値札に寄せる／明るく）</span>');
+        renderDebug(dbg);setHud('価格未検出','スキップ');lastKey='';return;
+      }
+      // 商品名OCR
+      if(SET.nameOcr!==false){
+        try{
+          var tn=performance.now();
+          var rn=await recognize(pre.con,'name',25000);
+          msName=Math.round(performance.now()-tn);
+          nameText=(rn&&rn.data&&rn.data.text||'').replace(/\s+/g,' ').trim();
+          dbg.push('商品名OCR '+msName+'ms →「'+esc(nameText.slice(0,60))+'」');
+        }catch(e){dbg.push('<span class="ng">商品名OCR失敗: '+esc(e.message)+'</span>')}
+      }
+      if(!nameText){
+        dbg.push('<span class="ng">→ 商品名未検出でスキップ（DBから手動選択もできます）</span>');
+        renderDebug(dbg);setHud('商品名未検出','スキップ');
+        lastKey='';return;
+      }
+      var marks=extractMarks(nameText);
+      dbg.push('マーク: 番号='+(marks.cardNo||'─')+' レア='+(marks.rarity||'─')+' 25th='+(marks.y25?'有':'無')+' プロモ='+(marks.promo?'有':'無')+' 再販='+(marks.reprint?'有':'無'));
+      itemPick=pickItem(nameText,marks,SET.grade);
+      if(!itemPick.item){
+        dbg.push('<span class="ng">→ 照合不可（近い商品がDBにない）</span>');
+        renderDebug(dbg);setHud('照合不可','スキップ');
+        showUnmatched(nameText,price,performance.now()-t0);lastKey='';return;
+      }
+      dbg.push('照合 → '+esc(itemPick.item.name)+'（一致'+Math.round(itemPick.score*100)+'%）'+(itemPick.gradeWarn?' <span class="ng">'+esc(itemPick.gradeWarn)+'</span>':'')+(itemPick.versionWarn?' '+esc(itemPick.versionWarn):''));
+    }
+    var key=itemPick.item.id+'@'+price;
+    var ms=Math.round(performance.now()-t0);
+    if(key===lastKey&&Date.now()-lastAt<30000){
+      dupCount++;dbg.push('同一商品・同一価格のため重複スキップ（'+dupCount+'回目）');
+      renderDebug(dbg);setHud('重複スキップ','─');return;
+    }
+    lastKey=key;lastAt=Date.now();
+    var r=judge(itemPick.item,price,{gradeWarn:itemPick.gradeWarn});
+    r.ms=ms;r.ocrName=nameText;r.ocrPrice=priceText;r.msPrice=msPrice;r.msName=msName;r.at=Date.now();
+    lastResult=r;
+    renderResult(r);renderDebug(dbg);addHistory(r);recordTest(r);
+    setHud(r.level==='buy'?'<b>買い</b> '+esc(r.item.name):r.level==='check'?'状態確認 '+esc(r.item.name):'見送り '+esc(r.item.name),'手取り '+yen(r.ch.best?r.ch.best.net:0));
+    if(!useSim||SET.simOcr){}else{}
+    speakResult(r);
+    if(SET.mode==='voice')setVoiceText((r.level==='buy'?'✅ 買い':'⚠ '+(r.title||'見送り'))+'<br><span style="font-size:15px">'+esc(r.item.name)+'</span><br><span style="font-size:14px;color:#8fa0ae">手取り'+yen(r.ch.best?r.ch.best.net:0)+' / 値札'+yen(r.tag)+'</span>','値札 '+yen(r.tag)+'・'+r.ch.best.name);
+  }catch(e){
+    renderDebug(['<span class="ng">スキャン例外: '+esc(e.message)+'</span>']);
+    showErr(e.message);
+  }finally{scanBusy=false}
+}
+
+function showUnmatched(nameText,price,ms){
+  var div=$('#result');
+  div.className='res check';
+  div.innerHTML='<div class="head"><span class="verdict check">照合できず</span><span class="badge gray">スキップ</span></div>'+
+    '<div class="itemmeta">読んだ名前：「'+esc((nameText||'').slice(0,60))+'」／ 価格：'+yen(price)+'</div>'+
+    '<div class="why">DBに近い商品名がありません。下から1タップでDBに追加できます（次回から照合されます）。</div>'+
+    '<div class="row mt10"><input id="addName" value="'+esc((nameText||'').slice(0,40))+'" placeholder="商品名" style="flex:1;min-width:140px">'+
+    '<input id="addPrice" type="number" value="'+price+'" style="width:110px">'+
+    '<button class="btn pri sm" id="btnAddFromScan">＋ この商品をDBに追加</button></div>';
+  $('#addName').addEventListener('input',function(){SET._pendingName=this.value});
+  $('#btnAddFromScan').addEventListener('click',function(){
+    var nm=$('#addName').value.trim()||'無名カード';var pr=num($('#addPrice').value,0);
+    var it={id:'u_'+Date.now(),cat:'single',name:nm,aliases:[nm],version:'通常版',grade:SET.grade,number:'',rarity:'',list:0,price:{oita:0,fukuoka:0,mail:pr,loose:0},oitaStore:'',src:'手動追加 '+nowLabel(),est:false};
+    DB.items.push(it);saveDB();renderDB();toast('DBに追加しました');
+    var r=judge(it,pr,{});lastResult=r;renderResult(r);
+  });
+  $('#lastMs').textContent=Math.round(ms)+'ms';
+}
+
+function renderResult(r){
+  if(!r){return}
+  lastResult=r;
+  var div=$('#result');
+  var cls=r.level==='buy'?'buy':r.level==='check'?'check':'pass';
+  div.className='res '+cls;
+  var b=r.ch.best;
+  var chRows=r.ch.all.map(function(c){
+    return '<tr class="'+(b&&c.key===b.key?'best':'')+'"><td>'+esc(c.name)+'</td>'+
+      '<td>'+(c.available?yen(c.gross):'<span class="mute">─</span>')+'</td>'+
+      '<td class="mute">'+(c.available?'-'+yen(c.cost):'─')+'</td>'+
+      '<td>'+(c.available?yen(c.net):'<span class="mute">取扱なし</span>')+'</td></tr>';
+  }).join('');
+  var meta=[];
+  meta.push(gradeLabel(r.item.grade));
+  if(r.item.version&&r.item.version!=='通常版')meta.push(r.item.version);
+  if(r.item.number)meta.push(r.item.number);
+  if(r.item.rarity)meta.push(r.item.rarity);
+  if(r.item.list)meta.push('定価'+yen(r.item.list));
+  if(r.ch.useLoose)meta.push('シュリンクなし価格で計算');
+  var hardLine='';
+  if(r.hardNet!=null)hardLine='<div class="why">安全ライン：状態難'+Math.round(r.hardRate*100)+'% → 手取り <b>'+yen(r.hardNet)+'</b>（差 <b>'+(r.hardProfit>=0?'+':'')+yen(r.hardProfit)+'</b>）</div>';
+  div.innerHTML=
+    '<div class="head"><span class="verdict '+r.level+'">'+(r.level==='buy'?'買い':r.level==='check'?esc(r.title):r.level==='pass'?'見送り':esc(r.title))+'</span>'+
+      '<span class="badge '+(r.level==='buy'?'live':'gray')+'">'+esc(r.title)+'</span>'+
+      '<span class="mini" style="margin-left:auto">'+r.ms+'ms</span></div>'+
+    '<div class="itemname">'+esc(r.item.name)+'</div>'+
+    '<div class="itemmeta">'+esc(meta.join(' ／ '))+'</div>'+
+    (r.versionWarn?'<div class="itemmeta" style="color:#b54708">⚠ '+esc(r.versionWarn)+'</div>':'')+
+    (r.gradeWarn?'<div class="itemmeta" style="color:#b54708">⚠ '+esc(r.gradeWarn)+'</div>':'')+
+    '<div class="money">'+
+      '<div><span>値札</span><b>'+yen(r.tag)+'</b></div>'+
+      '<div class="big"><span>手取り（'+esc((b?b.name:'─').split('／')[0])+'）</span><b>'+(b?yen(b.net):'─')+'</b></div>'+
+      '<div><span>差額</span><b style="color:'+(r.profit>=0?'#067647':'#d92d20')+'">'+(r.profit>=0?'+':'')+yen(r.profit)+'</b></div>'+
+    '</div>'+
+    '<div class="why">'+r.why+'</div>'+hardLine+
+    '<table class="chtable"><thead><tr><th>出口</th><th>掲示</th><th>経費</th><th>手取り</th></tr></thead><tbody>'+chRows+'</tbody></table>'+
+    '<div class="mini mt6">按分：'+r.ch.split+'枚で移動費を分割・'+esc((b?b.note:''))+'</div>'+
+    '<div class="row mt10">'+
+      '<button class="btn pri sm" id="btnInspectOpen">🔬 状態検査</button>'+
+      '<button class="btn sm" id="btnSay">🔊 読み上げ</button>'+
+      '<button class="btn sm" id="btnPickOther">別の商品として判定</button>'+
+      '<button class="btn sm" id="btnQuickAdd">＋ DBに追加</button>'+
+    '</div>';
+  $('#lastMs').textContent=r.ms+'ms';
+  var bi=$('#btnInspectOpen');if(bi)bi.addEventListener('click',openInspect);
+  var bs=$('#btnSay');if(bs)bs.addEventListener('click',function(){unlockAudio();speakResult(r)});
+  var bp=$('#btnPickOther');if(bp)bp.addEventListener('click',function(){showPicker(r)});
+  var bq=$('#btnQuickAdd');if(bq)bq.addEventListener('click',function(){quickAdd(r)});
+  if(SET.mode==='voice'){
+    setVoiceText((r.level==='buy'?'✅ 買い':r.level==='check'?'⚠ '+esc(r.title):'見送り')+'<br><span style="font-size:15px">'+esc(r.item.name)+'</span><br><span style="font-size:14px;color:#8fa0ae">手取り'+yen(b?b.net:0)+'／値札'+yen(r.tag)+'</span>',
+      '値札 '+yen(r.tag)+'・'+(b?esc(b.name):''));
+  }
+}
+function quickAdd(r){
+  var nm=prompt('DBに追加する商品名',r.item.name);
+  if(!nm)return;
+  var pr=prompt('宅配/郵送の買取価格（円）',r.ch.best?String(r.ch.best.gross):'');
+  if(pr==null)return;
+  var it={id:'u_'+Date.now(),cat:'single',name:nm,aliases:[nm],version:'通常版',grade:SET.grade,number:'',rarity:'',list:0,price:{oita:0,fukuoka:0,mail:num(pr,0),loose:0},oitaStore:'',src:'手動追加 '+nowLabel(),est:false};
+  DB.items.push(it);saveDB();renderDB();toast('DBに追加しました');
+}
+function showPicker(r){
+  var list=DB.items.map(function(it,i){return '<option value="'+i+'">'+esc(it.name)+'（'+gradeLabel(it.grade)+'）</option>'}).join('');
+  var div=$('#result');
+  var box=document.createElement('div');
+  box.className='row mt10';
+  box.innerHTML='<select id="pickSel" style="flex:1;min-width:180px">'+list+'</select><button class="btn pri sm" id="pickGo">この商品で判定</button>';
+  div.appendChild(box);
+  $('#pickGo').addEventListener('click',function(){
+    var it=DB.items[num($('#pickSel').value,0)];
+    var rr=judge(it,r.tag,{});rr.ms=r.ms;renderResult(rr);speakResult(rr);
+  });
+}
+function renderDebug(lines){
+  var d=$('#dbg');
+  d.innerHTML=(lines||[]).map(function(l){return '› '+l}).join('\n');
+  d.scrollTop=d.scrollHeight;
+}
+function addHistory(r){
+  history.unshift({t:Date.now(),name:r.item.name,price:r.tag,net:r.ch.best?r.ch.best.net:0,level:r.level});
+  history=history.slice(0,12);
+  $('#histCount').textContent=history.length+'件';
+  $('#hist').innerHTML=history.map(function(h){
+    var col=h.level==='buy'?'#067647':h.level==='check'?'#b54708':'#727d8c';
+    return '<div style="display:flex;gap:6px;padding:3px 0;border-bottom:1px solid #eef1f5;font-size:11px">'+
+      '<span style="color:'+col+';font-weight:800;width:38px">'+(h.level==='buy'?'買い':h.level==='check'?'確認':'見送')+'</span>'+
+      '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(h.name)+'</span>'+
+      '<span style="font-variant-numeric:tabular-nums">'+yen(h.price)+' → '+yen(h.net)+'</span></div>';
+  }).join('');
+}
+$('#btnClearHist').addEventListener('click',function(){history=[];$('#histCount').textContent='0件';$('#hist').textContent='まだありません。'});
+
+/* ---------------- デモ ---------------- */
+$('#btnDemo1').addEventListener('click',function(){demoScan('b_kodai',8000)});
+$('#btnDemo2').addEventListener('click',function(){demoScan('b_hado',6500)});
+$('#btnDemo3').addEventListener('click',function(){demoScan('s_umbreon',50000)});
+function demoScan(id,price){
+  var it=DB.items.filter(function(x){return x.id===id})[0];
+  if(!it){toast('デモ商品がDBにありません');return}
+  var r=judge(it,price,{});r.ms=120;r.ocrName=it.name;r.ocrPrice=String(price);
+  lastResult=r;renderResult(r);recordTest(r);speakResult(r);
+  renderDebug(['デモ実行（OCRなし・判定のみ '+r.ms+'ms）','照合 → '+esc(it.name),'値札 '+yen(price)]);
+  setHud('<b>'+r.title+'</b> '+esc(it.name),'手取り '+yen(r.ch.best?r.ch.best.net:0));
+  if(SET.mode==='voice')setVoiceText((r.level==='buy'?'✅ 買い':'⚠ '+r.title)+'<br><span style="font-size:15px">'+esc(it.name)+'</span>','値札 '+yen(price));
+}
+
+/* ---------------- 状態検査 ---------------- */
+var inspectSource=null;
+function openInspect(){
+  var sheet=$('#inspectSheet');sheet.hidden=false;
+  inspectSource=grabFrame();
+  analyzeAndShow(inspectSource);
+}
+$('#btnCloseInsp').addEventListener('click',function(){$('#inspectSheet').hidden=true});
+$('#btnInspectShot').addEventListener('click',function(){inspectSource=grabFrame();analyzeAndShow(inspectSource)});
+$('#btnInspectAgain').addEventListener('click',function(){inspectSource=grabFrame();analyzeAndShow(inspectSource)});
+$('#fileInspect').addEventListener('change',function(e){
+  var f=e.target.files&&e.target.files[0];if(!f)return;
+  var img=new Image();
+  img.onload=function(){
+    var c=document.createElement('canvas');c.width=img.width;c.height=img.height;
+    c.getContext('2d').drawImage(img,0,0);
+    inspectSource=c;analyzeAndShow(c);
+  };
+  img.src=URL.createObjectURL(f);
+});
+function analyzeAndShow(src){
+  var cv=$('#inspCanvas');
+  var W=cv.width,H=cv.height;
+  var ctx=cv.getContext('2d',{willReadFrequently:true});
+  var sc=Math.min(W/src.width,H/src.height),dw=src.width*sc,dh=src.height*sc,dx=(W-dw)/2,dy=(H-dh)/2;
+  ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);ctx.drawImage(src,dx,dy,dw,dh);
+  var an=analyzeCondition(src);
+  if(!an.ok){
+    $('#mLR').textContent='─';$('#mLRs').textContent=an.msg;
+    $('#mTB').textContent='─';$('#mTBs').textContent='';
+    $('#mWhite').textContent='─';$('#mWhites').textContent='枠を検出できませんでした';
+    $('#mWhite').className='';
+    return;
+  }
+  // overlay
+  ctx.strokeStyle='#3ee0bf';ctx.lineWidth=2;
+  ctx.strokeRect(dx+an.left*sc,dy+an.top*sc,an.cw*sc,an.ch*sc);
+  ctx.strokeStyle='#ffd166';ctx.lineWidth=1.5;
+  ctx.beginPath();
+  ctx.moveTo(dx+an.innerL*sc,dy+an.innerT*sc);ctx.lineTo(dx+an.innerL*sc,dy+an.innerB*sc);
+  ctx.moveTo(dx+an.innerR*sc,dy+an.innerT*sc);ctx.lineTo(dx+an.innerR*sc,dy+an.innerB*sc);
+  ctx.moveTo(dx+an.innerL*sc,dy+an.innerT*sc);ctx.lineTo(dx+an.innerR*sc,dy+an.innerT*sc);
+  ctx.moveTo(dx+an.innerL*sc,dy+an.innerB*sc);ctx.lineTo(dx+an.innerR*sc,dy+an.innerB*sc);
+  ctx.stroke();
+  // corner marks
+  ctx.fillStyle='rgba(255,209,102,.85)';
+  [[an.innerL,an.innerT],[an.innerR,an.innerT],[an.innerL,an.innerB],[an.innerR,an.innerB]].forEach(function(p){
+    ctx.fillRect(dx+p[0]*sc-2,dy+p[1]*sc-2,5,5);
+  });
+  var lr=an.lr, tb=an.tb;
+  var lrTxt=(lr<5?'ほぼ中央':lr<10?'良好':lr<15?'やや偏り':'偏り大');
+  var tbTxt=(tb<5?'ほぼ中央':tb<10?'良好':tb<15?'やや偏り':'偏り大');
+  $('#mLR').textContent=lr.toFixed(1)+'%';
+  $('#mLR').className=lr<5?'ok':lr<10?'':'ng';
+  $('#mLRs').textContent='左 '+an.leftMargin+'px ／ 右 '+an.rightMargin+'px（'+lrTxt+'）';
+  $('#mTB').textContent=tb.toFixed(1)+'%';
+  $('#mTB').className=tb<5?'ok':tb<10?'':'ng';
+  $('#mTBs').textContent='上 '+an.topMargin+'px ／ 下 '+an.bottomMargin+'px（'+tbTxt+'）';
+  $('#mWhite').textContent=an.white.suspect?'疑いあり':'疑いなし';
+  $('#mWhite').className=an.white.suspect?'ng':'ok';
+  $('#mWhites').textContent='信頼度 '+an.white.confidence+'% ／ 縁の白ピクセル '+an.white.ratio.toFixed(1)+'%';
+}
+function analyzeCondition(src){
+  var W=Math.min(640,src.width),H=Math.round(src.height*W/src.width);
+  var c=document.createElement('canvas');c.width=W;c.height=H;
+  var cx=c.getContext('2d',{willReadFrequently:true});cx.drawImage(src,0,0,W,H);
+  var d=cx.getImageData(0,0,W,H).data;
+  var lum=new Float32Array(W*H);
+  for(var i=0,p=0;i<d.length;i+=4,p++)lum[p]=d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114;
+  function L(x,y){return lum[y*W+x]}
+  var colG=new Float32Array(W),rowG=new Float32Array(H);
+  for(var y=1;y<H-1;y++)for(var x=1;x<W-1;x++){
+    var gx=Math.abs(L(x+1,y)-L(x-1,y)),gy=Math.abs(L(x,y+1)-L(x,y-1));
+    colG[x]+=gx;rowG[y]+=gy;
+  }
+  function bestIdx(arr,from,to){
+    var bi=-1,bv=0;
+    for(var i=Math.max(1,from);i<Math.min(arr.length-1,to);i++){if(arr[i]>bv){bv=arr[i];bi=i}}
+    return {i:bi,v:bv};
+  }
+  var left=bestIdx(colG,Math.round(W*0.01),Math.round(W*0.24));
+  var right=bestIdx(colG,Math.round(W*0.76),W-1);
+  var top=bestIdx(rowG,Math.round(H*0.01),Math.round(H*0.24));
+  var bottom=bestIdx(rowG,Math.round(H*0.76),H-1);
+  if(left.i<0||right.i<0||top.i<0||bottom.i<0||right.i-left.i<W*0.3||bottom.i-top.i<H*0.3){
+    return {ok:false,msg:'枠が見つかりません。背景を暗く／カードを枠いっぱいに'};
+  }
+  var cw=right.i-left.i,ch2=bottom.i-top.i;
+  // inner frame lines: search band 2%-14% inside each edge
+  function inner(from,to,axis){
+    var bi=from,bv=0;
+    for(var i=from;i<=to;i++){
+      var v=axis==='v'?colG[i]:rowG[i];
+      if(v>bv){bv=v;bi=i}
+    }
+    return bi;
+  }
+  var inL=inner(Math.round(left.i+cw*0.025),Math.round(left.i+cw*0.14),'v');
+  var inR=inner(Math.round(right.i-cw*0.14),Math.round(right.i-cw*0.025),'v');
+  var inT=inner(Math.round(top.i+ch2*0.025),Math.round(top.i+ch2*0.14),'h');
+  var inB=inner(Math.round(bottom.i-ch2*0.14),Math.round(bottom.i-ch2*0.025),'h');
+  var lm=inL-left.i,rm=right.i-inR,tm=inT-top.i,bm=bottom.i-inB;
+  if(lm<=0||rm<=0)lm=Math.max(1,Math.round(cw*0.05)),rm=Math.max(1,Math.round(cw*0.05));
+  if(tm<=0||bm<=0)tm=Math.max(1,Math.round(ch2*0.05)),bm=Math.max(1,Math.round(ch2*0.05));
+  var lr=Math.abs(lm-rm)/(lm+rm)*100;
+  var tb=Math.abs(tm-bm)/(tm+bm)*100;
+  // white edge check: sample band between card edge and inner line
+  var whitePx=0,totalPx=0;
+  function band(x0,x1,y0,y1){
+    for(var yy=Math.max(0,Math.floor(y0));yy<Math.min(H,Math.ceil(y1));yy++){
+      for(var xx=Math.max(0,Math.floor(x0));xx<Math.min(W,Math.ceil(x1));xx++){
+        var o=(yy*W+xx)*4;var r=d[o],g=d[o+1],b=d[o+2];
+        var mx=Math.max(r,g,b),mn=Math.min(r,g,b);
+        totalPx++;
+        if(mx>228&&(mx-mn)<26)whitePx++;
+      }
+    }
+  }
+  var bandW=Math.max(2,Math.min(lm,rm)*0.8), bandH=Math.max(2,Math.min(tm,bm)*0.8);
+  band(left.i,left.i+bandW,top.i+ch2*0.1,top.i+ch2*0.9);
+  band(right.i-bandW,right.i,top.i+ch2*0.1,top.i+ch2*0.9);
+  band(left.i+cw*0.1,left.i+cw*0.9,top.i,top.i+bandH);
+  band(left.i+cw*0.1,left.i+cw*0.9,bottom.i-bandH,bottom.i);
+  // corners
+  var cw2=Math.round(cw*0.09),ch3=Math.round(ch2*0.09);
+  band(left.i,left.i+cw2,top.i,top.i+ch3);
+  band(right.i-cw2,right.i,top.i,top.i+ch3);
+  band(left.i,left.i+cw2,bottom.i-ch3,bottom.i);
+  band(right.i-cw2,right.i,bottom.i-ch3,bottom.i);
+  var ratio=totalPx?whitePx/totalPx*100:0;
+  var suspect=ratio>4.5;
+  var conf=Math.round(clamp(40+Math.min(55,ratio*4.5),35,95));
+  return {
+    ok:true,left:left.i,right:right.i,top:top.i,bottom:bottom.i,cw:cw,ch:ch2,
+    innerL:inL,innerR:inR,innerT:inT,innerB:inB,
+    leftMargin:Math.round(lm),rightMargin:Math.round(rm),topMargin:Math.round(tm),bottomMargin:Math.round(bm),
+    lr:lr,tb:tb,
+    white:{suspect:suspect,confidence:conf,ratio:ratio}
+  };
+}
+
+/* ---------------- 実機テスト記録 ---------------- */
+function recordTest(r){
+  var expName=($('#expName')&&$('#expName').value||'').trim();
+  var expPrice=($('#expPrice')&&$('#expPrice').value||'').trim();
+  if(!expName&&!expPrice)return;
+  var okName=null,okPrice=null;
+  if(expName){
+    var en=norm(expName),on=norm(r.item.name+(r.ocrName?' '+r.ocrName:''));
+    okName=on.indexOf(en)>=0||dice(en,norm(r.item.name))>0.6||dice(en,on)>0.5;
+  }
+  if(expPrice)okPrice=Number(expPrice)===Number(r.tag);
+  TESTS.unshift({t:Date.now(),ms:r.ms,name:r.item.name,ocr:(r.ocrName||'').slice(0,40),price:r.tag,level:r.level,expName:expName,expPrice:expPrice,okName:okName,okPrice:okPrice});
+  saveTests();renderTests();
+}
+function renderTests(){
+  var tb=$('#testTable').querySelector('tbody');
+  tb.innerHTML=TESTS.slice(0,80).map(function(t){
+    function mark(v){return v===null?'─':v?'<span class="ok">○</span>':'<span class="ng">×</span>'}
+    return '<tr><td>'+new Date(t.t).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})+'</td><td>'+t.ms+'</td><td>'+esc(t.name)+'</td><td>'+yen(t.price)+'</td><td>'+esc(t.level)+'</td><td>'+mark(t.okName)+' '+mark(t.okPrice)+'</td></tr>';
+  }).join('');
+  $('#testEmpty').hidden=!!TESTS.length;
+  var withName=TESTS.filter(function(t){return t.okName!==null});
+  var withPrice=TESTS.filter(function(t){return t.okPrice!==null});
+  $('#stCount').textContent=TESTS.length;
+  $('#stName').textContent=withName.length?Math.round(withName.filter(function(t){return t.okName}).length/withName.length*100)+'%':'─';
+  $('#stPrice').textContent=withPrice.length?Math.round(withPrice.filter(function(t){return t.okPrice}).length/withPrice.length*100)+'%':'─';
+  $('#stMs').textContent=TESTS.length?Math.round(TESTS.reduce(function(a,t){return a+t.ms},0)/TESTS.length):'─';
+}
+$('#btnClearTests').addEventListener('click',function(){if(confirm('実測の記録を全部消しますか？')){TESTS=[];saveTests();renderTests()}});
+$('#btnCsv').addEventListener('click',function(){
+  var rows=[['時刻','ms','商品名','OCR生テキスト','価格','判定','正解名','正解価格','名前一致','価格一致']];
+  TESTS.forEach(function(t){rows.push([new Date(t.t).toISOString(),t.ms,t.name,t.ocr,t.price,t.level,t.expName,t.expPrice,t.okName===null?'':t.okName,t.okPrice===null?'':t.okPrice])});
+  downloadCsv(rows,'toreka-scan-tests-'+stamp()+'.csv');
+});
+
+/* ---------------- DB編集 ---------------- */
+function renderDB(){
+  var q=norm($('#dbSearch').value||'');
+  var tb=$('#dbBody');
+  var items=DB.items;
+  tb.innerHTML=items.map(function(it,idx){
+    var hay=norm(it.name+' '+(it.aliases||[]).join(' '));
+    if(q&&hay.indexOf(q)<0)return '';
+    return '<tr data-idx="'+idx+'" class="'+(it.est?'est':'')+'">'+
+      '<td><input data-k="name" value="'+esc(it.name)+'" style="min-width:130px"></td>'+
+      '<td><select data-k="cat"><option value="box"'+(it.cat==='box'?' selected':'')+'>BOX</option><option value="single"'+(it.cat!=='box'?' selected':'')+'>シングル</option></select></td>'+
+      '<td><select data-k="version">'+['通常版','25th','プロモ','再販・復刻'].map(function(v){return '<option'+(it.version===v?' selected':'')+'>'+v+'</option>'}).join('')+'</select></td>'+
+      '<td><select data-k="grade"><option value="raw"'+(it.grade!=='psa10'?' selected':'')+'>生</option><option value="psa10"'+(it.grade==='psa10'?' selected':'')+'>PSA10</option></select></td>'+
+      '<td><input data-k="number" value="'+esc(it.number||'')+'" style="min-width:64px"></td>'+
+      '<td><input class="num" data-k="list" type="number" value="'+(it.list||0)+'"></td>'+
+      '<td><input class="num" data-k="p.oita" type="number" value="'+(it.price.oita||0)+'"></td>'+
+      '<td><input class="num" data-k="p.fukuoka" type="number" value="'+(it.price.fukuoka||0)+'"></td>'+
+      '<td><input class="num" data-k="p.mail" type="number" value="'+(it.price.mail||0)+'"></td>'+
+      '<td><input class="num" data-k="p.loose" type="number" value="'+(it.price.loose||0)+'"></td>'+
+      '<td><input class="num" data-k="src" type="text" value="'+esc(it.src||'')+'" style="min-width:110px"></td>'+
+      '<td><span class="src" title="'+esc(it.src||'')+'">'+(it.est?'<span class="est">目安</span> ':'')+esc((it.src||'').slice(0,26))+'</span></td>'+
+      '<td><button class="del" data-del="'+idx+'" title="削除">✕</button></td>'+
+    '</tr>';
+  }).join('');
+  $('#dbCount').textContent=items.length+'件';
+  $('#dbTime').textContent=DB.updated||'─';
+  $('#dbEdited').textContent=DB.edited?'最終保存 '+DB.edited:'';
+}
+$('#dbSearch').addEventListener('input',function(){renderDB()});
+$('#dbBody').addEventListener('change',function(e){
+  var el=e.target;if(!el||!el.getAttribute)return;
+  var tr=el.closest('tr');if(!tr)return;
+  var idx=num(tr.getAttribute('data-idx'),-1),it=DB.items[idx];if(!it)return;
+  var k=el.getAttribute('data-k');if(!k)return;
+  var v=el.value;
+  if(k==='p.oita'||k==='p.fukuoka'||k==='p.mail'||k==='p.loose'||k==='list')v=num(v,0);
+  if(k.indexOf('p.')===0)it.price[k.slice(2)]=v;
+  else it[k]=v;
+  if(!it.aliases||!it.aliases.length)it.aliases=[it.name];
+  if(k==='name')it.aliases=[v].concat((it.aliases||[]).filter(function(a){return a!==it.name}));
+  saveDB();
+});
+$('#dbBody').addEventListener('click',function(e){
+  var b=e.target.closest('[data-del]');if(!b)return;
+  var idx=num(b.getAttribute('data-del'),-1);
+  if(!DB.items[idx])return;
+  if(!confirm('「'+DB.items[idx].name+'」をDBから削除しますか？'))return;
+  DB.items.splice(idx,1);saveDB();renderDB();
+});
+$('#btnAddRow').addEventListener('click',function(){
+  DB.items.unshift({id:'u_'+Date.now(),cat:'single',name:'新しい商品',aliases:['新しい商品'],version:'通常版',grade:'raw',number:'',rarity:'',list:0,price:{oita:0,fukuoka:0,mail:0,loose:0},oitaStore:'',src:'手動 '+nowLabel(),est:false});
+  saveDB();renderDB();$('#dbSearch').value='';goTab('db');toast('行を追加しました（価格を入れてください）');
+});
+$('#btnExport').addEventListener('click',function(){
+  downloadJson({updated:DB.updated,edited:DB.edited,items:DB.items},'toreka-scan-db-'+stamp()+'.json');
+});
+$('#fileImport').addEventListener('change',function(e){
+  var f=e.target.files&&e.target.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(){
+    try{
+      var j=JSON.parse(r.result);
+      var items=j.items||(Array.isArray(j)?j:null);
+      if(!items||!items.length)throw new Error('items がありません');
+      if(!confirm(items.length+'件のDBで置き換えます。よろしいですか？'))return;
+      DB={updated:j.updated||nowLabel(),edited:nowLabel(),items:items};
+      saveDB();renderDB();toast('読み込みました（'+items.length+'件）');
+    }catch(err){toast('読み込み失敗: '+err.message)}
+    e.target.value='';
+  };
+  r.readAsText(f);
+});
+$('#btnReset').addEventListener('click',function(){
+  if(!confirm('買取DBを 2026-11-28 19:00 の最新初期値に戻します。編集内容は消えます。よろしいですか？'))return;
+  DB=JSON.parse(JSON.stringify(DEFAULT_DB));saveDB();renderDB();toast('初期値に戻しました');
+});
+$('#btnExportCsv').addEventListener('click',function(){
+  var rows=[['商品名','種別','版','グレード','型番','定価','大分','福岡','宅配','シュリンクなし','出典','目安']];
+  DB.items.forEach(function(it){rows.push([it.name,it.cat,it.version,gradeLabel(it.grade),it.number||'',it.list||0,it.price.oita||0,it.price.fukuoka||0,it.price.mail||0,it.price.loose||0,it.src||'',it.est?'目安':''])});
+  downloadCsv(rows,'toreka-scan-db-'+stamp()+'.csv');
+});
+$('#btnExport2').addEventListener('click',function(){
+  downloadJson({db:DB,settings:SET},'toreka-scan-all-'+stamp()+'.json');
+});
+$('#btnClearAll').addEventListener('click',function(){
+  if(!confirm('この端末のDB・設定・実測記録を全部消します。よろしいですか？'))return;
+  try{localStorage.removeItem(LS.db);localStorage.removeItem(LS.set);localStorage.removeItem(LS.test)}catch(e){}
+  location.reload();
+});
+function stamp(){var d=new Date();function p(x){return (x<10?'0':'')+x}return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes())}
+function downloadJson(obj,name){
+  var blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});
+  downloadBlob(blob,name);
+}
+function downloadCsv(rows,name){
+  var csv=rows.map(function(r){return r.map(function(c){var s=String(c==null?'':c);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}).join(',')}).join('\r\n');
+  downloadBlob(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}),name);
+}
+function downloadBlob(blob,name){
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},800);
+}
+
+/* ---------------- 画面消灯防止 ---------------- */
+var wakeLock=null;
+async function requestWake(){
+  if(!SET.keepAwake||!('wakeLock' in navigator))return;
+  try{
+    if(wakeLock)return;
+    wakeLock=await navigator.wakeLock.request('screen');
+    wakeLock.addEventListener('release',function(){wakeLock=null});
+  }catch(e){}
+}
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='visible'){requestWake()}
+});
+
+/* ---------------- 起動 ---------------- */
+function init(){
+  fillSettings();renderDB();renderTests();applyMode();
+  $('#dbTime').textContent=DB.updated||'─';
+  $('#dbSources').innerHTML='<b>2026-11-28 19:00時点</b>：ハドウシーカー（シュリンクあり最高7,100／ホムラ6,800／なし6,600）、古代の咆哮（大分6,000／宅配10,600）、ワイルドフォース（大分7,000／宅配11,200）、スペシャルBOXフクオカ（8,500）、30th CELEBRATION（16,000）、ストームエメラルダ（7,200）、ロケット団の栄光（22,500）、インフェルノX（17,000）、MEGAドリームex（10,800）、OP-18 神の支配（6,600）。<br><br>その他のBOXは 11/26〜28 の調査値（道楽・ホムラ・pokeso等）。<b>「目安」バッジ</b>の付いた行は日次で動くので、店頭の表を見て上書きしてください。シングルは全国郵送買取（11/26）と道楽PSA10（11/26）。<b>生カードの大分・福岡店頭値は手動追加が確実です。</b>';
+  var card=$('#voiceCard');
+  if(card){card.addEventListener('click',function(){
+    if(running){stopScan();setVoiceText('停止中','画面タップで再開できます')}
+    else{unlockAudio();$('#btnScan').click()}
+  })}
+  document.addEventListener('click',function once(){unlockAudio();document.removeEventListener('click',once)},{once:true});
+  if('speechSynthesis' in window&&speechSynthesis.getVoices){
+    speechSynthesis.getVoices();
+  }
+}
+init();
+window.__scanner={judge:judge,channelsFor:channelsFor,pickItem:pickItem,findCandidates:findCandidates,parsePrice:parsePrice,extractMarks:extractMarks,preprocess:preprocess,analyzeCondition:analyzeCondition,DB:DB,SET:SET,scanOnce:scanOnce,demoScan:demoScan};
+})();
+</script>
+</body>
+</html>
