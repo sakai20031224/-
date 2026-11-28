@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<title>トレカスキャン判定 完全版｜買取手取りで「買い」を判定</title>
+<title>トレカスキャン判定 完全版v2｜店頭手取りで「買い」を判定</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
@@ -84,6 +84,22 @@ section[data-tab].on{display:block}
 .presets button{flex:1;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 4px;font-size:11px;font-weight:700;color:var(--dim);line-height:1.3}
 .presets button[aria-pressed="true"]{background:var(--tcbg);border-color:#a9d7cd;color:var(--tc2)}
 
+/* 光り方・柄の確認 */
+.finishbtns{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.finishbtns button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 2px;font-size:11.5px;font-weight:800;color:var(--ink2);line-height:1.25}
+.finishbtns button small{display:block;font-size:9px;font-weight:600;color:var(--dim2)}
+.finishbtns button[aria-pressed="true"]{background:#10241f;border-color:#10241f;color:#5ff0cf}
+.finishbtns button[aria-pressed="true"] small{color:#9fe3d3}
+.finishbtns button[data-finish="monster"],.finishbtns button[data-finish="master"]{border-color:#e3c9a0}
+.finishwarn{background:var(--redbg);border:1px solid #fbc9c4;color:#912018;border-radius:10px;padding:8px 10px;font-size:11.5px;font-weight:800;line-height:1.5;margin-top:8px}
+.finishok{background:var(--greenbg);border:1px solid #a6e9c5;color:#05603a;border-radius:10px;padding:7px 10px;font-size:11.5px;font-weight:700;margin-top:8px}
+.saya{background:#f5f7ff;border:1px solid #c7d2fe;border-radius:10px;padding:8px 10px;font-size:12px;font-weight:800;color:#1d4ed8;margin-top:8px;line-height:1.5}
+.saya .mini{color:#4b5563;font-weight:600;margin-top:2px}
+.sprow{display:flex;gap:6px;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--line2);font-size:11px;line-height:1.4}
+.sprow .nm{flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sprow .df{font-weight:800;color:#1d4ed8;font-variant-numeric:tabular-nums;white-space:nowrap}
+#finishCard{border-color:#e3c9a0;background:linear-gradient(180deg,#fffdf7,#fff)}
+
 /* カメラ */
 .camwrap{position:relative;background:#0b0d11;border-radius:14px;overflow:hidden;aspect-ratio:3/2;border:1px solid #111}
 .camwrap video,.camwrap canvas.sim{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
@@ -158,7 +174,7 @@ section[data-tab].on{display:block}
 /* DB */
 .dbtools{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
 .dbwrap{overflow:auto;border:1px solid var(--line);border-radius:10px;-webkit-overflow-scrolling:touch}
-table.db{border-collapse:collapse;width:100%;min-width:1080px;font-size:11px}
+table.db{border-collapse:collapse;width:100%;min-width:1620px;font-size:11px}
 table.db th{background:#f8fafb;color:var(--dim);font-size:10px;font-weight:700;padding:6px 4px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0}
 table.db td{padding:4px 3px;border-bottom:1px solid var(--line2);vertical-align:middle}
 table.db input,table.db select{width:100%;padding:4px 5px;font-size:11px;border-radius:6px;min-width:62px}
@@ -270,10 +286,14 @@ body[data-mode="ar"] .pre{opacity:.85}
 
 <header class="hd">
   <div class="top">
-    <h1>🎴 トレカスキャン判定<small>完全版</small></h1>
+    <h1>🎴 トレカスキャン判定<small>完全版 v2</small></h1>
     <button class="btn sm" id="btnVoiceTest" title="iPhoneの音声テスト">🔊 音声テスト</button>
   </div>
-  <div class="sub">カメラで読む → 出口手取りで判定 → 買いだけ耳打ち<br>買取DB更新 <b id="dbTime">2026-11-28 19:00</b>・判定は <b>0.1秒</b>（OCRのみ数秒）</div>
+  <div class="sub">カメラで読む → <b>大分・福岡の店頭手取り</b>で判定 → 買いだけ耳打ち<br>買取DB <b id="dbTime">2026-11-28 19:00</b>・<b id="feedState">フィード未取得</b></div>
+  <div class="row mt6" style="max-width:760px;margin-left:auto;margin-right:auto">
+    <button class="btn sm pri" id="btnFeedReload">🔄 最新データ再読込</button>
+    <span class="mini" id="feedNote">起動時に ./buyback_feed.json を自動取得（郵送は参考表示のみ）</span>
+  </div>
   <div class="modes" id="modes">
     <button data-mode="phone" aria-pressed="true"><span class="m1">📱</span>スマホ版</button>
     <button data-mode="ar" aria-pressed="false"><span class="m1">👓</span>ARグラス版</button>
@@ -296,10 +316,22 @@ body[data-mode="ar"] .pre{opacity:.85}
     <h2>用途プリセット <span class="tag" id="presetNote">状態難ライン80%</span></h2>
     <div class="presets" id="presets">
       <button data-preset="showcase" aria-pressed="true">🗄 ショーケース<br>個別カード</button>
-      <button data-preset="oripa" aria-pressed="false">🎁 オリパの<br>先頭カード</button>
+      <button data-preset="oripa" aria-pressed="false">🎁 オリパ前面<br>シングル／BOX</button>
       <button data-preset="storage" aria-pressed="false">📦 ストレージ</button>
     </div>
     <div class="hint mt6" id="presetHint">値札のカードを近づけて撮影。美品だけでなく<b>状態難でも買えるか</b>で判定します。</div>
+    <div class="hint mt6" style="color:#0b5d52;background:#e8f4f1;border-radius:8px;padding:7px 9px">判定に使う出口は<b>大分店頭・福岡店頭の実店舗だけ</b>です。郵送・全国相場は「参考（判定に使わない）」に分けています。未確認の価格は<b>未確認</b>のまま表示します。</div>
+  </div>
+
+  <div class="card" id="finishCard">
+    <h2>✨ 光り方・柄の最終確認 <span class="tag" id="finishState">未確認</span></h2>
+    <div class="finishbtns" id="finishBtns">
+      <button data-finish="normal" aria-pressed="false">通常<small>ノーマル</small></button>
+      <button data-finish="monster" aria-pressed="false">モンボ<small>ミラー</small></button>
+      <button data-finish="master" aria-pressed="false">マスボ<small>ミラー</small></button>
+      <button data-finish="holo" aria-pressed="false">ホロ<small>R/RR等</small></button>
+    </div>
+    <div class="hint mt6">カメラは「ミラーかどうか」の一次スコアだけ：<b id="finishScore">─</b>。<b>マスボとモンボの柄の自動判別はできません</b>。候補が出たら必ず目視で選んでください。未確認のままミラー候補を買い判定にはしません。</div>
   </div>
 
   <div class="card" id="camCard">
@@ -357,9 +389,11 @@ body[data-mode="ar"] .pre{opacity:.85}
     <h2>判定結果 <span class="tag" id="lastMs">─</span></h2>
     <div class="res empty" id="result">まだスキャンしていません。下のクイックデモか、カメラで読み取ってください。</div>
     <div class="row mt10">
-      <button class="btn" id="btnDemo1">デモ: 古代の咆哮 8,000円</button>
-      <button class="btn" id="btnDemo2">デモ: ハドウ 6,500円</button>
-      <button class="btn" id="btnDemo3">デモ: ブラッキーex SAR 50,000円</button>
+      <button class="btn" id="btnDemo1">デモ: ハドウ 6,000円</button>
+      <button class="btn" id="btnDemo2">デモ: サンダース マスボ PSA10 9,000円</button>
+      <button class="btn" id="btnDemo3">デモ: ゲンガー マスボ PSA10 120,000円</button>
+      <button class="btn" id="btnDemo4">デモ: オリパ前面 10,000円</button>
+      <button class="btn" id="btnDemo5">デモ: リザード マスボ PSA10 4,000円</button>
     </div>
   </div>
 
@@ -386,17 +420,22 @@ body[data-mode="ar"] .pre{opacity:.85}
     <div class="dbwrap">
       <table class="db">
         <thead><tr>
-          <th>商品名</th><th>種別</th><th>版</th><th>グレード</th><th>型番</th><th>定価</th>
-          <th>大分</th><th>福岡</th><th>宅配</th><th>シュリンクなし</th><th>出典</th><th>メモ</th><th></th>
+          <th>商品名</th><th>種別</th><th>版</th><th>グレード</th><th>加工</th><th>型番</th><th>レア</th><th>収録弾</th><th>定価</th>
+          <th>大分</th><th>福岡</th><th>宅配(参考)</th><th>シュリンクなし</th><th>サヤ</th><th>出典</th><th>メモ</th><th></th>
         </tr></thead>
         <tbody id="dbBody"></tbody>
       </table>
     </div>
-    <div class="dbnote">※ 初期値は <b>2026-11-28 19:00</b> 時点の買取。編集すると端末（localStorage）に自動保存され、リロードしても消えません。価格は日次で動くので、店頭で見た表に合わせて直してください。行左のオレンジ線は「目安値」です。</div>
+    <div class="dbnote">※ 起動時に <b>buyback_feed.json</b> を自動で読み込みます（2026-11-28 22:00時点のフィード）。編集した行は<b>「手動」</b>として端末に保存され、フィードで上書きされません。価格は日次で動くので、店頭で見た表に合わせて直してください。行左のオレンジ線は「目安値」（判定では買いを出さず要確認にします）。</div>
     <div class="row mt10">
       <button class="btn sm" id="btnExportCsv">⬇ CSV（一覧）</button>
       <span class="mini" id="dbEdited"></span>
     </div>
+  </div>
+  <div class="card">
+    <h2>店間サヤ・アラート <span class="tag">買取強化の差</span></h2>
+    <div class="hint">同じカードで大分・福岡（同じエリア内の店も可）の買取に差があるもの。店名と確認日つき。サヤが大きいほど「あっちの店ではいくら、こっちではいくら」の歪みです。</div>
+    <div id="spreadList" class="mt6"></div>
   </div>
   <div class="card">
     <h2>価格の出どころ</h2>
@@ -419,8 +458,9 @@ body[data-mode="ar"] .pre{opacity:.85}
     <div class="field" id="rowCustomKm" hidden><label>往復距離（km）<small>直接入力</small></label><input type="number" id="inCustomKm" min="0" step="1" value="36"></div>
     <div class="field"><label>燃料単価<small>円/km（下道）</small></label><input type="number" id="inFuel" min="0" step="1" value="10"></div>
     <div class="field"><label>福岡往復の燃料<small>杵築→福岡 下道 約310km</small></label><input type="number" id="inFuku" min="0" step="100" value="3100"></div>
-    <div class="field"><label>宅配の送料<small>1口あたり</small></label><input type="number" id="inShip" min="0" step="100" value="800"></div>
-    <div class="field"><label>梱包費<small>1口あたり</small></label><input type="number" id="inPack" min="0" step="100" value="500"></div>
+    <div class="field"><label>郵送の送料<small>参考のみ（判定に使わない）</small></label><input type="number" id="inShip" min="0" step="100" value="800"></div>
+    <div class="field"><label>郵送の梱包費<small>参考のみ（判定に使わない）</small></label><input type="number" id="inPack" min="0" step="100" value="500"></div>
+    <div class="hint mt6" style="color:#b54708">2026-11-28の本人方針で<b>郵送買取は使わない</b>。郵送の手取りは結果画面に「参考」として出すだけで、買い判定には入れません。</div>
   </div>
   <div class="card">
     <h2>按分（まとめ売り前提）</h2>
@@ -434,8 +474,8 @@ body[data-mode="ar"] .pre{opacity:.85}
     <div class="field"><label>ショーケース<small>利益がこの額以上で「買い」</small></label><input type="number" id="inThShowcase" min="0" step="100" value="500"></div>
     <div class="field"><label>オリパ<small>利益がこの額以上で「買い」</small></label><input type="number" id="inThOripa" min="0" step="100" value="500"></div>
     <div class="field"><label>ストレージ<small>初期500円（変更可）</small></label><input type="number" id="inThStorage" min="0" step="100" value="500"></div>
-    <div class="field"><label>状態難率（ショーケース）<small>状態難でも美品の何％で買い取られるか</small></label><input type="number" id="inHardShowcase" min="0" max="100" step="5" value="80"></div>
-    <div class="field"><label>状態難率（オリパ）<small>先頭カードは傷みやすい前提</small></label><input type="number" id="inHardOripa" min="0" max="100" step="5" value="60"></div>
+    <div class="field"><label>状態難率（ショーケース）<small>シングルもこの率を安全ラインにする</small></label><input type="number" id="inHardShowcase" min="0" max="100" step="5" value="80"></div>
+    <div class="field"><label>状態難率（オリパ前面）<small>前面カードは傷みやすい前提。BOXには適用しない</small></label><input type="number" id="inHardOripa" min="0" max="100" step="5" value="60"></div>
   </div>
   <div class="card">
     <h2>音声・画面</h2>
@@ -522,9 +562,21 @@ body[data-mode="ar"] .pre{opacity:.85}
   </div>
 
   <div class="fix">
-    <div><span class="no">6</span><h3>版の取り違え（通常版／25th／プロモ／再販）とグレード違い</h3></div>
-    <div class="did">カード番号（###/###）・レアリティ（SAR/AR等）・25thロゴ・プロモ・再販／復刻・レギュレーションを抽出し、<b>版ごとに別価格で照合</b>します。DBの想定グレード（生／PSA10）と違うときは「グレード違い」と警告し、<b>買い判定を出しません</b>（誤って高値のPSA10価格で買うのを防ぐ）。</div>
-    <div class="how">確認方法：デモ「ブラッキーex SAR 50,000円」でグレードを「生」にすると、PSA10価格のDBとは別扱いになることを確認。</div>
+    <div><span class="no">6</span><h3>版の取り違え（通常版／25th／プロモ／再販）とグレード・光り方の違い</h3></div>
+    <div class="did">カード番号（###/###）・レアリティ・25thロゴ・プロモ・再販／復刻・レギュレーションを抽出し、<b>版・グレード・加工ごとに別価格で照合</b>します。生とPSA10が違うときは警告して<b>買い判定を出しません</b>。<br><br><b>光り方は「通常／ホロ／モンボミラー／マスボミラー」を別アイテム・別価格で管理</b>し、同じ名前・同じ番号でも加工が違えば別行です（例：ゲンガー マスボミラー と モンボミラー、ピカチュウ マスボミラー と モンボミラー）。カメラはミラーかどうかの一次スコアだけを出し、<b>マスボとモンボの柄は目視のワンタップで確定</b>します。未確認のままミラー候補を「買い」にはしません。</div>
+    <div class="how">確認方法：カードを読み取ると「✨光り方・柄の最終確認」が出ます。マスボ＋通常を切り替えて判定が変わることを確認。</div>
+  </div>
+
+  <div class="fix">
+    <div><span class="no">7</span><h3>買取データが固定で、開くたびに古かった</h3></div>
+    <div class="did"><b>buyback_feed.json</b> を新設し、ページ起動時に自動で取得・内蔵DBとマージします。「🔄 最新データ再読込」ボタンでも取り直せます（キャッシュ回避クエリ付き）。手動で直した行は「手動」として保護され、フィードで上書きされません。店名・確認日つきの価格だけを入れ、未確認は未確認のままです。</div>
+    <div class="how">確認方法：右上の「フィード取得済み」表示と、DBタブの更新日時。オフラインなら「フィード取得できず（内蔵DB）」と出て、内蔵DBで動きます。</div>
+  </div>
+
+  <div class="fix">
+    <div><span class="no">8</span><h3>「あっちの店ではいくら、こっちではいくら」が見えなかった</h3></div>
+    <div class="did">判定結果とDBに<b>「店間サヤ」</b>を追加。大分最高値と福岡最高値を店名・確認日つきで並べ、<b>最大買取−最小買取の差</b>と<b>値札（売値）とのサヤ</b>を表示します。DBタブには差の大きい順の「店間サヤ・アラート」一覧も付けました。同じエリア内の店差も拾います。</div>
+    <div class="how">確認方法：DBタブの「サヤ」列とアラート一覧。スキャン結果の青い「店間サヤ」帯。</div>
   </div>
 
   <div class="fix">
@@ -536,11 +588,12 @@ body[data-mode="ar"] .pre{opacity:.85}
   <div class="card">
     <h2>まだ弱いところ（正直な限界）</h2>
     <div class="limit">
+      <b>・マスボ／モンボの柄の完全自動識別はできません。</b>カメラの一次スコアは「ミラーかどうか」まで。角度・反射で誤ります。ミラー候補は<b>目視のワンタップ確認が必須</b>で、未確認のまま買い判定は出しません。<br>
       <b>・絵柄認識は未実装。</b>商品名の文字が読めないカードは照合できません（画像の類似検索は今回の範囲外）。<br>
       <b>・OCRは近距離勝負。</b>ガラス越し・斜め・手書きの小さい数字は落ちます。まずBOX名と大きい値札から。<br>
       <b>・白かけ検出は一次スクリーニング。</b>見込み40〜70%。断定しないので、高額カードは目視も併用してください。<br>
-      <b>・実測はまだゼロ。</b>このページの実機テストモードで、保有BOX・保有カードから数字を貯める必要があります。<br>
-      <b>・シングルの初期DBはPSA10／全国郵送の買取が中心。</b>生カードの大分・福岡店頭価格は、店頭で見た値をDBに足すのが確実です（スキャン結果から1タップで追加できます）。<br>
+      <b>・大分のPSA10／シングル店頭表は未確認。</b>大分は店頭査定が中心で、Xに表を出していない店があります。入っているのは福岡（トレカハブ・道楽）など確認できた店だけです。<br>
+      <b>・店間サヤは「掲示価格の差」。</b>状態・在庫・減額条件で実際の買取額は動きます。移動費を引いた手取りで最終判断してください。<br>
       <b>・ARグラス実機では未検証。</b>Ray-Ban Meta等はカメラ映像をWebページへ直接渡せないため、現時点のARグラス版は「スマホをグラス代わりにしたHUD」です。実機連携は別途。
     </div>
   </div>
@@ -635,13 +688,54 @@ var DEFAULT_DB={updated:'2026-11-28 19:00',edited:'',items:[
 {id:'p_vaporeon',cat:'single',name:'シャワーズVMAX PROMO',aliases:['シャワーズVMAX','シャワーズVMAX PROMO'],version:'プロモ',grade:'psa10',number:'',rarity:'',list:0,price:{oita:0,fukuoka:930000,mail:0,loose:0},oitaStore:'',src:'11/26 道楽PSA10・930,000',est:true}
 ]};
 
+/* ===== 2026-11-28 追加：シングル照合キー =====
+   番号・収録弾は公式カードDB/専門店ページで確認したものだけ。大分・福岡の店頭買取は未確認のため 0（＝未確認表示）。
+   ref は全国通販・相場の「参考」（判定に使わない）。 */
+var SINGLE_KEYS=[
+{id:'s_rayquaza_ar',cat:'single',name:'レックウザAR',aliases:['レックウザAR','レックウザ AR','レックウザ'],version:'通常版',grade:'raw',number:'056/076',rarity:'AR',set:'伝説の鼓動 S3a',list:0,price:{oita:0,fukuoka:0,mail:0,loose:0},oitaStore:'',fukuokaStore:'',checked:{},src:'番号・弾は公式カードDBで確認（2026-11-28）。大分・福岡の店頭買取は未確認',est:false,verified:false,ref:{label:'全国通販・未鑑定相場（参考）',price:6000,date:'2026-11-24',source:'ポケカナウ'},refPsa10:{price:25000,date:'2026-11-24',source:'ポケカナウ'}},
+{id:'s_xerneas_ar',cat:'single',name:'ゼルネアスAR',aliases:['ゼルネアスAR','ゼルネアス AR','ゼルネアス'],version:'通常版',grade:'raw',number:'089/083',rarity:'AR',set:'ニンジャスピナー M4',list:0,price:{oita:0,fukuoka:0,mail:0,loose:0},oitaStore:'',fukuokaStore:'',checked:{},src:'番号・弾はカードDBで確認（2026-11-28）。大分・福岡の店頭買取は未確認',est:false,verified:false,ref:{label:'カードラッシュ買取（参考）',price:100,date:'2026-11-28',source:'カードラッシュ/トレシア'},refPsa10:{price:4499,date:'2026-11-24',source:'ポケカトラッカー'}},
+{id:'s_natane_sar',cat:'single',name:'ナタネの活気 SAR',aliases:['ナタネの活気SAR','ナタネの活気','ナタネ SAR'],version:'通常版',grade:'raw',number:'243/172',rarity:'SAR',set:'VSTARユニバース S12a',list:0,price:{oita:0,fukuoka:0,mail:0,loose:0},oitaStore:'',fukuokaStore:'',checked:{},src:'番号はカードDBで確認（2026-11-28）。大分・福岡の店頭買取は未確認',est:false,verified:false,ref:{label:'カードラッシュ買取（参考）',price:1400,date:'2026-11-28',source:'altema/カードラッシュ'},refPsa10:{price:17800,date:'2026-11-26',source:'ポケカチ'}},
+{id:'s_baokki_sar',cat:'single',name:'バオッキーVSTAR SAR',aliases:['バオッキーVSTAR SAR','バオッキーVSTAR','バオッキー SAR','バオッキー'],version:'通常版',grade:'raw',number:'214/172',rarity:'SAR',set:'VSTARユニバース S12a',list:0,price:{oita:0,fukuoka:0,mail:0,loose:0},oitaStore:'',fukuokaStore:'',checked:{},src:'番号はカードDBで確認（2026-11-28）。大分・福岡の店頭買取は未確認',est:false,verified:false,ref:{label:'カードラッシュ買取（参考）',price:3000,date:'2026-11-28',source:'altema/カードラッシュ'},refPsa10:{price:15800,date:'2026-11-26',source:'ポケカチ'}},
+{id:'s_gengar_mb',cat:'single',name:'ゲンガー マスターボールミラー',aliases:['ゲンガー マスターボールミラー','ゲンガー マスボ','ゲンガーマスボ','ゲンガーMB','ゲンガー'],version:'通常版',grade:'raw',number:'094/165',rarity:'マスターボールミラー',set:'ポケモンカード151 SV2a',list:0,price:{oita:0,fukuoka:0,mail:0,loose:0},oitaStore:'',fukuokaStore:'',checked:{},src:'番号は公式カードDBで確認（2026-11-28）。大分・福岡の店頭買取は未確認',est:false,verified:false,ref:{label:'カードラッシュ買取（参考）',price:85000,date:'2026-11-28',source:'altema/カードラッシュ'},refPsa10:{price:170000,date:'2026-11-26',source:'ポケカチ'}},
+{id:'s_chili_sar',cat:'single',name:'チリ SAR',aliases:['チリSAR','チリ SAR','チリ'],version:'通常版',grade:'raw',number:'088/062',rarity:'SAR',set:'レイジングサーフ SV3a',list:0,price:{oita:0,fukuoka:0,mail:0,loose:0},oitaStore:'',fukuokaStore:'',checked:{},src:'番号はカードDBで確認（2026-11-28）。大分・福岡の店頭買取は未確認',est:false,verified:false,ref:{label:'カードラッシュ買取（参考）',price:2000,date:'2026-11-28',source:'ゲームペディア/カードラッシュ'}},
+/* ===== 福岡店頭のPSA10（トレカハブ 福岡博多店 11/26表・画像を拡大して確認） ===== */
+{id:'p_mb_sanders',cat:'single',name:'サンダース マスターボールミラー',aliases:['サンダース マスターボールミラー','サンダース マスボ','サンダースMB','サンダース'],version:'通常版',grade:'psa10',number:'051/187',rarity:'マスターボールミラー',set:'ポケモンカード151 SV2a',list:0,price:{oita:0,fukuoka:11500,mail:0,loose:0},oitaStore:'',fukuokaStore:'トレカハブ 福岡博多店',checked:{fukuoka:'2026-11-26'},src:'11/26 トレカハブ博多 PSA10表・11,500',est:false,verified:true},
+{id:'p_mb_espeon',cat:'single',name:'エーフィ マスターボールミラー',aliases:['エーフィ マスターボールミラー','エーフィ マスボ','エーフィMB','エーフィ'],version:'通常版',grade:'psa10',number:'062/187',rarity:'マスターボールミラー',set:'ポケモンカード151 SV2a',list:0,price:{oita:0,fukuoka:15000,mail:0,loose:0},oitaStore:'',fukuokaStore:'トレカハブ 福岡博多店',checked:{fukuoka:'2026-11-26'},src:'11/26 トレカハブ博多 PSA10表・15,000',est:false,verified:true},
+{id:'p_mb_leafeon',cat:'single',name:'リーフィア マスターボールミラー',aliases:['リーフィア マスターボールミラー','リーフィア マスボ','リーフィアMB','リーフィア'],version:'通常版',grade:'psa10',number:'002/187',rarity:'マスターボールミラー',set:'ポケモンカード151 SV2a',list:0,price:{oita:0,fukuoka:7600,mail:0,loose:0},oitaStore:'',fukuokaStore:'トレカハブ 福岡博多店',checked:{fukuoka:'2026-11-26'},src:'11/26 トレカハブ博多 PSA10表・7,600',est:false,verified:true},
+{id:'p_mb_vaporeon',cat:'single',name:'シャワーズ マスターボールミラー',aliases:['シャワーズ マスターボールミラー','シャワーズ マスボ','シャワーズMB','シャワーズ'],version:'通常版',grade:'psa10',number:'134/165',rarity:'マスターボールミラー',set:'ポケモンカード151 SV2a',list:0,price:{oita:0,fukuoka:9500,mail:0,loose:0},oitaStore:'',fukuokaStore:'トレカハブ 福岡博多店',checked:{fukuoka:'2026-11-26'},src:'11/26 トレカハブ博多 PSA10表・9,500',est:false,verified:true},
+{id:'p_natane_sr',cat:'single',name:'ナタネ SR（070/066）',aliases:['ナタネ SR','ナタネSR','ナタネ 070'],version:'通常版',grade:'psa10',number:'070/066',rarity:'SR',set:'ウルトラサン SM5S',list:0,price:{oita:0,fukuoka:70000,mail:0,loose:0},oitaStore:'',fukuokaStore:'トレカハブ 福岡博多店',checked:{fukuoka:'2026-11-26'},src:'11/26 トレカハブ博多 PSA10表・70,000（「ナタネの活気 SAR 243/172」とは別カード）',est:false,verified:true}
+];
+DEFAULT_DB.items=DEFAULT_DB.items.concat(SINGLE_KEYS);
+
+/* ===== 2026-11-28 追加：高額PSA10の代表候補（店頭価格は確認できたものだけ。他は未確認） ===== */
+var HIGH_KEYS=[
+{id:'p_poncho_ray',cat:'single',name:'ポンチョを着たピカチュウ（レックウザ）',aliases:['ポンチョを着たピカチュウ レックウザ','ポンチョピカチュウ レックウザ','ポンチョ ピカチュウ'],version:'プロモ',grade:'psa10',finish:'normal',number:'',rarity:'プロモ',set:'プロモ（XY-P）',list:0,price:{oita:0,fukuoka:0,mail:0,loose:0},oitaStore:'',fukuokaStore:'',checked:{},src:'番号未確認。大分・福岡の店頭買取は未確認',est:false,verified:false,ref:{label:'全国通販・素体買取（参考）',price:1300000,date:'2026-11-28',source:'ポケカチ/カードラッシュ'},refPsa10:{price:2600000,date:'2026-11-26',source:'ポケカチ'}},
+{id:'p_poncho_charx',cat:'single',name:'ポンチョを着たピカチュウ（メガリザードンX）',aliases:['ポンチョを着たピカチュウ メガリザードンX','ポンチョピカチュウ リザードンX'],version:'プロモ',grade:'psa10',finish:'normal',number:'',rarity:'プロモ',set:'プロモ（XY-P）',list:0,price:{oita:0,fukuoka:0,mail:0,loose:0},oitaStore:'',fukuokaStore:'',checked:{},src:'番号未確認。大分・福岡の店頭買取は未確認',est:false,verified:false,ref:{label:'全国通販・素体買取（参考）',price:2100000,date:'2026-11-28',source:'ポケカチ/カードラッシュ'},refPsa10:{price:3450000,date:'2026-11-26',source:'ポケカチ'}},
+{id:'p_munch',cat:'single',name:'ムンクピカチュウ',aliases:['ムンクピカチュウ','ムンク ピカチュウ','叫びピカチュウ'],version:'プロモ',grade:'psa10',finish:'normal',number:'288/SM-P',rarity:'プロモ',set:'プロモ SM-P（ムンク展）',list:0,price:{oita:0,fukuoka:0,mail:0,loose:0},oitaStore:'',fukuokaStore:'',checked:{},src:'番号は公式カードDBで確認（2026-11-28）。大分・福岡の店頭買取は未確認',est:false,verified:false,ref:{label:'全国通販・素体買取（参考）',price:1300000,date:'2026-11-28',source:'ポケカチ/カードラッシュ'},refPsa10:{price:2470000,date:'2026-11-26',source:'ポケカチ'}},
+{id:'p_gogh',cat:'single',name:'ゴッホピカチュウ',aliases:['ゴッホピカチュウ','ゴッホ ピカチュウ'],version:'プロモ',grade:'psa10',finish:'normal',number:'',rarity:'プロモ',set:'プロモ（XY-P）',list:0,price:{oita:0,fukuoka:0,mail:0,loose:0},oitaStore:'',fukuokaStore:'',checked:{},src:'番号未確認。大分・福岡の店頭買取は未確認',est:false,verified:false,ref:{label:'全国通販・素体買取（参考）',price:100000,date:'2026-11-28',source:'ポケカチ/カードラッシュ'},refPsa10:{price:400000,date:'2026-11-26',source:'ポケカチ'}},
+{id:'p_umbreonvmax_sa',cat:'single',name:'ブラッキーVMAX SA',aliases:['ブラッキーVMAX SA','ブラッキーVMAX HR','ブラッキーVMAX'],version:'通常版',grade:'psa10',finish:'normal',number:'095/069',rarity:'HR（SA）',set:'イーブイヒーローズ S6a',list:0,price:{oita:0,fukuoka:650000,mail:0,loose:0},oitaStore:'',fukuokaStore:'トレカ道楽（福岡）',checked:{fukuoka:'2026-11-26'},src:'11/26 道楽PSA10・650,000',est:false,verified:true,ref:{label:'カードラッシュ買取・素体（参考）',price:450000,date:'2026-11-28',source:'ポケカチ/カードラッシュ'},refPsa10:{price:722000,date:'2026-11-26',source:'ポケカチ'}},
+{id:'p_giratina',cat:'single',name:'ギラティナV SA',aliases:['ギラティナV SA','ギラティナV SR','ギラティナV'],version:'通常版',grade:'psa10',finish:'normal',number:'111/100',rarity:'SR（SA）',set:'ロストアビス S11',list:0,price:{oita:0,fukuoka:245000,mail:0,loose:0},oitaStore:'',fukuokaStore:'トレカハブ 福岡博多店',checked:{fukuoka:'2026-11-26'},src:'11/26 トレカハブ博多 PSA10表・245,000（画像拡大確認）',est:false,verified:true,ref:{label:'福福トレカ PSA10買取（参考）',price:250000,date:'2026-11-28',source:'福福トレカ PSA10表'},refPsa10:{price:268000,date:'2026-11-28',source:'トレカジャパン'}},
+{id:'p_gengarvmax',cat:'single',name:'ゲンガーVMAX SA',aliases:['ゲンガーVMAX SA','ゲンガーVMAX'],version:'通常版',grade:'psa10',finish:'normal',number:'020/019',rarity:'SA',set:'ハイクラスデッキ ゲンガーVMAX sGG',list:0,price:{oita:0,fukuoka:0,mail:0,loose:0},oitaStore:'',fukuokaStore:'',checked:{},src:'番号はカードDBで確認（2026-11-28）。大分・福岡の店頭買取は未確認',est:false,verified:false,ref:{label:'福福トレカ PSA10買取（参考）',price:360000,date:'2026-11-28',source:'福福トレカ PSA10表'},refPsa10:{price:425000,date:'2026-11-26',source:'ポケカチ'}},
+{id:'p_iono_sar350',cat:'single',name:'ナンジャモ SAR 350/190',aliases:['ナンジャモ SAR 350','ナンジャモSAR','ナンジャモ 350/190'],version:'通常版',grade:'psa10',finish:'normal',number:'350/190',rarity:'SAR',set:'シャイニートレジャーex SV4a',list:0,price:{oita:0,fukuoka:19000,mail:0,loose:0},oitaStore:'',fukuokaStore:'トレカハブ 福岡博多店',checked:{fukuoka:'2026-11-26'},src:'11/26 トレカハブ博多 PSA10表・19,000',est:false,verified:true},
+{id:'p_lillie_sr_sm1',cat:'single',name:'リーリエ SR（066/060）',aliases:['リーリエ SR 066','リーリエ（帽子リーリエ）','帽子リーリエ','リーリエ SR','リーリエ'],version:'通常版',grade:'psa10',finish:'normal',number:'066/060',rarity:'SR',set:'コレクション ムーン SM1M',list:0,price:{oita:0,fukuoka:1100000,mail:0,loose:0},oitaStore:'',fukuokaStore:'トレカハブ 福岡博多店',checked:{fukuoka:'2026-11-26'},src:'11/26 トレカハブ博多 PSA10表・1,100,000（画像拡大確認）',est:false,verified:true,ref:{label:'国内販売相場（参考）',price:149930,date:'2026-11-28',source:'TCG PORTAL'}},
+{id:'p_lillie_sr_sm4',cat:'single',name:'リーリエ SR（119/114）',aliases:['リーリエ SR 119','リーリエ（がんばリーリエ）','がんばリーリエ','リーリエ SR GXバトルブースト'],version:'通常版',grade:'psa10',finish:'normal',number:'119/114',rarity:'SR',set:'GXバトルブースト SM4+',list:0,price:{oita:0,fukuoka:2020000,mail:0,loose:0},oitaStore:'',fukuokaStore:'トレカハブ 福岡博多店',checked:{fukuoka:'2026-11-26'},src:'11/26 トレカハブ博多 PSA10表・2,020,000（画像拡大確認）',est:false,verified:true},
+{id:'p_pika_master',cat:'single',name:'ピカチュウ マスターボールミラー',aliases:['ピカチュウ マスターボールミラー','ピカチュウ マスボ','マスボピカチュウ','ピカチュウ'],version:'通常版',grade:'psa10',finish:'master',number:'025/165',rarity:'マスターボールミラー',set:'ポケモンカード151 SV2a',list:0,price:{oita:0,fukuoka:0,mail:0,loose:0},oitaStore:'',fukuokaStore:'',checked:{},src:'番号は公式カードDBで確認（2026-11-28）。大分・福岡の店頭買取は未確認',est:false,verified:false,ref:{label:'遊々亭買取（素体・参考）',price:36000,date:'2026-11-28',source:'ポケカあるぞう/遊々亭'},refPsa10:{price:85099,date:'2026-11-28',source:'スニダン出品相場'}},
+{id:'p_pika_monster',cat:'single',name:'ピカチュウ モンスターボールミラー',aliases:['ピカチュウ モンスターボールミラー','ピカチュウ モンボ','モンボピカチュウ'],version:'通常版',grade:'psa10',finish:'monster',number:'025/165',rarity:'モンスターボールミラー',set:'ポケモンカード151 SV2a',list:0,price:{oita:0,fukuoka:0,mail:0,loose:0},oitaStore:'',fukuokaStore:'',checked:{},src:'番号は公式カードDBで確認（2026-11-28）。大分・福岡の店頭買取は未確認',est:false,verified:false},
+{id:'p_gengar_master',cat:'single',name:'ゲンガー マスターボールミラー',aliases:['ゲンガー マスターボールミラー','ゲンガー マスボ','ゲンガーマスボ'],version:'通常版',grade:'psa10',finish:'master',number:'094/165',rarity:'マスターボールミラー',set:'ポケモンカード151 SV2a',list:0,price:{oita:0,fukuoka:0,mail:0,loose:0},oitaStore:'',fukuokaStore:'',checked:{},src:'番号は公式カードDBで確認（2026-11-28）。大分・福岡の店頭買取は未確認',est:false,verified:false,ref:{label:'福福トレカ PSA10買取（参考）',price:130000,date:'2026-11-28',source:'福福トレカ PSA10表'},refPsa10:{price:170000,date:'2026-11-26',source:'ポケカチ'}},
+{id:'p_gengar_monster',cat:'single',name:'ゲンガー モンスターボールミラー',aliases:['ゲンガー モンスターボールミラー','ゲンガー モンボ','ゲンガーモンボ'],version:'通常版',grade:'psa10',finish:'monster',number:'094/165',rarity:'モンスターボールミラー',set:'ポケモンカード151 SV2a',list:0,price:{oita:0,fukuoka:0,mail:0,loose:0},oitaStore:'',fukuokaStore:'',checked:{},src:'番号は公式カードDBで確認（2026-11-28）。大分・福岡の店頭買取は未確認',est:false,verified:false},
+{id:'p_lizard_master',cat:'single',name:'リザード マスターボールミラー',aliases:['リザード マスターボールミラー','リザード マスボ','リザードマスボ'],version:'通常版',grade:'psa10',finish:'master',number:'005/165',rarity:'マスターボールミラー',set:'ポケモンカード151 SV2a',list:0,price:{oita:0,fukuoka:8500,mail:0,loose:0},oitaStore:'',fukuokaStore:'トレカハブ 福岡博多店',checked:{fukuoka:'2026-11-26'},src:'11/26 トレカハブ博多 PSA10表・8,500（画像拡大確認）',est:false,verified:true},
+{id:'p_brand_new',cat:'single',name:'リザードンex SAR 137/103',aliases:['リザードンex SAR 137','リザードンex SAR','リザードン137'],version:'通常版',grade:'psa10',finish:'normal',number:'137/103',rarity:'SAR',set:'30th CELEBRATION M6a',list:0,price:{oita:0,fukuoka:73000,mail:0,loose:0},oitaStore:'',fukuokaStore:'トレカ道楽（福岡）',checked:{fukuoka:'2026-11-26'},src:'11/26 道楽PSA10・73,000',est:false,verified:true}
+];
+DEFAULT_DB.items=DEFAULT_DB.items.concat(HIGH_KEYS);
+DEFAULT_DB.updated='2026-11-28 22:00';
+
 var DEFAULT_SET={
   mode:'phone',preset:'showcase',interval:4500,
   threshold:{showcase:500,oripa:500,storage:500},
   hardRate:{showcase:0.8,oripa:0.6},
   split:{showcase:5,oripa:1,storage:10},
   oitaKm:36,oitaKmLabel:'大分市',fuel:10,fukuokaFuel:3100,mailShip:800,pack:500,
-  shrink:true,grade:'raw',audioOn:true,allAudio:false,keepAwake:true,nameOcr:true,simOcr:false
+  shrink:true,grade:'raw',finishConfirm:'unknown',audioOn:true,allAudio:false,keepAwake:true,nameOcr:true,simOcr:false
 };
 
 var LS={db:'tscanner.db.v1',set:'tscanner.set.v1',test:'tscanner.tests.v1'};
@@ -653,7 +747,37 @@ Object.keys(DEFAULT_SET).forEach(function(k){if(SET[k]===undefined)SET[k]=JSON.p
 if(typeof SET.threshold!=='object')SET.threshold=JSON.parse(JSON.stringify(DEFAULT_SET.threshold));
 if(typeof SET.hardRate!=='object')SET.hardRate=JSON.parse(JSON.stringify(DEFAULT_SET.hardRate));
 if(typeof SET.split!=='object')SET.split=JSON.parse(JSON.stringify(DEFAULT_SET.split));
+if(!SET.finishConfirm)SET.finishConfirm='unknown';
 var TESTS=load(LS.test,[]);
+
+/* ---------------- 加工・光り方（Finish） ---------------- */
+var FINISH_LABEL={normal:'通常',holo:'ホロ/R',monster:'モンボミラー',master:'マスボミラー'};
+function itemFinish(it){
+  if(!it)return 'normal';
+  if(it.finish)return it.finish;
+  if(it.rarity==='マスターボールミラー')return 'master';
+  if(it.rarity==='モンスターボールミラー')return 'monster';
+  return 'normal';
+}
+function finishLabel(f){return FINISH_LABEL[f]||'未確認'}
+function finishShort(f){return f==='monster'?'モンボ':f==='master'?'マスボ':FINISH_LABEL[f]||'未確認'}
+function normalizeItem(it){
+  if(!it)return it;
+  if(!it.price)it.price={oita:0,fukuoka:0,mail:0,loose:0};
+  ['oita','fukuoka','mail','loose'].forEach(function(k){it.price[k]=num(it.price[k],0)});
+  if(!it.checked||typeof it.checked!=='object')it.checked={};
+  if(it.verified===undefined)it.verified=!it.est;
+  if(!it.finish)it.finish=it.cat==='single'?(it.rarity==='マスターボールミラー'?'master':it.rarity==='モンスターボールミラー'?'monster':'normal'):'';
+  return it;
+}
+DB.items.forEach(normalizeItem);
+if(!DB.manual||typeof DB.manual!=='object')DB.manual={};
+if(DB.schema!==2){
+  var have={};DB.items.forEach(function(it){have[it.id]=1});
+  DEFAULT_DB.items.forEach(function(it){if(!have[it.id])DB.items.push(JSON.parse(JSON.stringify(it)))});
+  DB.schema=2;
+  try{localStorage.setItem(LS.db,JSON.stringify(DB))}catch(e){}
+}
 
 function saveDB(){DB.edited=nowLabel();try{localStorage.setItem(LS.db,JSON.stringify(DB))}catch(e){};$('#dbEdited').textContent='保存 '+DB.edited}
 function saveSet(){try{localStorage.setItem(LS.set,JSON.stringify(SET))}catch(e){}}
@@ -671,17 +795,24 @@ function grams(s,n){if(!s)return[];if(s.length<=n)return[s];var a=[];for(var i=0
 function dice(a,b){var A=grams(a,2),B=grams(b,2);if(!A.length||!B.length)return 0;var m={},hit=0;A.forEach(function(x){m[x]=(m[x]||0)+1});B.forEach(function(x){if(m[x]){m[x]--;hit++}});return 2*hit/(A.length+B.length)}
 function extractMarks(text){
   var t=String(text||'');
-  var cn=t.match(/(\d{2,3})\s*[\/／]\s*(\d{2,3})/);
-  var rar=t.match(/\b(SAR|AR|SR|UR|HR|CHR|CSR|RR|MA)\b/i);
+  var tt=t.replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0)});
+  var cn=tt.match(/(\d{2,3})\s*[\/／]\s*(\d{2,3})/);
+  var rar=tt.match(/\b(SAR|AR|SR|UR|HR|CHR|CSR|RR|MUR)\b/i);
+  var master=/マスター\s*ボール|マスターボール|マスボ|MASTER\s*BALL/i.test(tt);
+  var monster=/モンスター\s*ボール|モンスターボール|モンボ|MONSTER\s*BALL/i.test(tt);
+  var shiny=/ホロ|キラ|ミラー|MIRROR|\bHOLO\b/i.test(tt);
   return {
     cardNo:cn?cn[1]+'/'+cn[2]:'',
-    rarity:rar?rar[1].toUpperCase():'',
-    promo:/プロモ|PROMO|\bPR\b/i.test(t),
-    y25:/25th|25周年|25ｔｈ/i.test(t),
-    reprint:/再販|復刻|リプリント|reprint/i.test(t),
-    reg:(t.match(/\b([FGHI])\b/g)||[]).join(''),
-    setCode:(t.match(/\b(SV\d+[a-zA-Z]?|M\d+[a-zA-Z]?|S\d+[a-zA-Z]?|OP-?\d+)\b/i)||[])[0]||'',
-    mark:/エキスパンション|拡張マーク/.test(t)
+    rarity:(master||monster)?'ミラー':(rar?rar[1].toUpperCase():''),
+    rarityRaw:rar?rar[1].toUpperCase():'',
+    promo:/プロモ|PROMO|\bPR\b/i.test(tt),
+    y25:/25th|25周年|25ｔｈ/i.test(tt),
+    reprint:/再販|復刻|リプリント|reprint/i.test(tt),
+    reg:(tt.match(/\b([FGHI])\b/g)||[]).join(''),
+    setCode:(tt.match(/\b(SV\d+[a-zA-Z]?|M\d+[a-zA-Z]?|S\d+[a-zA-Z]?|SM\d+[a-zA-Z]?|OP-?\d+)\b/i)||[])[0]||'',
+    mark:/エキスパンション|拡張マーク/.test(tt),
+    finishHint:master?'master':monster?'monster':(shiny?'holo':''),
+    gradeText:/PSA\s*10|PSA10|鑑定\s*10/i.test(tt)?'psa10':(/\bPSA\b|鑑定/i.test(tt)?'psa_other':'')
   };
 }
 function versionHint(marks){
@@ -708,8 +839,9 @@ function findCandidates(text,marks){
       if(s>best)best=s;
     });
     if(it.number&&marks.cardNo&&norm(it.number)===norm(marks.cardNo))best=Math.max(best,1.05);
-    if(it.rarity&&marks.rarity&&it.rarity.toUpperCase()===marks.rarity)best+=0.02;
+    if(it.rarity&&marks.rarityRaw&&it.rarity.toUpperCase()===marks.rarityRaw)best+=0.02;
     if(marks.y25&&it.version==='25th')best+=0.04;
+    if(marks.finishHint&&itemFinish(it)===marks.finishHint)best+=0.08;
     if(best>0.42)out.push({it:it,score:Math.min(1.12,best)});
   });
   out.sort(function(a,b){return b.score-a.score});
@@ -720,66 +852,107 @@ function pickItem(text,marks,grade){
   if(!cands.length)return {item:null,reason:'照合不可（DBに近い商品名がない）',cands:[]};
   var top=cands[0];
   var pool=cands.filter(function(c){return c.score>=top.score-0.25});
+  var fin=(SET.finishConfirm||'unknown');
+  if(fin==='unknown'&&marks.finishHint)fin=marks.finishHint;
+  if(fin!=='unknown'){
+    var byFin=pool.filter(function(c){return itemFinish(c.it)===fin});
+    if(byFin.length)pool=byFin;
+  }
   var sameGrade=pool.filter(function(c){
     if((c.it.grade||'raw')!==grade)return false;
     if(c.it.number&&marks.cardNo&&norm(c.it.number)!==norm(marks.cardNo))return false;
     return true;
   });
-  var base=(sameGrade.length&&(top.it.grade||'raw')!==grade)?sameGrade:pool;
+  var base=sameGrade.length?sameGrade:pool;
   var vh=versionHint(marks), vwarn='';
   var sameVer=vh?base.filter(function(c){return c.it.version===vh}):[];
   var pick=(sameVer.length?sameVer:base)[0];
   var it=pick.it, score=pick.score;
   if(vh&&it.version!==vh)vwarn='版の可能性：'+vh+'（DBは'+versionLabel(it.version)+'）';
   var gwarn=(it.grade||'raw')!==grade?'グレード違い（DBは'+gradeLabel(it.grade)+'）':'';
-  return {item:it,score:score,versionWarn:vwarn,gradeWarn:gwarn,cands:cands.slice(0,4)};
+  if(!gwarn&&marks.gradeText==='psa10'&&grade!=='psa10')gwarn='画像はPSA10の可能性（設定は生カード）';
+  var fwarn='';
+  if(fin!=='unknown'&&itemFinish(it)!==fin)fwarn='選んだ光り方（'+finishLabel(fin)+'）とDB候補（'+finishLabel(itemFinish(it))+'）が違います';
+  if(fin==='unknown'&&(itemFinish(it)==='master'||itemFinish(it)==='monster'))fwarn='ミラー柄（'+finishLabel(itemFinish(it))+'）の候補。目視で確認してください';
+  return {item:it,score:score,versionWarn:vwarn,gradeWarn:gwarn,finishWarn:fwarn,finishUsed:fin,cands:cands.slice(0,4)};
 }
 
 /* ---------------- 判定エンジン ---------------- */
 function channelsFor(it){
+  normalizeItem(it);
   var split=it.cat==='box'?1:Math.max(1,num(SET.split[SET.preset],1));
   var km=num(SET.oitaKm,36);
   var fuel=num(SET.fuel,10);
   var oitaCost=km*2*fuel/split;
   var fukuCost=num(SET.fukuokaFuel,3100)/split;
-  var mailCost=num(SET.mailShip,800)+num(SET.pack,500);
   var useLoose=it.cat==='box'&&SET.shrink===false&&num(it.price.loose,0)>0;
-  var p=it.price;
+  var p=it.price,ck=it.checked||{};
   function g(v){return Math.max(0,num(v,0))}
   var list=[
-    {key:'oita',name:'大分店頭'+(it.oitaStore&&it.oitaStore!=='大分店頭'?'／'+it.oitaStore:''),gross:useLoose?g(p.loose):g(p.oita),cost:oitaCost,note:SET.oitaKmLabel+' 往復'+(km*2)+'km÷'+split},
-    {key:'fukuoka',name:'福岡店頭',gross:useLoose?g(p.loose):g(p.fukuoka),cost:fukuCost,note:'下道往復燃料÷'+split},
-    {key:'mail',name:'宅配（郵送）',gross:useLoose?g(p.loose):g(p.mail),cost:mailCost,note:'送料'+num(SET.mailShip,800)+'＋梱包'+num(SET.pack,500)}
+    {key:'oita',name:'大分店頭'+(it.oitaStore?'／'+it.oitaStore:''),gross:useLoose?g(p.loose):g(p.oita),cost:oitaCost,store:it.oitaStore||'',checked:ck.oita||'',note:SET.oitaKmLabel+' 往復'+(km*2)+'km÷'+split},
+    {key:'fukuoka',name:'福岡店頭'+(it.fukuokaStore?'／'+it.fukuokaStore:''),gross:useLoose?g(p.loose):g(p.fukuoka),cost:fukuCost,store:it.fukuokaStore||'',checked:ck.fukuoka||'',note:'下道往復燃料÷'+split}
   ];
   list.forEach(function(c){c.available=c.gross>0;c.net=c.available?Math.round(c.gross-c.cost):0});
   var best=list.filter(function(c){return c.available}).sort(function(a,b){return b.net-a.net})[0]||null;
-  return {all:list,best:best,split:split,useLoose:useLoose};
+  var mailGross=useLoose?g(p.loose):g(p.mail);
+  var mailCost=num(SET.mailShip,800)+num(SET.pack,500);
+  var ref={key:'mail',name:'全国郵送（参考）',gross:mailGross,cost:mailCost,available:mailGross>0,net:mailGross>0?Math.round(mailGross-mailCost):0,ref:true,note:'判定に使わない'};
+  return {all:list,best:best,split:split,useLoose:useLoose,ref:ref};
 }
 function judge(it,tag,opt){
   opt=opt||{};
+  normalizeItem(it);
   var ch=channelsFor(it);
   var threshold=num(SET.threshold[SET.preset],500);
   var isSingle=it.cat!=='box';
   var res={item:it,tag:Number(tag)||0,ch:ch,threshold:threshold,isSingle:isSingle,listRatio:0};
+  var hardRate=num(SET.hardRate[SET.preset]!==undefined?SET.hardRate[SET.preset]:0.8,0.8);
+  if(isSingle&&(it.grade||'raw')==='psa10')hardRate=1;
+  res.hardRate=hardRate;
+  res.isPsa10=(isSingle&&(it.grade||'raw')==='psa10');
+  var fin=SET.finishConfirm||'unknown';
+  res.finishUse=fin;
+  res.finish=itemFinish(it);
+  var refNote='';
+  if(ch.ref&&ch.ref.available)refNote=' 参考（判定に使わない）：全国郵送 掲示'+yen(ch.ref.gross)+'・手取り'+yen(ch.ref.net)+'。';
+  if(it.ref&&it.ref.price)refNote+=' 参考（判定に使わない）：'+it.ref.label+' '+yen(it.ref.price)+(it.ref.date?'（'+it.ref.date+'）':'')+'。';
+  if(it.refPsa10&&it.refPsa10.price)refNote+=' 参考（判定に使わない）：PSA10 '+(it.refPsa10.source||'')+' '+yen(it.refPsa10.price)+'（'+(it.refPsa10.date||it.refPsa10.checked_at||'')+'）。';
+  res.refNote=refNote;
   if(!ch.best){
-    res.level='none';res.title='価格なし';res.why='この商品の買取価格がDBにありません。DBに追加してください。';
+    res.level='none';res.title='価格未確認';
+    res.why='大分・福岡の店頭買取が<b>未確認</b>です。推測では埋めません。店頭で確かべてDBに足すか、下の修正欄から登録してください。'+refNote;
+    var fin0=itemFinish(it);
+    if(fin0==='master'||fin0==='monster'){
+      res.finishWarn=true;
+      if(fin!==fin0)res.why='<b>⚠ ミラー柄（'+finishLabel(fin0)+'）の候補。マスボ／モンボの取り違え注意。目視で確認してください。</b>'+res.why;
+    }
     return res;
   }
-  var profit=ch.best.net-res.tag;
+  var b=ch.best;
+  var profit=b.net-res.tag;
   res.profit=profit;
-  res.ratio=res.tag>0?ch.best.net/res.tag:0;
-  res.listRatio=it.list>0?ch.best.gross/it.list:0;
-  var hardRate=num(SET.hardRate[SET.preset]!==undefined?SET.hardRate[SET.preset]:0.8,0.8);
-  if(isSingle){
-    hardRate=num(SET.hardRate[SET.preset]!==undefined?SET.hardRate[SET.preset]:0.8,0.8);
-    res.hardRate=hardRate;
-    res.hardNet=Math.round(Math.max(0,ch.best.gross*hardRate-ch.best.cost));
-    var hp=res.hardNet-res.tag;
-    res.hardProfit=hp;
-    if(hp>=threshold){res.level='buy';res.title='買い';res.why='状態難（'+Math.round(hardRate*100)+'%）でも手取り<b>'+yen(res.hardNet)+'</b>。値札'+yen(res.tag)+'なら<b>+'+yen(hp)+'</b>。状態を気にせず買えます。';}
-    else if(profit>=threshold){res.level='check';res.title='状態確認が必要';res.why='美品なら<b>+'+yen(profit)+'</b>。でも状態難だと<b>'+yen(hp)+'</b>。傷・白かけ・反りを確認してから。';}
-    else{res.level='pass';res.title='見送り';res.why='美品でも<b>'+yen(profit)+'</b>。値札が買取を上回っています。';}
-    if(res.level==='buy'&&profit<threshold){res.why+=' 美品なら<b>+'+yen(profit)+'</b>まで伸びます。';}
+  res.ratio=res.tag>0?b.net/res.tag:0;
+  res.listRatio=it.list>0?b.gross/it.list:0;
+  res.hardNet=isSingle?Math.round(Math.max(0,b.gross*hardRate-b.cost)):b.net;
+  res.hardProfit=res.hardNet-res.tag;
+  var isOripa=SET.preset==='oripa';
+  if(isSingle||isOripa){
+    res.frontNet=isSingle?res.hardNet:b.net;
+    if(isOripa){
+      res.stage1=res.frontNet>=res.tag;
+      if(res.stage1){
+        res.level='buy';res.title='前面だけで元が取れる';
+        res.why='前面'+(isSingle?'カードの状態難'+Math.round(hardRate*100)+'%':'BOXの')+'手取り<b>'+yen(res.frontNet)+'</b> ≧ オリパ価格'+yen(res.tag)+'。<b>前面だけで元が取れます。</b>（差 +'+yen(res.frontNet-res.tag)+'）';
+      }else{
+        res.level='check';res.title='前面だけでは不足';
+        res.why='前面の手取り<b>'+yen(res.frontNet)+'</b> ＜ オリパ価格'+yen(res.tag)+'（不足 '+yen(res.tag-res.frontNet)+'）。下の<b>第2段</b>に残りの当たり総額と残り口数を入れると期待値を計算します。';
+      }
+    }else{
+      if(res.hardProfit>=threshold){res.level='buy';res.title='買い';res.why=(res.isPsa10?'PSA10はグレードが状態の代わり（ケース傷のみ店頭判断）。':'状態難（'+Math.round(hardRate*100)+'%）でも')+'手取り<b>'+yen(res.hardNet)+'</b>。値札'+yen(res.tag)+'なら<b>+'+yen(res.hardProfit)+'</b>。状態を気にせず買えます。';}
+      else if(profit>=threshold){res.level='check';res.title='状態確認が必要';res.why='美品なら<b>+'+yen(profit)+'</b>。でも状態難だと<b>'+yen(res.hardProfit)+'</b>。傷・白かけ・反りを確認してから。';}
+      else{res.level='pass';res.title='見送り';res.why='美品でも<b>'+yen(profit)+'</b>。値札が買取を上回っています。';}
+      if(res.level==='buy'&&profit<threshold)res.why+=' 美品なら<b>+'+yen(profit)+'</b>まで伸びます。';
+    }
   }else{
     if(profit>=threshold){res.level='buy';res.title='買い';res.why='手取り<b>'+yen(ch.best.net)+'</b>（'+ch.best.name+'）− 値札'+yen(res.tag)+'＝<b>+'+yen(profit)+'</b>。';}
     else if(profit>=0){res.level='check';res.title='薄利';res.why='手取り<b>'+yen(ch.best.net)+'</b>で<b>+'+yen(profit)+'</b>。移動・手間を考えると見送り寄り。';}
@@ -790,7 +963,27 @@ function judge(it,tag,opt){
       else res.why+=' 定価比'+res.listRatio.toFixed(2)+'倍。';
     }
   }
-  if(opt.gradeWarn){res.level='check';res.title='グレード確認';res.why='<b>'+opt.gradeWarn+'</b>。価格をそのまま当てにしないでください。'+res.why;}
+  if(it.est){
+    res.level='check';res.title='目安のみ（要店頭確認）';
+    res.why='<b>この価格は目安（推定）</b>で、実店舗の確認値ではありません。買い判定は出しません。'+res.why;
+  }
+  if(opt.gradeWarn){res.level='check';res.title='グレード確認';res.why='<b>'+opt.gradeWarn+'</b>。買い判定は出しません。'+res.why;}
+  if(opt.versionWarn){res.level='check';res.title='版の確認';res.why='<b>'+opt.versionWarn+'</b>。'+res.why;}
+  var itemFin=itemFinish(it);
+  if(fin==='unknown'&&opt.mirrorHint&&itemFin!=='master'&&itemFin!=='monster'){
+    res.finishWarn=true;res.level='check';res.title='光り方の確認';
+    res.why='<b>⚠ 画像にミラー反射があります。</b>マスボ／モンボの取り違え注意。上の光り方ボタンで目視確認するまで買い判定は出しません。参考：美品手取り'+yen(b.net)+'／値札'+yen(res.tag)+'。';
+  }
+  if(itemFin==='master'||itemFin==='monster'){
+    res.finishWarn=true;
+    if(fin!==itemFin){
+      res.level='check';res.title='光り方の確認';
+      res.why='<b>⚠ ミラー柄（マスボ／モンボ）の取り違え注意。</b>DB候補は<b>'+finishLabel(itemFin)+'</b>、選択は<b>'+(fin==='unknown'?'未確認':finishLabel(fin))+'</b>。上の光り方ボタンで目視確認するまで買い判定は出しません。参考：手取り'+yen(res.hardNet)+'／値札'+yen(res.tag)+'。';
+    }
+  }else if((fin==='master'||fin==='monster')&&itemFin!==fin){
+    res.level='check';res.title='加工の不一致';
+    res.why='選んだ光り方は<b>'+finishLabel(fin)+'</b>ですが、DBの候補は<b>'+finishLabel(itemFin)+'</b>。別の候補を選ぶか、修正欄で登録してください。'+res.why;
+  }
   return res;
 }
 
@@ -817,9 +1010,17 @@ function speak(text,force){
   }catch(e){showErr('音声: '+e.message)}
 }
 function speakResult(r){
-  if(!r)return;
-  if(r.level==='buy')speak(r.item.name+'、買い。値札'+Math.round(r.tag)+'円、手取り'+r.ch.best.net+'円、プラス'+Math.round(r.profit)+'円。'+r.ch.best.name.replace('／',' '));
-  else if(r.level==='check')speak(r.item.name+'、状態確認が必要。美品ならプラス'+Math.round(r.profit)+'円。');
+  if(!r||!r.item)return;
+  var finWarn=(r.finish==='master'||r.finish==='monster');
+  if(finWarn&&r.finishUse!==r.finish){
+    speak('ミラー柄です。'+finishLabel(r.finish)+'か、モンボか、目視で確認してください。確認するまで買い判定は出しません。',true);
+    return;
+  }
+  if(r.level==='buy'){
+    if(SET.preset==='oripa'&&r.stage1)speak(r.item.name+'、オリパ、前面だけで元が取れます。買い。オリパ価格'+Math.round(r.tag)+'円、前面の手取り'+r.frontNet+'円。'+finishLabel(r.finish)+'。',true);
+    else speak(r.item.name+'、'+finishLabel(r.finish)+'、買い。値札'+Math.round(r.tag)+'円、手取り'+(r.ch.best?r.ch.best.net:0)+'円、プラス'+Math.round(r.profit)+'円。'+(r.ch.best?r.ch.best.name.replace('／',' '):''),true);
+  }
+  else if(r.level==='check')speak(r.item.name+'、'+(r.title||'確認')+'。'+(r.title==='前面だけでは不足'?'前面だけでは足りません。残りの当たりを入れて期待値を計算してください。':'美品ならプラス'+Math.round(num(r.profit,0))+'円。'),true);
   else if(SET.allAudio)speak(r.item.name+'、見送り。');
 }
 
@@ -885,14 +1086,59 @@ function fillSettings(){
   updatePresetNote();
 }
 function updatePresetNote(){
-  var names={showcase:'ショーケース',oripa:'オリパ先頭',storage:'ストレージ'};
+  var names={showcase:'ショーケース',oripa:'オリパ前面',storage:'ストレージ'};
   var hr=SET.hardRate[SET.preset];
   $('#presetNote').textContent=names[SET.preset]+'・買いライン'+yen(SET.threshold[SET.preset])+(hr!=null?'・状態難'+Math.round(hr*100)+'%':'');
   var h=$('#presetHint');
   if(SET.preset==='showcase')h.innerHTML='値札のカードを近づけて撮影。<b>状態難でも買えるか</b>で判定します（美品だけなら「状態確認」）。';
-  else if(SET.preset==='oripa')h.innerHTML='オリパの先頭カードは傷み前提。<b>状態難'+Math.round(num(SET.hardRate.oripa,0.6)*100)+'%</b>でも値札を上回るものだけ「買い」。';
+  else if(SET.preset==='oripa')h.innerHTML='オリパの先頭カード（または先頭BOX）は傷み前提。<b>第1段：前面の手取りがオリパ価格以上なら「前面だけで元が取れる」</b>。不足なら下の第2段で残りの当たり総額÷残り口数の期待値を計算します。';
   else h.innerHTML='ストレージのまとめ買い用。1枚あたりの利益が<b>'+yen(SET.threshold.storage)+'</b>以上で「買い」。移動費は'+SET.split.storage+'枚で按分。';
 }
+function applyFinishUI(){
+  $$('#finishBtns button').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-finish')===SET.finishConfirm?'true':'false')});
+  var st=$('#finishState');
+  if(st){st.textContent=SET.finishConfirm==='unknown'?'未確認':finishLabel(SET.finishConfirm);st.style.color=SET.finishConfirm==='unknown'?'#b54708':'#0b5d52'}
+}
+function analyzeFinish(src){
+  var W=180,H=Math.max(1,Math.round(src.height*W/src.width));
+  var c=document.createElement('canvas');c.width=W;c.height=H;
+  var cx=c.getContext('2d',{willReadFrequently:true});cx.drawImage(src,0,0,W,H);
+  var d=cx.getImageData(0,0,W,H).data;
+  var x0=Math.round(W*0.12),x1=Math.round(W*0.88),y0=Math.round(H*0.15),y1=Math.round(H*0.85);
+  var bright=0,total=0,sat=0,edge=0;
+  for(var y=y0;y<y1;y++){
+    for(var x=x0;x<x1;x++){
+      var o=(y*W+x)*4,r=d[o],g=d[o+1],b=d[o+2];
+      var mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(r*0.299+g*0.587+b*0.114);
+      total++;if(l>242)bright++;sat+=(mx-mn);
+      if(x<x1-1){var o2=o+4,l2=(d[o2]*0.299+d[o2+1]*0.587+d[o2+2]*0.114);edge+=Math.abs(l-l2)}
+    }
+  }
+  if(!total)return {score:0,level:'none',brightRatio:0};
+  var br=bright/total,sa=sat/total,eg=edge/total;
+  var score=Math.round(clamp(br*230+(eg>14?10:0),0,100));
+  return {score:score,level:score>=55?'mirror':score>=32?'shine':'none',brightRatio:br,satAvg:sa};
+}
+function updateFinishScore(f){
+  var el=$('#finishScore');if(!el)return;
+  var label=f.level==='mirror'?'ミラー候補':f.level==='shine'?'光りあり（ホロ/ミラー？）':'ミラー感なし';
+  el.textContent=f.score+'/100 '+label;
+  el.style.color=f.level==='mirror'?'#912018':f.level==='shine'?'#b54708':'#0b5d52';
+}
+function setFinish(f,rejudge){
+  SET.finishConfirm=f;saveSet();applyFinishUI();
+  if(rejudge&&lastScan){
+    var p=pickItem(lastScan.name,lastScan.marks||{},SET.grade);
+    if(p.item){
+      var r=judge(p.item,lastScan.price,{gradeWarn:p.gradeWarn,versionWarn:p.versionWarn,mirrorHint:!!lastScan.mirrorHint});
+      r.ms=lastScan.ms||0;renderResult(r);speakResult(r);
+    }
+  }else if(rejudge&&lastResult){
+    var q=judge(lastResult.item,lastResult.tag,{});renderResult(q);speakResult(q);
+  }
+}
+$$('#finishBtns button').forEach(function(b){b.addEventListener('click',function(){setFinish(b.getAttribute('data-finish'),true)})});
+
 function bindNum(sel,path,scale){
   var el=$(sel);if(!el)return;
   el.addEventListener('change',function(){
@@ -1187,7 +1433,7 @@ function parsePrice(text){
 }
 
 /* ---------------- スキャン本体 ---------------- */
-var scanBusy=false,lastResult=null,history=[],dupCount=0;
+var scanBusy=false,lastResult=null,lastScan=null,history=[],dupCount=0;
 async function scanOnce(manual){
   if(scanBusy)return;
   scanBusy=true;
@@ -1199,7 +1445,9 @@ async function scanOnce(manual){
     var roi=cropROI(frame);
     var pre=preprocess(roi);
     paintPreview(pre);
+    var fs=analyzeFinish(roi);updateFinishScore(fs);
     var dbg=[];dbg.push('ROI '+roi.width+'x'+roi.height+' / 二値しきい値 '+pre.thr);
+    dbg.push('光り方スコア '+fs.score+'/100（'+(fs.level==='mirror'?'ミラー候補':fs.level==='shine'?'光りあり':'ミラー感なし')+'・一次補助のみ）');
     var nameText='',priceText='',price=0,msPrice=0,msName=0,itemPick=null;
     if(useSim){
       var s=pickSimItem();
@@ -1237,15 +1485,17 @@ async function scanOnce(manual){
         return;
       }
       var marks=extractMarks(nameText);
-      dbg.push('マーク: 弾='+(marks.setCode||'─')+' 番号='+(marks.cardNo||'─')+' レア='+(marks.rarity||'─')+' 25th='+(marks.y25?'有':'無')+' プロモ='+(marks.promo?'有':'無')+' 再販='+(marks.reprint?'有':'無'));
+      dbg.push('マーク: 弾='+(marks.setCode||'─')+' 番号='+(marks.cardNo||'─')+' レア='+(marks.rarity||'─')+' 光り='+(marks.finishHint||'─')+' 25th='+(marks.y25?'有':'無')+' プロモ='+(marks.promo?'有':'無')+' 再販='+(marks.reprint?'有':'無'));
       itemPick=pickItem(nameText,marks,SET.grade);
       if(!itemPick.item){
         dbg.push('<span class="ng">→ 照合不可（近い商品がDBにない）</span>');
         renderDebug(dbg);setHud('照合不可','スキップ');
         showUnmatched(nameText,price,performance.now()-t0);return;
       }
-      dbg.push('照合 → '+esc(itemPick.item.name)+'（一致'+Math.round(itemPick.score*100)+'%）'+(itemPick.gradeWarn?' <span class="ng">'+esc(itemPick.gradeWarn)+'</span>':'')+(itemPick.versionWarn?' '+esc(itemPick.versionWarn):''));
+      dbg.push('照合 → '+esc(itemPick.item.name)+'（一致'+Math.round(itemPick.score*100)+'%・'+finishLabel(itemFinish(itemPick.item))+'）'+(itemPick.gradeWarn?' <span class="ng">'+esc(itemPick.gradeWarn)+'</span>':'')+(itemPick.versionWarn?' '+esc(itemPick.versionWarn):''));
+      lastScan={name:nameText,marks:marks,price:price,ms:Math.round(performance.now()-t0),mirrorHint:fs.level==='mirror'};
     }
+    if(useSim){lastScan={name:nameText,marks:extractMarks(nameText),price:price,ms:0,mirrorHint:fs.level==='mirror'};}
     var key=itemPick.item.id+'@'+price;
     var ms=Math.round(performance.now()-t0);
     if(key===lastKey&&Date.now()-lastAt<30000){
@@ -1253,11 +1503,11 @@ async function scanOnce(manual){
       renderDebug(dbg);setHud('重複スキップ','─');return;
     }
     lastKey=key;lastAt=Date.now();
-    var r=judge(itemPick.item,price,{gradeWarn:itemPick.gradeWarn});
+    var r=judge(itemPick.item,price,{gradeWarn:itemPick.gradeWarn,versionWarn:itemPick.versionWarn,mirrorHint:fs.level==='mirror'});
     r.ms=ms;r.ocrName=nameText;r.ocrPrice=priceText;r.msPrice=msPrice;r.msName=msName;r.at=Date.now();
     lastResult=r;
     renderResult(r);renderDebug(dbg);addHistory(r);recordTest(r);
-    setHud(r.level==='buy'?'<b>買い</b> '+esc(r.item.name):r.level==='check'?'状態確認 '+esc(r.item.name):'見送り '+esc(r.item.name),'手取り '+yen(r.ch.best?r.ch.best.net:0));
+    setHud(r.level==='buy'?'<b>買い</b> '+esc(r.item.name):r.level==='check'?'状態確認 '+esc(r.item.name):'見送り '+esc(r.item.name),(r.ch.best?'手取り '+yen(r.ch.best.net):'価格未確認'));
     if(!useSim||SET.simOcr){}else{}
     speakResult(r);
     if(SET.mode==='voice')setVoiceText((r.level==='buy'?'✅ 買い':'⚠ '+(r.title||'見送り'))+'<br><span style="font-size:15px">'+esc(r.item.name)+'</span><br><span style="font-size:14px;color:#8fa0ae">手取り'+yen(r.ch.best?r.ch.best.net:0)+' / 値札'+yen(r.tag)+'</span>','値札 '+yen(r.tag)+'・'+r.ch.best.name);
@@ -1279,74 +1529,167 @@ function showUnmatched(nameText,price,ms){
   $('#addName').addEventListener('input',function(){SET._pendingName=this.value});
   $('#btnAddFromScan').addEventListener('click',function(){
     var nm=$('#addName').value.trim()||'無名カード';var pr=num($('#addPrice').value,0);
-    var it={id:'u_'+Date.now(),cat:'single',name:nm,aliases:[nm],version:'通常版',grade:SET.grade,number:'',rarity:'',list:0,price:{oita:0,fukuoka:0,mail:pr,loose:0},oitaStore:'',src:'手動追加 '+nowLabel(),est:false};
-    DB.items.push(it);saveDB();renderDB();toast('DBに追加しました');
+    var it={id:'u_'+Date.now(),cat:'single',name:nm,aliases:[nm],version:'通常版',grade:SET.grade,finish:SET.finishConfirm==='unknown'?'normal':SET.finishConfirm,number:'',rarity:'',set:'',list:0,price:{oita:0,fukuoka:0,mail:0,loose:0},oitaStore:'',fukuokaStore:'',checked:{},src:'スキャンから追加 '+nowLabel()+'（買取は未確認）',est:false,verified:false};
+    DB.items.push(it);DB.manual[it.id]=nowLabel();saveDB();renderDB();toast('DBに追加しました（買取価格は未確認）');
     var r=judge(it,pr,{});lastResult=r;renderResult(r);
   });
   $('#lastMs').textContent=Math.round(ms)+'ms';
 }
 
+function areaName(a){return a==='oita'?'大分':a==='fukuoka'?'福岡':'全国'}
+function realStoreName(s){return !!s&&s!=='大分店頭'&&s!=='福岡店頭'}
+function spreadOf(it){
+  normalizeItem(it);
+  var list=[],have={};
+  (it.offers||[]).forEach(function(o){
+    if(num(o.price,0)>0){list.push({store:o.store||areaName(o.area),area:o.area,price:num(o.price,0),checked:o.checked_at||''});have[o.area]=1;}
+  });
+  if(!have.oita&&num(it.price.oita,0)>0&&realStoreName(it.oitaStore))list.push({store:it.oitaStore,area:'oita',price:num(it.price.oita,0),checked:(it.checked||{}).oita||''});
+  if(!have.fukuoka&&num(it.price.fukuoka,0)>0&&realStoreName(it.fukuokaStore))list.push({store:it.fukuokaStore,area:'fukuoka',price:num(it.price.fukuoka,0),checked:(it.checked||{}).fukuoka||''});
+  if(!list.length)return {list:list,ok:false,diff:0};
+  list.sort(function(a,b){return b.price-a.price});
+  return {list:list,ok:list.length>1,diff:list.length>1?list[0].price-list[list.length-1].price:0,max:list[0],min:list[list.length-1]};
+}
+function finishBtnsHTML(cur){
+  var list=[['normal','通常'],['monster','モンボ'],['master','マスボ'],['holo','ホロ']];
+  return '<div class="finishbtns mt6">'+list.map(function(x){
+    return '<button type="button" data-finish="'+x[0]+'" aria-pressed="'+(cur===x[0]?'true':'false')+'">'+x[1]+'</button>';
+  }).join('')+'</div>';
+}
 function renderResult(r){
-  if(!r){return}
+  if(!r)return;
   lastResult=r;
   var div=$('#result');
   var cls=r.level==='buy'?'buy':r.level==='check'?'check':'pass';
   div.className='res '+cls;
   var b=r.ch.best;
-  var chRows=r.ch.all.map(function(c){
-    return '<tr class="'+(b&&c.key===b.key?'best':'')+'"><td>'+esc(c.name)+'</td>'+
-      '<td>'+(c.available?yen(c.gross):'<span class="mute">─</span>')+'</td>'+
-      '<td class="mute">'+(c.available?'-'+yen(c.cost):'─')+'</td>'+
-      '<td>'+(c.available?yen(c.net):'<span class="mute">取扱なし</span>')+'</td></tr>';
+  var chRows=r.ch.stores||r.ch.all;
+  chRows=chRows.map(function(c){
+    return '<tr class="'+(b&&c.key===b.key?'best':'')+'"><td>'+esc(c.name)+'<br><span class="mini">'+(c.available?('確認 '+(c.checked||'日付未確認')+'・経費'+yen(c.cost)+'<br>手取り'+yen(c.net)):'未確認')+'</span></td>'+
+      '<td>'+(c.available?yen(c.gross):'<span class="mute">未確認</span>')+'</td></tr>';
   }).join('');
+  var refRow=r.ch.ref&&r.ch.ref.available?'<tr><td>'+esc(r.ch.ref.name)+'<br><span class="mini">参考・判定に使わない</span></td><td>'+yen(r.ch.ref.gross)+'</td></tr>':'<tr><td>全国郵送<br><span class="mini">参考・判定に使わない</span></td><td><span class="mute">未確認</span></td></tr>';
   var meta=[];
   meta.push(gradeLabel(r.item.grade));
   if(r.item.version&&r.item.version!=='通常版')meta.push(r.item.version);
-  if(r.item.number)meta.push(r.item.number);
-  if(r.item.rarity)meta.push(r.item.rarity);
+  if(r.item.cat==='single'){
+    meta.push('加工：'+finishLabel(itemFinish(r.item)));
+    meta.push(r.item.number?('番号 '+r.item.number):'番号 未確認');
+    meta.push(r.item.rarity?r.item.rarity:'レア 未確認');
+    meta.push(r.item.set?('弾 '+r.item.set):'収録弾 未確認');
+  }
   if(r.item.list)meta.push('定価'+yen(r.item.list));
   if(r.ch.useLoose)meta.push('シュリンクなし価格で計算');
   var hardLine='';
-  if(r.hardNet!=null)hardLine='<div class="why">安全ライン：状態難'+Math.round(r.hardRate*100)+'% → 手取り <b>'+yen(r.hardNet)+'</b>（差 <b>'+(r.hardProfit>=0?'+':'')+yen(r.hardProfit)+'</b>）</div>';
+  if(r.item.cat==='single'&&r.hardNet!=null)hardLine='<div class="why">安全ライン：'+(r.isPsa10?'PSA10（状態難ではなくケース傷のみ）':'状態難'+Math.round(num(r.hardRate,0.8)*100)+'%')+' → 手取り <b>'+yen(r.hardNet)+'</b>（値札との差 <b>'+(r.hardProfit>=0?'+':'')+yen(r.hardProfit)+'</b>）</div>';
+  var sp=spreadOf(r.item);
+  var spreadLine='';
+  var ao=(r.ch.all||[]).filter(function(c){return c.key==='oita'})[0];
+  var af=(r.ch.all||[]).filter(function(c){return c.key==='fukuoka'})[0];
+  var areaTxt='大分最高 '+(ao&&ao.available?yen(ao.gross)+'（'+esc(ao.store||'店名未確認')+'・'+(ao.checked||'日付未確認')+'）':'未確認')+' ／ 福岡最高 '+(af&&af.available?yen(af.gross)+'（'+esc(af.store||'店名未確認')+'・'+(af.checked||'日付未確認')+'）':'未確認');
+  if(sp.ok){
+    spreadLine='<div class="saya"><b>店間サヤ '+yen(sp.diff)+'</b>（最高 '+esc(sp.max.store)+' '+yen(sp.max.price)+(sp.max.checked?'・'+esc(sp.max.checked):'')+' ／ 最低 '+esc(sp.min.store)+' '+yen(sp.min.price)+(sp.min.checked?'・'+esc(sp.min.checked):'')+'）<div class="mini">'+areaTxt+'</div><div class="mini">'+(sp.max.area!==sp.min.area?'大分と福岡で値付けが違う':'同じエリア内の店間差')+'。値札とのサヤ '+(function(v){return (v>=0?'+':'')+yen(v)})(SET.preset==='oripa'?(num(r.frontNet,0)-r.tag):num(r.profit,0))+'（手取り−値札）</div></div>';
+  }else if(sp.list.length===1){
+    spreadLine='<div class="saya"><b>店間サヤ：比較不可</b><div class="mini">'+esc(sp.list[0].store)+' '+yen(sp.list[0].price)+'（'+(sp.list[0].checked||'日付未確認')+'）のみ。もう一方のエリアの店頭価格が未確認です。</div><div class="mini">'+areaTxt+'</div></div>';
+  }else{
+    spreadLine='<div class="saya"><b>店間サヤ：未確認</b><div class="mini">大分・福岡の店頭価格がまだ入っていません。</div></div>';
+  }
+  var finLine='';
+  if(r.item.cat==='single'){
+    finLine='<div class="finishok"><div style="font-size:11px;font-weight:800;margin-bottom:4px">✨ 光り方・柄の最終確認（目視で選ぶ）</div>'+finishBtnsHTML(r.finishUse)+'<div class="mini mt6">'+(r.finishUse==='unknown'?'<b style="color:#912018">未確認</b>：ミラー候補は買い判定を出しません。':'選択：<b>'+finishLabel(r.finishUse)+'</b>')+'</div></div>';
+  }
+  if(r.finishWarn&&(r.finishUse!==r.finish||(r.finish!=='master'&&r.finish!=='monster'))){
+    finLine+='<div class="finishwarn">⚠️ ミラー柄（マスボ／モンボ）を目視確認してください！取り違え注意。'+(r.finish==='master'||r.finish==='monster'?'DB候補は '+finishLabel(r.finish)+'。':'')+'</div>';
+  }
+  var stage2='';
+  if(SET.preset==='oripa'&&r.ch.best){
+    stage2='<div style="border:1px solid #c9e5df;border-radius:10px;padding:10px;margin-top:10px">'+
+      '<div style="font-size:12px;font-weight:800;margin-bottom:6px">第2段：残りの当たりで期待値</div>'+
+      '<div class="row tight"><label class="mini">残りの当たり総額</label><input id="evHits" type="number" inputmode="numeric" value="'+(r.evHits||'')+'" placeholder="60000" style="width:105px">'+
+      '<label class="mini">残り口数</label><input id="evSlots" type="number" inputmode="numeric" value="'+(r.evSlots||'')+'" placeholder="20" style="width:70px">'+
+      '<button class="btn pri sm" id="btnEv">期待値を計算</button></div>'+
+      '<div id="evOut" class="why">'+(r.evText||'残りの当たり総額 ÷ 残り口数を前面手取りに足して、オリパ価格と比べます。')+'</div></div>';
+  }
+  var setOpt=r.item.set||'', noOpt=r.item.number||'', rarOpt=r.item.rarity||'';
+  var fix='<details class="mt10"><summary style="font-size:11.5px;font-weight:800;color:#0b5d52;cursor:pointer">✏️ 読み取りを修正（商品名・番号・レア・弾・グレード・光り方）</summary>'+
+    '<div class="row tight mt6"><input id="fxName" value="'+esc(r.item.name)+'" placeholder="商品名" style="flex:1;min-width:140px"></div>'+
+    '<div class="row tight mt6"><input id="fxNo" value="'+esc(noOpt)+'" placeholder="094/165" style="width:100px">'+
+    '<input id="fxRar" value="'+esc(rarOpt)+'" placeholder="AR/SAR" style="width:80px">'+
+    '<input id="fxSet" value="'+esc(setOpt)+'" placeholder="収録弾" style="flex:1;min-width:90px"></div>'+
+    '<div class="row tight mt6"><select id="fxGrade"><option value="raw"'+(r.item.grade!=='psa10'?' selected':'')+'>生カード</option><option value="psa10"'+(r.item.grade==='psa10'?' selected':'')+'>PSA10</option></select>'+
+    '<select id="fxFinish"><option value="unknown"'+(r.finishUse==='unknown'?' selected':'')+'>未確認</option>'+[['normal','通常'],['monster','モンボミラー'],['master','マスボミラー'],['holo','ホロ/R']].map(function(x){return '<option value="'+x[0]+'"'+(r.finishUse===x[0]?' selected':'')+'>'+x[1]+'</option>'}).join('')+'</select>'+
+    '<input id="fxPrice" type="number" value="'+r.tag+'" style="width:95px"><button class="btn pri sm" id="fxApply">再判定</button></div>'+
+    '<div class="mini mt6">番号・弾が未確認のカードはここで入れると、次回から番号で照合します。</div></details>';
   div.innerHTML=
-    '<div class="head"><span class="verdict '+r.level+'">'+(r.level==='buy'?'買い':r.level==='check'?esc(r.title):r.level==='pass'?'見送り':esc(r.title))+'</span>'+
+    '<div class="head"><span class="verdict '+r.level+'">'+(r.level==='buy'?(SET.preset==='oripa'?'前面で元が取れる':'買い'):r.level==='check'?esc(r.title):r.level==='pass'?'見送り':esc(r.title))+'</span>'+
       '<span class="badge '+(r.level==='buy'?'live':'gray')+'">'+esc(r.title)+'</span>'+
-      '<span class="mini" style="margin-left:auto">'+r.ms+'ms</span></div>'+
-    '<div class="itemname">'+esc(r.item.name)+'</div>'+
+      '<span class="mini" style="margin-left:auto">'+(r.ms||0)+'ms</span></div>'+
+    '<div class="itemname">'+esc(r.item.name)+(r.item.cat==='single'?' <span class="badge gray">'+finishShort(itemFinish(r.item))+'</span>':'')+'</div>'+
     '<div class="itemmeta">'+esc(meta.join(' ／ '))+'</div>'+
     (r.versionWarn?'<div class="itemmeta" style="color:#b54708">⚠ '+esc(r.versionWarn)+'</div>':'')+
     (r.gradeWarn?'<div class="itemmeta" style="color:#b54708">⚠ '+esc(r.gradeWarn)+'</div>':'')+
     '<div class="money">'+
-      '<div><span>値札</span><b>'+yen(r.tag)+'</b></div>'+
-      '<div class="big"><span>手取り（'+esc((b?b.name:'─').split('／')[0])+'）</span><b>'+(b?yen(b.net):'─')+'</b></div>'+
-      '<div><span>差額</span><b style="color:'+(r.profit>=0?'#067647':'#d92d20')+'">'+(r.profit>=0?'+':'')+yen(r.profit)+'</b></div>'+
+      '<div><span>値札／オリパ価格</span><b>'+yen(r.tag)+'</b></div>'+
+      '<div class="big"><span>手取り（'+esc((b?b.name:'─').split('／')[0])+'）</span><b>'+(b?yen(b.net):'未確認')+'</b></div>'+
+      '<div><span>'+(SET.preset==='oripa'?'前面の手取り':'差額')+'</span><b style="color:'+((b&&(SET.preset==='oripa'?r.frontNet-r.tag:r.profit)>=0)?'#067647':'#727d8c')+'">'+(b?(SET.preset==='oripa'?yen(num(r.frontNet,0)):((r.profit>=0?'+':'')+yen(num(r.profit,0)))):'─')+'</b></div>'+
     '</div>'+
-    '<div class="why">'+r.why+'</div>'+hardLine+
-    '<table class="chtable"><thead><tr><th>出口</th><th>掲示</th><th>経費</th><th>手取り</th></tr></thead><tbody>'+chRows+'</tbody></table>'+
-    '<div class="mini mt6">按分：'+r.ch.split+'枚で移動費を分割・'+esc((b?b.note:''))+'</div>'+
+    spreadLine+
+    '<div class="why">'+r.why+'</div>'+hardLine+finLine+stage2+
+    '<table class="chtable"><thead><tr><th>出口（店名）</th><th>掲示</th></tr></thead><tbody>'+chRows+refRow+'</tbody></table>'+
+    '<div class="mini mt6">按分：'+r.ch.split+'枚で移動費を分割・'+esc((b?b.note:''))+'</div>'+fix+
     '<div class="row mt10">'+
       '<button class="btn pri sm" id="btnInspectOpen">🔬 状態検査</button>'+
       '<button class="btn sm" id="btnSay">🔊 読み上げ</button>'+
       '<button class="btn sm" id="btnPickOther">別の商品として判定</button>'+
       '<button class="btn sm" id="btnQuickAdd">＋ DBに追加</button>'+
     '</div>';
-  $('#lastMs').textContent=r.ms+'ms';
+  $('#lastMs').textContent=(r.ms||0)+'ms';
   var bi=$('#btnInspectOpen');if(bi)bi.addEventListener('click',openInspect);
   var bs=$('#btnSay');if(bs)bs.addEventListener('click',function(){unlockAudio();speakResult(r)});
   var bp=$('#btnPickOther');if(bp)bp.addEventListener('click',function(){showPicker(r)});
   var bq=$('#btnQuickAdd');if(bq)bq.addEventListener('click',function(){quickAdd(r)});
+  $$('#result .finishbtns button').forEach(function(btn){btn.addEventListener('click',function(){setFinish(btn.getAttribute('data-finish'),true)})});
+  var ev=$('#btnEv');if(ev)ev.addEventListener('click',computeEV);
+  var fx=$('#fxApply');if(fx)fx.addEventListener('click',applyFix);
   if(SET.mode==='voice')renderVoice(r);
+}
+function computeEV(){
+  if(!lastResult)return;
+  var r=lastResult;
+  var hits=num($('#evHits').value,0),slots=num($('#evSlots').value,0);
+  r.evHits=hits;r.evSlots=slots;
+  if(slots<=0){$('#evOut').innerHTML='残り口数を1以上で入れてください。';return}
+  var per=hits/slots,ev=r.frontNet+per,diff=ev-r.tag,th=num(SET.threshold.oripa,500),ok=diff>=th;
+  r.evText='残り当たり総額 '+yen(hits)+' ÷ 残り口数 '+slots+' = <b>'+yen(per)+'/口</b><br>期待値 = 前面手取り '+yen(r.frontNet)+' + '+yen(per)+' = <b>'+yen(ev)+'</b> ／ オリパ価格 '+yen(r.tag)+' → 差 <b>'+(diff>=0?'+':'')+yen(diff)+'</b>';
+  $('#evOut').innerHTML=r.evText+'<br><b style="color:'+(ok?'#067647':'#d92d20')+'">'+(ok?'期待値プラス（当たり内容の確度次第）':'期待値でも不足')+'</b>';
+  r.evOk=ok;
+  if(ok)speak('期待値プラス。買い候補ですが、当たり内容を確認してください。',true);
+}
+function applyFix(){
+  if(!lastResult)return;
+  var name=$('#fxName').value.trim();
+  var no=$('#fxNo').value.trim();
+  var rar=$('#fxRar').value.trim().toUpperCase();
+  var setv=$('#fxSet').value.trim();
+  var grade=$('#fxGrade').value;
+  var fin=$('#fxFinish').value;
+  var price=num($('#fxPrice').value,0);
+  SET.grade=grade;SET.finishConfirm=fin;saveSet();applyFinishUI();
+  var marks={cardNo:no,rarityRaw:rar,rarity:'',finishHint:(fin==='monster'||fin==='master')?fin:'',promo:false,y25:false,reprint:false,reg:'',setCode:'',mark:false,gradeText:''};
+  var pick=pickItem([name,no,rar,setv].join(' '),marks,grade);
+  if(!pick.item){toast('照合できません（DBタブで追加してください）');return}
+  var rr=judge(pick.item,price,{gradeWarn:pick.gradeWarn,versionWarn:pick.versionWarn});
+  rr.ms=lastResult.ms;renderResult(rr);speakResult(rr);
 }
 function quickAdd(r){
   var nm=prompt('DBに追加する商品名',r.item.name);
   if(!nm)return;
-  var pr=prompt('宅配/郵送の買取価格（円）',r.ch.best?String(r.ch.best.gross):'');
-  if(pr==null)return;
-  var it={id:'u_'+Date.now(),cat:'single',name:nm,aliases:[nm],version:'通常版',grade:SET.grade,number:'',rarity:'',list:0,price:{oita:0,fukuoka:0,mail:num(pr,0),loose:0},oitaStore:'',src:'手動追加 '+nowLabel(),est:false};
-  DB.items.push(it);saveDB();renderDB();toast('DBに追加しました');
+  var pr=prompt('大分店頭の買取価格（未確認なら空欄）','');
+  var it={id:'u_'+Date.now(),cat:'single',name:nm,aliases:[nm],version:'通常版',grade:SET.grade,finish:SET.finishConfirm||'unknown',number:'',rarity:'',set:'',list:0,price:{oita:pr?num(pr,0):0,fukuoka:0,mail:0,loose:0},oitaStore:pr?'手動入力':'',checked:{},src:'手動追加 '+nowLabel(),est:false,verified:!!pr};
+  DB.items.push(it);DB.manual[it.id]=nowLabel();saveDB();renderDB();toast('DBに追加しました');
 }
 function showPicker(r){
-  var list=DB.items.map(function(it,i){return '<option value="'+i+'">'+esc(it.name)+'（'+gradeLabel(it.grade)+'）</option>'}).join('');
+  var list=DB.items.map(function(it,i){return '<option value="'+i+'">'+esc(it.name)+'（'+gradeLabel(it.grade)+(it.cat==='single'?'・'+finishShort(itemFinish(it)):'')+'）</option>'}).join('');
   var div=$('#result');
   var box=document.createElement('div');
   box.className='row mt10';
@@ -1365,7 +1708,7 @@ function renderDebug(lines){
 function addHistory(r){
   var top=history[0];
   if(top&&top.name===r.item.name&&top.price===r.tag&&Date.now()-top.t<30000)return;
-  history.unshift({t:Date.now(),name:r.item.name,price:r.tag,net:r.ch.best?r.ch.best.net:0,level:r.level});
+  history.unshift({t:Date.now(),name:r.item.name,price:r.tag,net:r.ch.best?r.ch.best.net:null,level:r.level});
   history=history.slice(0,12);
   $('#histCount').textContent=history.length+'件';
   $('#hist').innerHTML=history.map(function(h){
@@ -1373,22 +1716,25 @@ function addHistory(r){
     return '<div style="display:flex;gap:6px;padding:3px 0;border-bottom:1px solid #eef1f5;font-size:11px">'+
       '<span style="color:'+col+';font-weight:800;width:38px">'+(h.level==='buy'?'買い':h.level==='check'?'確認':'見送')+'</span>'+
       '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(h.name)+'</span>'+
-      '<span style="font-variant-numeric:tabular-nums">'+yen(h.price)+' → '+yen(h.net)+'</span></div>';
+      '<span style="font-variant-numeric:tabular-nums">'+yen(h.price)+' → '+(h.net==null?'未確認':yen(h.net))+'</span></div>';
   }).join('');
 }
 $('#btnClearHist').addEventListener('click',function(){history=[];$('#histCount').textContent='0件';$('#hist').textContent='まだありません。'});
 
 /* ---------------- デモ ---------------- */
-$('#btnDemo1').addEventListener('click',function(){demoScan('b_kodai',8000)});
-$('#btnDemo2').addEventListener('click',function(){demoScan('b_hado',6500)});
-$('#btnDemo3').addEventListener('click',function(){demoScan('s_umbreon',50000)});
+$('#btnDemo1').addEventListener('click',function(){SET.preset='showcase';SET.finishConfirm='unknown';SET.grade='raw';saveSet();applyFinishUI();fillSettings();demoScan('b_hado',6000)});
+$('#btnDemo2').addEventListener('click',function(){SET.preset='showcase';SET.finishConfirm='master';SET.grade='psa10';saveSet();applyFinishUI();fillSettings();demoScan('p_mb_sanders',9000)});
+$('#btnDemo3').addEventListener('click',function(){SET.preset='showcase';SET.finishConfirm='unknown';SET.grade='psa10';saveSet();applyFinishUI();fillSettings();demoScan('p_gengar_master',120000)});
+$('#btnDemo4').addEventListener('click',function(){SET.preset='oripa';SET.finishConfirm='master';SET.grade='psa10';saveSet();applyFinishUI();fillSettings();demoScan('p_mb_sanders',10000)});
+$('#btnDemo5').addEventListener('click',function(){SET.preset='showcase';SET.finishConfirm='unknown';SET.grade='psa10';saveSet();applyFinishUI();fillSettings();demoScan('p_lizard_master',4000)});
 function demoScan(id,price){
   var it=DB.items.filter(function(x){return x.id===id})[0];
   if(!it){toast('デモ商品がDBにありません');return}
   var r=judge(it,price,{});r.ms=120;r.ocrName=it.name;r.ocrPrice=String(price);
+  lastScan={name:it.name,marks:extractMarks(it.name),price:price,ms:120,mirrorHint:false};
   lastResult=r;renderResult(r);recordTest(r);speakResult(r);
   renderDebug(['デモ実行（OCRなし・判定のみ '+r.ms+'ms）','照合 → '+esc(it.name),'値札 '+yen(price)]);
-  setHud('<b>'+r.title+'</b> '+esc(it.name),'手取り '+yen(r.ch.best?r.ch.best.net:0));
+  setHud('<b>'+r.title+'</b> '+esc(it.name),(r.ch.best?'手取り '+yen(r.ch.best.net):'価格未確認'));
   addHistory(r);
   if(SET.mode==='voice')renderVoice(r);
 }
@@ -1576,27 +1922,50 @@ function renderDB(){
   var tb=$('#dbBody');
   var items=DB.items;
   tb.innerHTML=items.map(function(it,idx){
-    var hay=norm(it.name+' '+(it.aliases||[]).join(' '));
+    normalizeItem(it);
+    var hay=norm(it.name+' '+(it.aliases||[]).join(' ')+' '+(it.number||'')+' '+(it.set||'')+' '+(it.rarity||''));
     if(q&&hay.indexOf(q)<0)return '';
+    var sp=spreadOf(it);
+    var spTitle=sp.list.map(function(o){return o.store+' '+yen(o.price)+(o.checked?'（'+o.checked+'）':'')}).join(' / ');
+    var showSaya=!it.est&&sp.ok&&sp.diff>0;
     return '<tr data-idx="'+idx+'" class="'+(it.est?'est':'')+'">'+
       '<td><input data-k="name" value="'+esc(it.name)+'" style="min-width:130px"></td>'+
       '<td><select data-k="cat"><option value="box"'+(it.cat==='box'?' selected':'')+'>BOX</option><option value="single"'+(it.cat!=='box'?' selected':'')+'>シングル</option></select></td>'+
       '<td><select data-k="version">'+['通常版','25th','プロモ','再販・復刻'].map(function(v){return '<option'+(it.version===v?' selected':'')+'>'+v+'</option>'}).join('')+'</select></td>'+
       '<td><select data-k="grade"><option value="raw"'+(it.grade!=='psa10'?' selected':'')+'>生</option><option value="psa10"'+(it.grade==='psa10'?' selected':'')+'>PSA10</option></select></td>'+
+      '<td><select data-k="finish">'+[['normal','通常'],['holo','ホロ/R'],['monster','モンボ'],['master','マスボ']].map(function(x){return '<option value="'+x[0]+'"'+(itemFinish(it)===x[0]?' selected':'')+'>'+x[1]+'</option>'}).join('')+'</select></td>'+
       '<td><input data-k="number" value="'+esc(it.number||'')+'" style="min-width:64px"></td>'+
+      '<td><input data-k="rarity" value="'+esc(it.rarity||'')+'" style="min-width:52px"></td>'+
+      '<td><input data-k="set" value="'+esc(it.set||'')+'" style="min-width:86px"></td>'+
       '<td><input class="num" data-k="list" type="number" value="'+(it.list||0)+'"></td>'+
       '<td><input class="num" data-k="p.oita" type="number" value="'+(it.price.oita||0)+'"></td>'+
       '<td><input class="num" data-k="p.fukuoka" type="number" value="'+(it.price.fukuoka||0)+'"></td>'+
       '<td><input class="num" data-k="p.mail" type="number" value="'+(it.price.mail||0)+'"></td>'+
       '<td><input class="num" data-k="p.loose" type="number" value="'+(it.price.loose||0)+'"></td>'+
-      '<td><input class="num" data-k="src" type="text" value="'+esc(it.src||'')+'" style="min-width:110px"></td>'+
-      '<td><span class="src" title="'+esc(it.src||'')+'">'+(it.est?'<span class="est">目安</span> ':'')+esc((it.src||'').slice(0,26))+'</span></td>'+
+      '<td class="num" title="'+esc(spTitle)+'" style="font-variant-numeric:tabular-nums;white-space:nowrap;color:'+(showSaya?'#1d4ed8':'#98a2b0')+';font-weight:800">'+(showSaya?yen(sp.diff):'─')+'</td>'+
+      '<td><input data-k="src" type="text" value="'+esc(it.src||'')+'" style="min-width:110px"></td>'+
+      '<td><span class="src" title="'+esc(it.src||'')+'">'+(DB.manual[it.id]?'<span class="est">手動</span> ':'')+(it.est?'<span class="est">目安</span> ':'')+esc((it.src||'').slice(0,26))+'</span></td>'+
       '<td><button class="del" data-del="'+idx+'" title="削除">✕</button></td>'+
     '</tr>';
   }).join('');
   $('#dbCount').textContent=items.length+'件';
   $('#dbTime').textContent=DB.updated||'─';
   $('#dbEdited').textContent=DB.edited?'最終保存 '+DB.edited:'';
+  renderSpreadList();
+}
+function renderSpreadList(){
+  var el=$('#spreadList');if(!el)return;
+  var rows=[];
+  DB.items.forEach(function(it){
+    if(it.est)return;
+    if(!it.offers||it.offers.length<2)return;
+    var sp=spreadOf(it);if(sp.ok&&sp.diff>0)rows.push({it:it,sp:sp});
+  });
+  rows.sort(function(a,b){return b.sp.diff-a.sp.diff});
+  if(!rows.length){el.innerHTML='<div class="hint">まだ2店舗分の店名つき価格が入っていません。フィードを読み込むか、DBに大分・福岡の店頭値を足してください（目安値はアラートに出しません）。</div>';return}
+  el.innerHTML=rows.slice(0,15).map(function(x){
+    return '<div class="sprow"><span class="nm">'+esc(x.it.name)+'<br><span class="mini">'+esc(x.sp.max.store)+' '+yen(x.sp.max.price)+(x.sp.max.checked?'・'+esc(x.sp.max.checked):'')+' ／ '+esc(x.sp.min.store)+' '+yen(x.sp.min.price)+(x.sp.min.checked?'・'+esc(x.sp.min.checked):'')+'</span></span><span class="df">'+yen(x.sp.diff)+'</span></div>';
+  }).join('');
 }
 $('#dbSearch').addEventListener('input',function(){renderDB()});
 $('#dbBody').addEventListener('change',function(e){
@@ -1606,11 +1975,13 @@ $('#dbBody').addEventListener('change',function(e){
   var k=el.getAttribute('data-k');if(!k)return;
   var v=el.value;
   if(k==='p.oita'||k==='p.fukuoka'||k==='p.mail'||k==='p.loose'||k==='list')v=num(v,0);
-  if(k.indexOf('p.')===0)it.price[k.slice(2)]=v;
+  if(k.indexOf('p.')===0){it.price[k.slice(2)]=v;it.offers=null;it.verified=true;it.checked=it.checked||{};}
   else it[k]=v;
+  if(k==='finish')it.finish=v;
   if(!it.aliases||!it.aliases.length)it.aliases=[it.name];
   if(k==='name')it.aliases=[v].concat((it.aliases||[]).filter(function(a){return a!==it.name}));
-  saveDB();
+  DB.manual[it.id]=nowLabel();
+  saveDB();renderSpreadList();
 });
 $('#dbBody').addEventListener('click',function(e){
   var b=e.target.closest('[data-del]');if(!b)return;
@@ -1620,8 +1991,8 @@ $('#dbBody').addEventListener('click',function(e){
   DB.items.splice(idx,1);saveDB();renderDB();
 });
 $('#btnAddRow').addEventListener('click',function(){
-  DB.items.unshift({id:'u_'+Date.now(),cat:'single',name:'新しい商品',aliases:['新しい商品'],version:'通常版',grade:'raw',number:'',rarity:'',list:0,price:{oita:0,fukuoka:0,mail:0,loose:0},oitaStore:'',src:'手動 '+nowLabel(),est:false});
-  saveDB();renderDB();$('#dbSearch').value='';goTab('db');toast('行を追加しました（価格を入れてください）');
+  var it={id:'u_'+Date.now(),cat:'single',name:'新しい商品',aliases:['新しい商品'],version:'通常版',grade:'raw',finish:'normal',number:'',rarity:'',set:'',list:0,price:{oita:0,fukuoka:0,mail:0,loose:0},oitaStore:'',fukuokaStore:'',checked:{},src:'手動 '+nowLabel(),est:false,verified:false};
+  DB.items.unshift(it);DB.manual[it.id]=nowLabel();saveDB();renderDB();$('#dbSearch').value='';goTab('db');toast('行を追加しました（価格を入れてください）');
 });
 $('#btnExport').addEventListener('click',function(){
   downloadJson({updated:DB.updated,edited:DB.edited,items:DB.items},'toreka-scan-db-'+stamp()+'.json');
@@ -1688,11 +2059,108 @@ document.addEventListener('visibilitychange',function(){
   if(document.visibilityState==='visible'){requestWake()}
 });
 
+/* ---------------- 買取フィード（buyback_feed.json） ---------------- */
+var FEED={url:'./buyback_feed.json',state:'未取得',at:'',count:0,err:''};
+function fmtFeedTime(s){
+  if(!s)return '';
+  var m=String(s).match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/);
+  return m?(m[1]+' '+m[2]):String(s).slice(0,16);
+}
+function feedBadge(){
+  var el=$('#feedState');if(!el)return;
+  if(FEED.state==='ok'){el.textContent='フィード取得済み '+(FEED.at||'');el.style.color='#067647'}
+  else if(FEED.state==='loading'){el.textContent='フィード取得中…';el.style.color='#b54708'}
+  else if(FEED.state==='error'){el.textContent='フィード取得できず（内蔵DB）';el.style.color='#b54708'}
+  else{el.textContent='フィード未取得';el.style.color='#727d8c'}
+  var note=$('#feedNote');if(note&&FEED.state==='ok')note.textContent='最終取得 '+(FEED.at||'')+'・'+FEED.count+'件を反映（郵送は参考のみ）';
+}
+function findFeedTarget(f){
+  var byId=DB.items.filter(function(x){return x.id===f.id})[0];
+  if(byId)return byId;
+  var n=norm(f.name||'');
+  return DB.items.filter(function(x){return norm(x.name)===n&&(x.grade||'raw')===(f.grade||'raw')&&itemFinish(x)===itemFinish(f)})[0]||null;
+}
+function bestStoreNames(f){
+  return (f.offers||[]).filter(function(o){return num(o.price,0)>0}).map(function(o){return (o.store||o.area)+' '+yen(o.price)+'（'+(o.checked_at||'')+'）'}).join(' / ');
+}
+function applyFeedItem(it,f){
+  var best={};
+  (f.offers||[]).forEach(function(o){
+    var a=o.area;if(!a||!(num(o.price,0)>0))return;
+    if(!best[a]||num(o.price,0)>num(best[a].price,0))best[a]=o;
+  });
+  it.checked=it.checked||{};
+  if(best.oita){it.price.oita=num(best.oita.price,0);it.oitaStore=best.oita.store||'';it.checked.oita=best.oita.checked_at||'';}
+  if(best.fukuoka){it.price.fukuoka=num(best.fukuoka.price,0);it.fukuokaStore=best.fukuoka.store||'';it.checked.fukuoka=best.fukuoka.checked_at||'';}
+  if(f.offers&&f.offers.length)it.offers=f.offers.filter(function(o){return num(o.price,0)>0}).map(function(o){return {area:o.area,store:o.store,price:num(o.price,0),checked_at:o.checked_at||'',note:o.note||'',source:o.source||''}});
+  if(f.reference&&f.reference.length){
+    var r=f.reference.slice().sort(function(a,b){return num(b.price,0)-num(a.price,0)})[0];
+    if(r&&num(r.price,0)>0){
+      it.ref={label:r.label||'全国通販（参考）',price:num(r.price,0),date:r.checked_at||'',source:r.source||''};
+      if(it.cat==='box')it.price.mail=num(r.price,0);
+    }
+  }
+  if(it.cat!=='box'){
+    var mr=(f.reference||[]).filter(function(x){return /郵送|宅配/.test(x.label||'')})[0];
+    it.price.mail=mr?num(mr.price,0):0;
+  }
+  if(f.refPsa10)it.refPsa10=f.refPsa10;
+  if(f.list)it.list=num(f.list,0);
+  if(f.rarity)it.rarity=f.rarity;
+  if(f.set)it.set=f.set;
+  if(f.number)it.number=f.number;
+  if(f.version)it.version=f.version;
+  it.finish=f.finish||itemFinish(it);
+  it.cat=f.cat||it.cat;
+  it.grade=f.grade||it.grade;
+  it.est=false;it.verified=true;
+  it.src='フィード'+(f.updated_at||DB.updated||'')+(f.offers&&f.offers.length?'・'+bestStoreNames(f):'・店頭価格未確認');
+  normalizeItem(it);
+}
+function mergeFeed(feed){
+  var stats={updated:0,added:0,skipped:0};
+  (feed.items||[]).forEach(function(f){
+    var it=findFeedTarget(f);
+    if(it&&DB.manual[it.id]){stats.skipped++;return}
+    if(!it){
+      it={id:f.id||('f_'+norm(f.name).slice(0,18)),cat:f.cat||'single',name:f.name,aliases:[f.name],version:f.version||'通常版',grade:f.grade||'raw',finish:f.finish||'normal',number:f.number||'',rarity:f.rarity||'',set:f.set||'',list:num(f.list,0),price:{oita:0,fukuoka:0,mail:0,loose:0},oitaStore:'',fukuokaStore:'',checked:{},src:'フィード',est:false,verified:true,offers:[]};
+      DB.items.push(it);stats.added++;
+    }
+    applyFeedItem(it,f);stats.updated++;
+  });
+  DB.feedUpdated=feed.generated_at||nowLabel();
+  DB.updated=fmtFeedTime(feed.generated_at)||DB.updated;
+  FEED.at=fmtFeedTime(feed.generated_at)||nowLabel();
+  FEED.count=stats.updated;
+  saveDB();renderDB();
+  if(lastResult&&lastResult.item){var rr=judge(lastResult.item,lastResult.tag,{});rr.ms=lastResult.ms;renderResult(rr);}
+  return stats;
+}
+async function loadFeed(manual){
+  if(!window.fetch){FEED.state='error';FEED.err='fetch非対応';feedBadge();return}
+  FEED.state='loading';feedBadge();
+  try{
+    var res=await fetch(FEED.url+'?t='+Date.now(),{cache:'no-store'});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    var j=await res.json();
+    if(!j||!j.items||!j.items.length)throw new Error('itemsなし');
+    mergeFeed(j);
+    FEED.state='ok';feedBadge();
+    if(manual)toast('買取フィードを更新（'+FEED.count+'件）');
+  }catch(e){
+    FEED.state='error';FEED.err=e.message;feedBadge();
+    if(manual)toast('フィード取得失敗（内蔵DBで動作）');
+    console.warn('feed',e);
+  }
+}
+var feedBtn=document.getElementById('btnFeedReload');
+if(feedBtn)feedBtn.addEventListener('click',function(){loadFeed(true)});
+
 /* ---------------- 起動 ---------------- */
 function init(){
-  fillSettings();renderDB();renderTests();applyMode();
+  fillSettings();renderDB();renderTests();applyMode();applyFinishUI();
   $('#dbTime').textContent=DB.updated||'─';
-  $('#dbSources').innerHTML='<b>2026-11-28 19:00時点</b>：ハドウシーカー（シュリンクあり最高7,100／ホムラ6,800／なし6,600）、古代の咆哮（大分6,000／宅配10,600）、ワイルドフォース（大分7,000／宅配11,200）、スペシャルBOXフクオカ（8,500）、30th CELEBRATION（16,000）、ストームエメラルダ（7,200）、ロケット団の栄光（22,500）、インフェルノX（17,000）、MEGAドリームex（10,800）、OP-18 神の支配（6,600）。<br><br>その他のBOXは 11/26〜28 の調査値（道楽・ホムラ・pokeso等）。<b>「目安」バッジ</b>の付いた行は日次で動くので、店頭の表を見て上書きしてください。シングルは全国郵送買取（11/26）と道楽PSA10（11/26）。<b>生カードの大分・福岡店頭値は手動追加が確実です。</b>';
+  $('#dbSources').innerHTML='<b>判定に使うのは大分店頭・福岡店頭の実店舗価格だけ</b>です。2026-11-28の本人方針で<b>郵送買取は使いません</b>（参考表示のみ）。<br><br>BOX：ハドウシーカーは大分 極KIWAMI 6,500（11/27）・ポケカん 6,200（11/28）・マンガ倉庫わさだ 6,000（11/27）、福岡はホムラ 6,800（11/28）。古代の咆哮・ワイルドフォースは福岡のホムラ／トレカハブ／マフィア（11/26〜27）、大分は未確認。<br><br>PSA10：福岡 トレカハブ博多 11/26表（サンダース マスボ11,500・エーフィ15,000・リーフィア7,600・シャワーズ9,500・ナタネSR 70,000・ナンジャモSAR 19,000 他）、道楽 11/26表（リザードンex SAR 73,000・ブラッキーVMAX SA 650,000 他）。<b>大分のPSA10店頭表は未確認</b>です。<br><br>シングルの番号・収録弾は公式カードDBで確認し、<b>買取価格が未確認のものは0円（未確認表示）</b>にしています。全国通販・相場は「参考（判定に使わない）」欄です。<br><br><b>「目安」バッジ</b>の行は推定値なので買い判定を出しません。店頭の表を見て上書きしてください。';
   var card=$('#voiceCard');
   if(card){card.addEventListener('click',function(){
     if(running){stopScan();setVoiceText('停止中','画面タップで再開できます')}
@@ -1702,9 +2170,10 @@ function init(){
   if('speechSynthesis' in window&&speechSynthesis.getVoices){
     speechSynthesis.getVoices();
   }
+  loadFeed(false);
 }
 init();
-window.__scanner={judge:judge,channelsFor:channelsFor,pickItem:pickItem,findCandidates:findCandidates,parsePrice:parsePrice,extractMarks:extractMarks,preprocess:preprocess,analyzeCondition:analyzeCondition,DB:DB,SET:SET,scanOnce:scanOnce,demoScan:demoScan};
+window.__scanner={judge:judge,channelsFor:channelsFor,pickItem:pickItem,findCandidates:findCandidates,parsePrice:parsePrice,extractMarks:extractMarks,preprocess:preprocess,analyzeCondition:analyzeCondition,analyzeFinish:analyzeFinish,spreadOf:spreadOf,itemFinish:itemFinish,mergeFeed:mergeFeed,loadFeed:loadFeed,DB:DB,SET:SET,scanOnce:scanOnce,demoScan:demoScan};
 })();
 </script>
 </body>
