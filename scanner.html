@@ -972,13 +972,13 @@ function judge(it,tag,opt){
   var itemFin=itemFinish(it);
   if(fin==='unknown'&&opt.mirrorHint&&itemFin!=='master'&&itemFin!=='monster'){
     res.finishWarn=true;res.level='check';res.title='光り方の確認';
-    res.why='<b>⚠ 画像にミラー反射があります。</b>マスボ／モンボの取り違え注意。上の光り方ボタンで目視確認するまで買い判定は出しません。'+res.why;
+    res.why='<b>⚠ 画像にミラー反射があります。</b>マスボ／モンボの取り違え注意。上の光り方ボタンで目視確認するまで買い判定は出しません。参考：美品手取り'+yen(b.net)+'／値札'+yen(res.tag)+'。';
   }
   if(itemFin==='master'||itemFin==='monster'){
     res.finishWarn=true;
     if(fin!==itemFin){
       res.level='check';res.title='光り方の確認';
-      res.why='<b>⚠ ミラー柄（マスボ／モンボ）の取り違え注意。</b>DB候補は<b>'+finishLabel(itemFin)+'</b>、選択は<b>'+(fin==='unknown'?'未確認':finishLabel(fin))+'</b>。上の光り方ボタンで目視確認するまで買い判定は出しません。'+res.why;
+      res.why='<b>⚠ ミラー柄（マスボ／モンボ）の取り違え注意。</b>DB候補は<b>'+finishLabel(itemFin)+'</b>、選択は<b>'+(fin==='unknown'?'未確認':finishLabel(fin))+'</b>。上の光り方ボタンで目視確認するまで買い判定は出しません。参考：手取り'+yen(res.hardNet)+'／値札'+yen(res.tag)+'。';
     }
   }else if((fin==='master'||fin==='monster')&&itemFin!==fin){
     res.level='check';res.title='加工の不一致';
@@ -1598,7 +1598,7 @@ function renderResult(r){
   if(r.item.cat==='single'){
     finLine='<div class="finishok"><div style="font-size:11px;font-weight:800;margin-bottom:4px">✨ 光り方・柄の最終確認（目視で選ぶ）</div>'+finishBtnsHTML(r.finishUse)+'<div class="mini mt6">'+(r.finishUse==='unknown'?'<b style="color:#912018">未確認</b>：ミラー候補は買い判定を出しません。':'選択：<b>'+finishLabel(r.finishUse)+'</b>')+'</div></div>';
   }
-  if(r.finishWarn){
+  if(r.finishWarn&&(r.finishUse!==r.finish||(r.finish!=='master'&&r.finish!=='monster'))){
     finLine+='<div class="finishwarn">⚠️ ミラー柄（マスボ／モンボ）を目視確認してください！取り違え注意。'+(r.finish==='master'||r.finish==='monster'?'DB候補は '+finishLabel(r.finish)+'。':'')+'</div>';
   }
   var stage2='';
