@@ -343,7 +343,7 @@ body[data-mode="ar"] .pre{opacity:.85}
       <figure><canvas id="pvBin" width="240" height="120"></canvas><figcaption>二値化</figcaption></figure>
     </div>
     <div class="debuglog" id="dbg">待機中。読み取りのどこで止まったかをここに表示します。</div>
-    <div class="hint mt6">💡 iPhoneはカメラ許可が必要です。カメラが開かないときは自動で<b>シミュレーション棚</b>に切り替わります（判定ロジックは同じ）。</div>
+    <div class="hint mt6">💡 iPhoneはカメラ許可が必要です。カメラが開かないときは自動で<b>シミュレーション棚</b>に切り替わります（判定ロジックは同じ）。初回のOCRは読み込みで10〜20秒かかることがあります。</div>
   </div>
 
   <div class="card" id="voiceCard">
@@ -1218,7 +1218,7 @@ async function scanOnce(manual){
       }catch(e){dbg.push('<span class="ng">価格OCR失敗: '+esc(e.message)+'</span>')}
       if(!price){
         dbg.push('<span class="ng">→ 価格未検出でスキップ（枠を値札に寄せる／明るく）</span>');
-        renderDebug(dbg);setHud('価格未検出','スキップ');lastKey='';return;
+        renderDebug(dbg);setHud('価格未検出','スキップ');return;
       }
       // 商品名OCR
       if(SET.nameOcr!==false){
@@ -1233,7 +1233,7 @@ async function scanOnce(manual){
       if(!nameText){
         dbg.push('<span class="ng">→ 商品名未検出でスキップ（DBから手動選択もできます）</span>');
         renderDebug(dbg);setHud('商品名未検出','スキップ');
-        lastKey='';return;
+        return;
       }
       var marks=extractMarks(nameText);
       dbg.push('マーク: 番号='+(marks.cardNo||'─')+' レア='+(marks.rarity||'─')+' 25th='+(marks.y25?'有':'無')+' プロモ='+(marks.promo?'有':'無')+' 再販='+(marks.reprint?'有':'無'));
@@ -1241,7 +1241,7 @@ async function scanOnce(manual){
       if(!itemPick.item){
         dbg.push('<span class="ng">→ 照合不可（近い商品がDBにない）</span>');
         renderDebug(dbg);setHud('照合不可','スキップ');
-        showUnmatched(nameText,price,performance.now()-t0);lastKey='';return;
+        showUnmatched(nameText,price,performance.now()-t0);return;
       }
       dbg.push('照合 → '+esc(itemPick.item.name)+'（一致'+Math.round(itemPick.score*100)+'%）'+(itemPick.gradeWarn?' <span class="ng">'+esc(itemPick.gradeWarn)+'</span>':'')+(itemPick.versionWarn?' '+esc(itemPick.versionWarn):''));
     }
@@ -1362,6 +1362,8 @@ function renderDebug(lines){
   d.scrollTop=d.scrollHeight;
 }
 function addHistory(r){
+  var top=history[0];
+  if(top&&top.name===r.item.name&&top.price===r.tag&&Date.now()-top.t<30000)return;
   history.unshift({t:Date.now(),name:r.item.name,price:r.tag,net:r.ch.best?r.ch.best.net:0,level:r.level});
   history=history.slice(0,12);
   $('#histCount').textContent=history.length+'件';
@@ -1549,7 +1551,8 @@ function renderTests(){
   var tb=$('#testTable').querySelector('tbody');
   tb.innerHTML=TESTS.slice(0,80).map(function(t){
     function mark(v){return v===null?'─':v?'<span class="ok">○</span>':'<span class="ng">×</span>'}
-    return '<tr><td>'+new Date(t.t).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})+'</td><td>'+t.ms+'</td><td>'+esc(t.name)+'</td><td>'+yen(t.price)+'</td><td>'+esc(t.level)+'</td><td>'+mark(t.okName)+' '+mark(t.okPrice)+'</td></tr>';
+    var lv={buy:'買い',check:'確認',pass:'見送',none:'価格なし'}[t.level]||t.level;
+    return '<tr><td>'+new Date(t.t).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})+'</td><td>'+t.ms+'</td><td>'+esc(t.name)+'</td><td>'+yen(t.price)+'</td><td>'+lv+'</td><td>'+mark(t.okName)+' '+mark(t.okPrice)+'</td></tr>';
   }).join('');
   $('#testEmpty').hidden=!!TESTS.length;
   var withName=TESTS.filter(function(t){return t.okName!==null});
