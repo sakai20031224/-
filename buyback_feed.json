@@ -409,9 +409,11 @@
       "number": "111/100",
       "rarity": "SR（SA）",
       "set": "ロストアビス S11",
-      "updated_at": "2026-11-28",
-      "offers": [],
-      "note": "大分・福岡の店頭買取は未確認",
+      "updated_at": "2026-11-26",
+      "offers": [
+        {"area": "fukuoka", "store": "トレカハブ 福岡博多店", "price": 245000, "checked_at": "2026-11-26", "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認"}
+      ],
+      "note": "大分のPSA10店頭表は未確認",
       "reference": [
         {"label": "福福トレカ PSA10買取（参考）", "price": 250000, "checked_at": "2026-11-28", "source": "福福トレカ PSA10表"}
       ],
@@ -443,9 +445,11 @@
       "number": "066/060",
       "rarity": "SR",
       "set": "コレクション ムーン SM1M",
-      "updated_at": "2026-11-28",
-      "offers": [],
-      "note": "大分・福岡の店頭買取は未確認",
+      "updated_at": "2026-11-26",
+      "offers": [
+        {"area": "fukuoka", "store": "トレカハブ 福岡博多店", "price": 1100000, "checked_at": "2026-11-26", "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認（帽子リーリエ）"}
+      ],
+      "note": "大分のPSA10店頭表は未確認",
       "reference": [
         {"label": "国内販売相場（参考）", "price": 149930, "checked_at": "2026-11-28", "source": "TCG PORTAL"}
       ]
@@ -459,9 +463,26 @@
       "number": "119/114",
       "rarity": "SR",
       "set": "GXバトルブースト SM4+",
-      "updated_at": "2026-11-28",
-      "offers": [],
-      "note": "大分・福岡の店頭買取は未確認"
+      "updated_at": "2026-11-26",
+      "offers": [
+        {"area": "fukuoka", "store": "トレカハブ 福岡博多店", "price": 2020000, "checked_at": "2026-11-26", "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認（がんばリーリエ）"}
+      ],
+      "note": "大分のPSA10店頭表は未確認"
+    },
+    {
+      "id": "p_lizard_master",
+      "name": "リザード マスターボールミラー",
+      "cat": "single",
+      "finish": "master",
+      "grade": "psa10",
+      "number": "005/165",
+      "rarity": "マスターボールミラー",
+      "set": "ポケモンカード151 SV2a",
+      "updated_at": "2026-11-26",
+      "offers": [
+        {"area": "fukuoka", "store": "トレカハブ 福岡博多店", "price": 8500, "checked_at": "2026-11-26", "source": "https://x.com/torekahub/status/2125699509984592229 画像13枚・拡大確認"}
+      ],
+      "note": "大分のPSA10店頭表は未確認"
     },
     {
       "id": "p_pika_master",
