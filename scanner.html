@@ -1084,7 +1084,7 @@ function fillSettings(){
   updatePresetNote();
 }
 function updatePresetNote(){
-  var names={showcase:'ショーケース',oripa:'オリパ先頭',storage:'ストレージ'};
+  var names={showcase:'ショーケース',oripa:'オリパ前面',storage:'ストレージ'};
   var hr=SET.hardRate[SET.preset];
   $('#presetNote').textContent=names[SET.preset]+'・買いライン'+yen(SET.threshold[SET.preset])+(hr!=null?'・状態難'+Math.round(hr*100)+'%':'');
   var h=$('#presetHint');
@@ -1505,7 +1505,7 @@ async function scanOnce(manual){
     r.ms=ms;r.ocrName=nameText;r.ocrPrice=priceText;r.msPrice=msPrice;r.msName=msName;r.at=Date.now();
     lastResult=r;
     renderResult(r);renderDebug(dbg);addHistory(r);recordTest(r);
-    setHud(r.level==='buy'?'<b>買い</b> '+esc(r.item.name):r.level==='check'?'状態確認 '+esc(r.item.name):'見送り '+esc(r.item.name),'手取り '+yen(r.ch.best?r.ch.best.net:0));
+    setHud(r.level==='buy'?'<b>買い</b> '+esc(r.item.name):r.level==='check'?'状態確認 '+esc(r.item.name):'見送り '+esc(r.item.name),(r.ch.best?'手取り '+yen(r.ch.best.net):'価格未確認'));
     if(!useSim||SET.simOcr){}else{}
     speakResult(r);
     if(SET.mode==='voice')setVoiceText((r.level==='buy'?'✅ 買い':'⚠ '+(r.title||'見送り'))+'<br><span style="font-size:15px">'+esc(r.item.name)+'</span><br><span style="font-size:14px;color:#8fa0ae">手取り'+yen(r.ch.best?r.ch.best.net:0)+' / 値札'+yen(r.tag)+'</span>','値札 '+yen(r.tag)+'・'+r.ch.best.name);
@@ -1534,14 +1534,16 @@ function showUnmatched(nameText,price,ms){
   $('#lastMs').textContent=Math.round(ms)+'ms';
 }
 
+function areaName(a){return a==='oita'?'大分':a==='fukuoka'?'福岡':'全国'}
+function realStoreName(s){return !!s&&s!=='大分店頭'&&s!=='福岡店頭'}
 function spreadOf(it){
   normalizeItem(it);
-  var list=[];
-  (it.offers||[]).forEach(function(o){if(num(o.price,0)>0)list.push({store:o.store||areaName(o.area),area:o.area,price:num(o.price,0),checked:o.checked_at||''})});
-  if(!list.length){
-    if(num(it.price.oita,0)>0)list.push({store:it.oitaStore||'大分店頭',area:'oita',price:num(it.price.oita,0),checked:(it.checked||{}).oita||''});
-    if(num(it.price.fukuoka,0)>0)list.push({store:it.fukuokaStore||'福岡店頭',area:'fukuoka',price:num(it.price.fukuoka,0),checked:(it.checked||{}).fukuoka||''});
-  }
+  var list=[],have={};
+  (it.offers||[]).forEach(function(o){
+    if(num(o.price,0)>0){list.push({store:o.store||areaName(o.area),area:o.area,price:num(o.price,0),checked:o.checked_at||''});have[o.area]=1;}
+  });
+  if(!have.oita&&num(it.price.oita,0)>0&&realStoreName(it.oitaStore))list.push({store:it.oitaStore,area:'oita',price:num(it.price.oita,0),checked:(it.checked||{}).oita||''});
+  if(!have.fukuoka&&num(it.price.fukuoka,0)>0&&realStoreName(it.fukuokaStore))list.push({store:it.fukuokaStore,area:'fukuoka',price:num(it.price.fukuoka,0),checked:(it.checked||{}).fukuoka||''});
   if(!list.length)return {list:list,ok:false,diff:0};
   list.sort(function(a,b){return b.price-a.price});
   return {list:list,ok:list.length>1,diff:list.length>1?list[0].price-list[list.length-1].price:0,max:list[0],min:list[list.length-1]};
@@ -1584,7 +1586,7 @@ function renderResult(r){
   var af=(r.ch.all||[]).filter(function(c){return c.key==='fukuoka'})[0];
   var areaTxt='大分最高 '+(ao&&ao.available?yen(ao.gross)+'（'+esc(ao.store||'店名未確認')+'・'+(ao.checked||'日付未確認')+'）':'未確認')+' ／ 福岡最高 '+(af&&af.available?yen(af.gross)+'（'+esc(af.store||'店名未確認')+'・'+(af.checked||'日付未確認')+'）':'未確認');
   if(sp.ok){
-    spreadLine='<div class="saya"><b>店間サヤ '+yen(sp.diff)+'</b>（最高 '+esc(sp.max.store)+' '+yen(sp.max.price)+(sp.max.checked?'・'+esc(sp.max.checked):'')+' ／ 最低 '+esc(sp.min.store)+' '+yen(sp.min.price)+(sp.min.checked?'・'+esc(sp.min.checked):'')+'）<div class="mini">'+areaTxt+'</div><div class="mini">値札とのサヤ '+(r.profit>=0?'+':'')+yen(num(r.profit,0))+'（手取り−値札）</div></div>';
+    spreadLine='<div class="saya"><b>店間サヤ '+yen(sp.diff)+'</b>（最高 '+esc(sp.max.store)+' '+yen(sp.max.price)+(sp.max.checked?'・'+esc(sp.max.checked):'')+' ／ 最低 '+esc(sp.min.store)+' '+yen(sp.min.price)+(sp.min.checked?'・'+esc(sp.min.checked):'')+'）<div class="mini">'+areaTxt+'</div><div class="mini">'+(sp.max.area!==sp.min.area?'大分と福岡で値付けが違う':'同じエリア内の店間差')+'。値札とのサヤ '+(function(v){return (v>=0?'+':'')+yen(v)})(SET.preset==='oripa'?(num(r.frontNet,0)-r.tag):num(r.profit,0))+'（手取り−値札）</div></div>';
   }else if(sp.list.length===1){
     spreadLine='<div class="saya"><b>店間サヤ：比較不可</b><div class="mini">'+esc(sp.list[0].store)+' '+yen(sp.list[0].price)+'（'+(sp.list[0].checked||'日付未確認')+'）のみ。もう一方のエリアの店頭価格が未確認です。</div><div class="mini">'+areaTxt+'</div></div>';
   }else{
@@ -1594,8 +1596,8 @@ function renderResult(r){
   if(r.item.cat==='single'){
     finLine='<div class="finishok"><div style="font-size:11px;font-weight:800;margin-bottom:4px">✨ 光り方・柄の最終確認（目視で選ぶ）</div>'+finishBtnsHTML(r.finishUse)+'<div class="mini mt6">'+(r.finishUse==='unknown'?'<b style="color:#912018">未確認</b>：ミラー候補は買い判定を出しません。':'選択：<b>'+finishLabel(r.finishUse)+'</b>')+'</div></div>';
   }
-  if(r.finishWarn&&(r.finish==='master'||r.finish==='monster')&&r.finishUse!==r.finish){
-    finLine+='<div class="finishwarn">⚠️ ミラー柄（マスボ／モンボ）を目視確認してください！取り違え注意。DB候補は '+finishLabel(r.finish)+'。</div>';
+  if(r.finishWarn){
+    finLine+='<div class="finishwarn">⚠️ ミラー柄（マスボ／モンボ）を目視確認してください！取り違え注意。'+(r.finish==='master'||r.finish==='monster'?'DB候補は '+finishLabel(r.finish)+'。':'')+'</div>';
   }
   var stage2='';
   if(SET.preset==='oripa'&&r.ch.best){
@@ -1704,7 +1706,7 @@ function renderDebug(lines){
 function addHistory(r){
   var top=history[0];
   if(top&&top.name===r.item.name&&top.price===r.tag&&Date.now()-top.t<30000)return;
-  history.unshift({t:Date.now(),name:r.item.name,price:r.tag,net:r.ch.best?r.ch.best.net:0,level:r.level});
+  history.unshift({t:Date.now(),name:r.item.name,price:r.tag,net:r.ch.best?r.ch.best.net:null,level:r.level});
   history=history.slice(0,12);
   $('#histCount').textContent=history.length+'件';
   $('#hist').innerHTML=history.map(function(h){
@@ -1712,7 +1714,7 @@ function addHistory(r){
     return '<div style="display:flex;gap:6px;padding:3px 0;border-bottom:1px solid #eef1f5;font-size:11px">'+
       '<span style="color:'+col+';font-weight:800;width:38px">'+(h.level==='buy'?'買い':h.level==='check'?'確認':'見送')+'</span>'+
       '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(h.name)+'</span>'+
-      '<span style="font-variant-numeric:tabular-nums">'+yen(h.price)+' → '+yen(h.net)+'</span></div>';
+      '<span style="font-variant-numeric:tabular-nums">'+yen(h.price)+' → '+(h.net==null?'未確認':yen(h.net))+'</span></div>';
   }).join('');
 }
 $('#btnClearHist').addEventListener('click',function(){history=[];$('#histCount').textContent='0件';$('#hist').textContent='まだありません。'});
@@ -1922,6 +1924,7 @@ function renderDB(){
     if(q&&hay.indexOf(q)<0)return '';
     var sp=spreadOf(it);
     var spTitle=sp.list.map(function(o){return o.store+' '+yen(o.price)+(o.checked?'（'+o.checked+'）':'')}).join(' / ');
+    var showSaya=!it.est&&sp.ok&&sp.diff>0;
     return '<tr data-idx="'+idx+'" class="'+(it.est?'est':'')+'">'+
       '<td><input data-k="name" value="'+esc(it.name)+'" style="min-width:130px"></td>'+
       '<td><select data-k="cat"><option value="box"'+(it.cat==='box'?' selected':'')+'>BOX</option><option value="single"'+(it.cat!=='box'?' selected':'')+'>シングル</option></select></td>'+
@@ -1936,7 +1939,7 @@ function renderDB(){
       '<td><input class="num" data-k="p.fukuoka" type="number" value="'+(it.price.fukuoka||0)+'"></td>'+
       '<td><input class="num" data-k="p.mail" type="number" value="'+(it.price.mail||0)+'"></td>'+
       '<td><input class="num" data-k="p.loose" type="number" value="'+(it.price.loose||0)+'"></td>'+
-      '<td class="num" title="'+esc(spTitle)+'" style="font-variant-numeric:tabular-nums;white-space:nowrap;color:'+(sp.ok&&sp.diff>0?'#1d4ed8':'#98a2b0')+';font-weight:800">'+(sp.ok&&sp.diff>0?yen(sp.diff):'─')+'</td>'+
+      '<td class="num" title="'+esc(spTitle)+'" style="font-variant-numeric:tabular-nums;white-space:nowrap;color:'+(showSaya?'#1d4ed8':'#98a2b0')+';font-weight:800">'+(showSaya?yen(sp.diff):'─')+'</td>'+
       '<td><input data-k="src" type="text" value="'+esc(it.src||'')+'" style="min-width:110px"></td>'+
       '<td><span class="src" title="'+esc(it.src||'')+'">'+(DB.manual[it.id]?'<span class="est">手動</span> ':'')+(it.est?'<span class="est">目安</span> ':'')+esc((it.src||'').slice(0,26))+'</span></td>'+
       '<td><button class="del" data-del="'+idx+'" title="削除">✕</button></td>'+
@@ -1950,9 +1953,13 @@ function renderDB(){
 function renderSpreadList(){
   var el=$('#spreadList');if(!el)return;
   var rows=[];
-  DB.items.forEach(function(it){var sp=spreadOf(it);if(sp.ok&&sp.diff>0)rows.push({it:it,sp:sp})});
+  DB.items.forEach(function(it){
+    if(it.est)return;
+    if(!it.offers||it.offers.length<2)return;
+    var sp=spreadOf(it);if(sp.ok&&sp.diff>0)rows.push({it:it,sp:sp});
+  });
   rows.sort(function(a,b){return b.sp.diff-a.sp.diff});
-  if(!rows.length){el.innerHTML='<div class="hint">まだ2店舗分の価格が入っていません。フィードを読み込むか、DBに大分・福岡の店頭値を足してください。</div>';return}
+  if(!rows.length){el.innerHTML='<div class="hint">まだ2店舗分の店名つき価格が入っていません。フィードを読み込むか、DBに大分・福岡の店頭値を足してください（目安値はアラートに出しません）。</div>';return}
   el.innerHTML=rows.slice(0,15).map(function(x){
     return '<div class="sprow"><span class="nm">'+esc(x.it.name)+'<br><span class="mini">'+esc(x.sp.max.store)+' '+yen(x.sp.max.price)+(x.sp.max.checked?'・'+esc(x.sp.max.checked):'')+' ／ '+esc(x.sp.min.store)+' '+yen(x.sp.min.price)+(x.sp.min.checked?'・'+esc(x.sp.min.checked):'')+'</span></span><span class="df">'+yen(x.sp.diff)+'</span></div>';
   }).join('');
@@ -2085,7 +2092,10 @@ function applyFeedItem(it,f){
   if(f.offers&&f.offers.length)it.offers=f.offers.filter(function(o){return num(o.price,0)>0}).map(function(o){return {area:o.area,store:o.store,price:num(o.price,0),checked_at:o.checked_at||'',note:o.note||'',source:o.source||''}});
   if(f.reference&&f.reference.length){
     var r=f.reference.slice().sort(function(a,b){return num(b.price,0)-num(a.price,0)})[0];
-    if(r&&num(r.price,0)>0){it.price.mail=num(r.price,0);it.ref={label:r.label||'全国通販（参考）',price:num(r.price,0),date:r.checked_at||'',source:r.source||''};}
+    if(r&&num(r.price,0)>0){
+      it.ref={label:r.label||'全国通販（参考）',price:num(r.price,0),date:r.checked_at||'',source:r.source||''};
+      if(it.cat==='box')it.price.mail=num(r.price,0);
+    }
   }
   if(f.refPsa10)it.refPsa10=f.refPsa10;
   if(f.list)it.list=num(f.list,0);
@@ -2143,7 +2153,7 @@ if(feedBtn)feedBtn.addEventListener('click',function(){loadFeed(true)});
 function init(){
   fillSettings();renderDB();renderTests();applyMode();applyFinishUI();
   $('#dbTime').textContent=DB.updated||'─';
-  $('#dbSources').innerHTML='<b>判定に使うのは大分店頭・福岡店頭の実店舗価格だけ</b>です。2026-11-28の本人方針で<b>郵送買取は使いません</b>（参考表示のみ）。<br><br>BOX：ハドウシーカーは大分 極KIWAMI 6,500（11/27）・ポケカん 6,200（11/28）、福岡は掲載なしで未確認。古代の咆哮・ワイルドフォースは福岡のホムラ／トレカハブ／マフィア（11/26〜27）、大分は未確認。<br><br>PSA10：福岡 トレカハブ博多 11/26表（サンダース マスボ11,500・エーフィ15,000・リーフィア7,600・シャワーズ9,500・ナタネSR 70,000・ナンジャモSAR 19,000 他）。<b>大分のPSA10店頭表は未確認</b>です。<br><br>シングルの番号・収録弾は公式カードDBで確認し、<b>買取価格が未確認のものは0円（未確認表示）</b>にしています。全国通販・相場は「参考（判定に使わない）」欄です。<br><br><b>「目安」バッジ</b>の行は推定値なので買い判定を出しません。店頭の表を見て上書きしてください。';
+  $('#dbSources').innerHTML='<b>判定に使うのは大分店頭・福岡店頭の実店舗価格だけ</b>です。2026-11-28の本人方針で<b>郵送買取は使いません</b>（参考表示のみ）。<br><br>BOX：ハドウシーカーは大分 極KIWAMI 6,500（11/27）・ポケカん 6,200（11/28）・マンガ倉庫わさだ 6,000（11/27）、福岡はホムラ 6,800（11/28）。古代の咆哮・ワイルドフォースは福岡のホムラ／トレカハブ／マフィア（11/26〜27）、大分は未確認。<br><br>PSA10：福岡 トレカハブ博多 11/26表（サンダース マスボ11,500・エーフィ15,000・リーフィア7,600・シャワーズ9,500・ナタネSR 70,000・ナンジャモSAR 19,000 他）、道楽 11/26表（リザードンex SAR 73,000・ブラッキーVMAX SA 650,000 他）。<b>大分のPSA10店頭表は未確認</b>です。<br><br>シングルの番号・収録弾は公式カードDBで確認し、<b>買取価格が未確認のものは0円（未確認表示）</b>にしています。全国通販・相場は「参考（判定に使わない）」欄です。<br><br><b>「目安」バッジ</b>の行は推定値なので買い判定を出しません。店頭の表を見て上書きしてください。';
   var card=$('#voiceCard');
   if(card){card.addEventListener('click',function(){
     if(running){stopScan();setVoiceText('停止中','画面タップで再開できます')}
