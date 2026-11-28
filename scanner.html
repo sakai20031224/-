@@ -43,7 +43,8 @@ html.nojs .only-js,html.js .only-nojs{display:none!important}
 .hd h1 small{font-size:10.5px;font-weight:700;color:var(--tc);background:var(--tcbg);border-radius:999px;padding:2px 7px;margin-left:5px;vertical-align:2px}
 .hd .sub{font-size:11px;color:var(--dim);margin-top:3px;line-height:1.5}
 .hd .sub b{color:var(--ink2);font-variant-numeric:tabular-nums}
-.modes{display:flex;gap:6px;margin-top:10px}
+.modes{display:flex;gap:6px;margin-top:10px;max-width:760px;margin-left:auto;margin-right:auto}
+.hd>.top,.hd>.sub{max-width:760px;margin-left:auto;margin-right:auto}
 .modes button{flex:1;border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 4px;font-size:11.5px;font-weight:700;color:var(--dim);line-height:1.25}
 .modes button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
 .modes button .m1{display:block;font-size:15px}
@@ -90,7 +91,7 @@ section[data-tab].on{display:block}
 .camwrap canvas.sim{display:none}
 .camwrap.sim-on canvas.sim{display:block}
 .camwrap.sim-on video{display:none}
-#roi{position:absolute;left:9%;top:20%;width:82%;height:52%;border:2px solid #3ee0bf;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.34);pointer-events:none}
+#roi{position:absolute;left:8%;top:13%;width:84%;height:64%;border:2px solid #3ee0bf;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.34);pointer-events:none}
 #roi span{position:absolute;left:0;top:-21px;background:#3ee0bf;color:#052e29;font-size:10px;font-weight:800;padding:2px 7px;border-radius:6px;white-space:nowrap}
 #roi .cn{position:absolute;width:10px;height:10px;border:2px solid #3ee0bf;border-radius:2px}
 .camhud{position:absolute;left:8px;right:8px;bottom:8px;display:flex;gap:6px;align-items:flex-end;pointer-events:none}
@@ -231,8 +232,15 @@ body[data-mode="ar"] .card{background:#0d1218;border-color:#1b2530}
 body[data-mode="ar"] .card h2{color:#e8f0f4}
 body[data-mode="ar"] .hint,body[data-mode="ar"] .mini{color:#8fa0ae}
 body[data-mode="ar"] .camwrap{aspect-ratio:auto;height:calc(100vh - 205px);min-height:320px;border-radius:12px}
-body[data-mode="ar"] #roi{left:6%;top:24%;width:88%;height:46%}
+body[data-mode="ar"] #roi{left:6%;top:15%;width:88%;height:60%}
 body[data-mode="ar"] #camCard .hint{display:none}
+body[data-mode="ar"] .modes button{background:#0d1218;border-color:#243241;color:#8fa0ae}
+body[data-mode="ar"] .modes button[aria-pressed="true"]{background:#5ff0cf;border-color:#5ff0cf;color:#052e29}
+body[data-mode="ar"] .presets button{background:#0d1218;border-color:#243241;color:#8fa0ae}
+body[data-mode="ar"] .presets button[aria-pressed="true"]{background:#10241f;border-color:#2c6a5b;color:#5ff0cf}
+body[data-mode="ar"] select,body[data-mode="ar"] input{background:#0d1218;border-color:#243241;color:#e8f0f4}
+body[data-mode="ar"] .camwrap.sim-on{height:auto;aspect-ratio:3/2}
+body[data-mode="ar"] .chtable td,body[data-mode="ar"] .chtable th{color:#c2d0da}
 body[data-mode="ar"] .res{background:#0d1218;border-color:#1b2530;color:#e8f0f4}
 body[data-mode="ar"] .res .money div{background:#0d1218}
 body[data-mode="ar"] .res .money b{color:#eaf1f5}
@@ -342,7 +350,7 @@ body[data-mode="ar"] .pre{opacity:.85}
     <div class="vlamp" id="vLamp">🎧</div>
     <div class="vtext" id="vText">待機中</div>
     <div class="vsub" id="vSub">買いのときだけ読み上げます</div>
-    <div class="vfoot">画面をタップで再開／停止・黒画面＝OLED節電<br><button id="btnExitVoice" style="margin-top:8px;background:#0d1218;color:#8fa0ae;border:1px solid #243241;border-radius:999px;padding:6px 14px;font-size:11px">📱 スマホ画面に戻る</button></div>
+    <div class="vfoot">画面をタップで再開／停止・黒画面＝OLED節電<br><button id="btnExitVoice" style="margin-top:8px;background:#13212b;color:#a9c6d8;border:1px solid #2b4657;border-radius:999px;padding:7px 16px;font-size:11px">📱 スマホ画面に戻る</button></div>
   </div>
 
   <div class="card">
@@ -738,7 +746,7 @@ function channelsFor(it){
   var p=it.price;
   function g(v){return Math.max(0,num(v,0))}
   var list=[
-    {key:'oita',name:'大分店頭'+(it.oitaStore?'／'+it.oitaStore:''),gross:useLoose?g(p.loose):g(p.oita),cost:oitaCost,note:SET.oitaKmLabel+' 往復'+(km*2)+'km÷'+split},
+    {key:'oita',name:'大分店頭'+(it.oitaStore&&it.oitaStore!=='大分店頭'?'／'+it.oitaStore:''),gross:useLoose?g(p.loose):g(p.oita),cost:oitaCost,note:SET.oitaKmLabel+' 往復'+(km*2)+'km÷'+split},
     {key:'fukuoka',name:'福岡店頭',gross:useLoose?g(p.loose):g(p.fukuoka),cost:fukuCost,note:'下道往復燃料÷'+split},
     {key:'mail',name:'宅配（郵送）',gross:useLoose?g(p.loose):g(p.mail),cost:mailCost,note:'送料'+num(SET.mailShip,800)+'＋梱包'+num(SET.pack,500)}
   ];
@@ -818,7 +826,14 @@ function speakResult(r){
 function applyMode(){
   document.body.setAttribute('data-mode',SET.mode);
   $$('#modes button').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-mode')===SET.mode?'true':'false')});
-  if(SET.mode==='voice'){setVoiceText(lastResult?'':'待機中');}
+  if(SET.mode==='voice'){
+    if(lastResult)renderVoice(lastResult);
+    else setVoiceText('待機中','買いのときだけ読み上げます');
+  }
+}
+function renderVoice(r){
+  var b=r.ch.best;
+  setVoiceText((r.level==='buy'?'✅ 買い':r.level==='check'?'⚠ '+esc(r.title):'見送り')+'<br><span style="font-size:15px">'+esc(r.item.name)+'</span><br><span style="font-size:14px;color:#8fa0ae">手取り'+yen(b?b.net:0)+'／値札'+yen(r.tag)+'</span>','値札 '+yen(r.tag)+'・'+(b?esc(b.name):''));
 }
 function setVoiceText(t,sub){
   var vt=$('#vText'),vs=$('#vSub');
@@ -1060,7 +1075,7 @@ function grabFrame(){
 function cropROI(src){
   var c=roiCv.getContext('2d');
   c.drawImage(src,0,0);
-  var x=Math.round(src.width*0.09),y=Math.round(src.height*0.20),w=Math.round(src.width*0.82),h=Math.round(src.height*0.52);
+  var x=Math.round(src.width*0.08),y=Math.round(src.height*0.13),w=Math.round(src.width*0.84),h=Math.round(src.height*0.64);
   var out=document.createElement('canvas');out.width=720;out.height=Math.round(720*h/w);
   out.getContext('2d').drawImage(src,x,y,w,h,0,0,out.width,out.height);
   return out;
@@ -1319,10 +1334,7 @@ function renderResult(r){
   var bs=$('#btnSay');if(bs)bs.addEventListener('click',function(){unlockAudio();speakResult(r)});
   var bp=$('#btnPickOther');if(bp)bp.addEventListener('click',function(){showPicker(r)});
   var bq=$('#btnQuickAdd');if(bq)bq.addEventListener('click',function(){quickAdd(r)});
-  if(SET.mode==='voice'){
-    setVoiceText((r.level==='buy'?'✅ 買い':r.level==='check'?'⚠ '+esc(r.title):'見送り')+'<br><span style="font-size:15px">'+esc(r.item.name)+'</span><br><span style="font-size:14px;color:#8fa0ae">手取り'+yen(b?b.net:0)+'／値札'+yen(r.tag)+'</span>',
-      '値札 '+yen(r.tag)+'・'+(b?esc(b.name):''));
-  }
+  if(SET.mode==='voice')renderVoice(r);
 }
 function quickAdd(r){
   var nm=prompt('DBに追加する商品名',r.item.name);
@@ -1374,7 +1386,8 @@ function demoScan(id,price){
   lastResult=r;renderResult(r);recordTest(r);speakResult(r);
   renderDebug(['デモ実行（OCRなし・判定のみ '+r.ms+'ms）','照合 → '+esc(it.name),'値札 '+yen(price)]);
   setHud('<b>'+r.title+'</b> '+esc(it.name),'手取り '+yen(r.ch.best?r.ch.best.net:0));
-  if(SET.mode==='voice')setVoiceText((r.level==='buy'?'✅ 買い':'⚠ '+r.title)+'<br><span style="font-size:15px">'+esc(it.name)+'</span>','値札 '+yen(price));
+  addHistory(r);
+  if(SET.mode==='voice')renderVoice(r);
 }
 
 /* ---------------- 状態検査 ---------------- */
