@@ -680,6 +680,7 @@ function extractMarks(text){
     y25:/25th|25周年|25ｔｈ/i.test(t),
     reprint:/再販|復刻|リプリント|reprint/i.test(t),
     reg:(t.match(/\b([FGHI])\b/g)||[]).join(''),
+    setCode:(t.match(/\b(SV\d+[a-zA-Z]?|M\d+[a-zA-Z]?|S\d+[a-zA-Z]?|OP-?\d+)\b/i)||[])[0]||'',
     mark:/エキスパンション|拡張マーク/.test(t)
   };
 }
@@ -1236,7 +1237,7 @@ async function scanOnce(manual){
         return;
       }
       var marks=extractMarks(nameText);
-      dbg.push('マーク: 番号='+(marks.cardNo||'─')+' レア='+(marks.rarity||'─')+' 25th='+(marks.y25?'有':'無')+' プロモ='+(marks.promo?'有':'無')+' 再販='+(marks.reprint?'有':'無'));
+      dbg.push('マーク: 弾='+(marks.setCode||'─')+' 番号='+(marks.cardNo||'─')+' レア='+(marks.rarity||'─')+' 25th='+(marks.y25?'有':'無')+' プロモ='+(marks.promo?'有':'無')+' 再販='+(marks.reprint?'有':'無'));
       itemPick=pickItem(nameText,marks,SET.grade);
       if(!itemPick.item){
         dbg.push('<span class="ng">→ 照合不可（近い商品がDBにない）</span>');
