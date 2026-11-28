@@ -1631,7 +1631,7 @@ function renderResult(r){
     (r.gradeWarn?'<div class="itemmeta" style="color:#b54708">⚠ '+esc(r.gradeWarn)+'</div>':'')+
     '<div class="money">'+
       '<div><span>値札／オリパ価格</span><b>'+yen(r.tag)+'</b></div>'+
-      '<div class="big"><span>手取り（'+esc((b?b.name:'─').split('／')[0])+'）</span><b>'+(b?yen(b.net):'未確認')+'</b></div>'+
+      '<div class="big"><span>手取り</span><b>'+(b?yen(b.net):'未確認')+'</b></div>'+
       '<div><span>'+(SET.preset==='oripa'?'前面の手取り':'差額')+'</span><b style="color:'+((b&&(SET.preset==='oripa'?r.frontNet-r.tag:r.profit)>=0)?'#067647':'#727d8c')+'">'+(b?(SET.preset==='oripa'?yen(num(r.frontNet,0)):((r.profit>=0?'+':'')+yen(num(r.profit,0)))):'─')+'</b></div>'+
     '</div>'+
     spreadLine+
