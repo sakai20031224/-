@@ -1132,6 +1132,7 @@ function setFinish(f,rejudge){
     if(p.item){
       var r=judge(p.item,lastScan.price,{gradeWarn:p.gradeWarn,versionWarn:p.versionWarn,mirrorHint:!!lastScan.mirrorHint});
       r.ms=lastScan.ms||0;renderResult(r);speakResult(r);
+      setHud((r.level==='buy'?'<b>買い</b> ':'')+esc(r.item.name),(r.ch.best?'手取り '+yen(r.ch.best.net):'価格未確認'));
     }
   }else if(rejudge&&lastResult){
     var q=judge(lastResult.item,lastResult.tag,{});renderResult(q);speakResult(q);
